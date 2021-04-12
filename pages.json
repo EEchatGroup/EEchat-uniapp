@@ -1,0 +1,28 @@
+{
+    "pages": [{
+            "path": "pages/login"
+
+        },
+        {
+            "path": "pages/register"
+
+        },
+        {
+            "path": "pages/confirm"
+
+        },
+        {
+            "path": "pages/confirm"
+
+        },
+        {
+            "path": "pages/home"
+
+        }
+    ],
+    "globalStyle": {
+        "app-plus": {
+            "titleNView": false
+        }
+    }
+}
