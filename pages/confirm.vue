@@ -24,9 +24,9 @@
             },
             goHome() {
                 console.log("44444444")
-                uni.navigateTo({
-                    url: './home'
-                });
+                uni.switchTab({
+                    url:'./home'
+                })
             }
         }
 

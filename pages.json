@@ -18,11 +18,41 @@
         {
             "path": "pages/home"
 
+        }, 
+        {
+            "path": "pages/my"
+
+        }, 
+        {
+            "path": "pages/edit-nickname"
+
+        }, 
+        {
+            "path": "pages/blockList"
+
         }
     ],
     "globalStyle": {
         "app-plus": {
             "titleNView": false
         }
+    },
+    "tabBar": {
+        "color":"#1B72EC",
+        "selectedColor": "#1B72EC",
+        "list": [{
+                "text": "EEchat",
+                "pagePath": "pages/home",
+                "iconPath": "static/tab-home.png",
+                "selectedIconPath": "static/tab-home-selected.png"
+            },
+            {
+                "text": "我的",
+                "pagePath": "pages/my",
+                "iconPath": "static/tab-my.png",
+                "selectedIconPath": "static/tab-my-selected.png"
+            }
+        ]
     }
+
 }
