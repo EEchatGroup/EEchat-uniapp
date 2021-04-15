@@ -30,6 +30,10 @@
         {
             "path": "pages/blockList"
 
+        }, 
+        {
+            "path": "pages/dialogue"
+
         }
     ],
     "globalStyle": {

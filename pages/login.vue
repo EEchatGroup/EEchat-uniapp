@@ -11,7 +11,7 @@
             <text>端到端加密，消息安全</text>
         </view>
         <input type="text" value="" class="inputArea" placeholder="输入您的助记词，并使用空格分隔" />
-        <button type="primary" class="loginButton">登录</button>
+        <button type="primary" class="loginButton" @click="login" >登录</button>
         <text class="register" @click="goRegiester">注册新账号</text>
     </view>
 
@@ -25,6 +25,11 @@
             }
         },
         methods: {
+            login(){
+                uni.switchTab({
+                    url:'./home'
+                })
+            },
             goRegiester() {
                 uni.navigateTo({
                     url: './register'
