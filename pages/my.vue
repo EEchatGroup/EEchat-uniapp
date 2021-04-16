@@ -92,6 +92,7 @@
                 this.$refs.logoutPopup.close()
             },
             logout() {
+				this.$refs.logoutPopup.close()
                 uni.navigateTo({
                     url: './login'
                 })
