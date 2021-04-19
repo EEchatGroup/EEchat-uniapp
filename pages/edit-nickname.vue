@@ -4,7 +4,7 @@
         <view class="main">
             <input type="text" v-model="nickname" class="input" />
             <button :type=" nickname.length==0? 'defailt':'primary' "
-                :style="nickname.length==0? 'color=#333333':'color=#000000'" class="saveButton">保存</button>
+                :style="nickname.length==0? 'color=#333333':'color=#000000'" class="saveButton" @click="submit">保存</button>
         </view>
 
     </view>
@@ -22,7 +22,12 @@
                 uni.switchTab({
                     url: './my'
                 });
-            }
+            },
+			submit(){
+				uni.switchTab({
+				    url: './my'
+				});
+			}
         }
     }
 </script>

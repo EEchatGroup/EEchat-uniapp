@@ -8,7 +8,8 @@
 		<view class="writeArea">
 			<view class="writeArea-item" v-for=" item in writeArr">
 				<text>{{item.id}}.</text>
-				<view :class="item.content.length==0? 'writeArea-item-main':'writeArea-item-main-writed' " @click="deleteWrited(item)">
+				<view :class="item.content.length==0? 'writeArea-item-main':'writeArea-item-main-writed' "
+					@click="deleteWrited(item)">
 					{{item.content}}
 				</view>
 			</view>
@@ -79,73 +80,55 @@
 						content: ""
 					}
 				],
-				chooseArr: [{
-						id: 1,
-						content: "a"
-					},
-					{
-						id: 2,
-						content: "b"
-					},
-					{
-						id: 3,
-						content: "c"
-					},
-					{
-						id: 4,
-						content: "d"
-					},
-					{
-						id: 5,
-						content: "e"
-					},
-					{
-						id: 6,
-						content: "f"
-					},
-					{
-						id: 7,
-						content: "g"
-					},
-					{
-						id: 8,
-						content: "h"
-					},
-					{
-						id: 9,
-						content: "i"
-					},
-					{
-						id: 10,
-						content: "j"
-					},
-					{
-						id: 11,
-						content: "k"
-					},
-					{
-						id: 12,
-						content: "l"
-					}
-				]
+				chooseArr: [],
+				originMnemonicArr:[]
+				
+			}
+		},
+		onLoad(options) {
+			//传参渲染
+			this.originMnemonicArr =  options.mnemonicInfo.split(" ")
+			console.log(this.originMnemonicArr.toString(),"44444")
+			
+			let randomArr = this.originMnemonicArr.sort(this.randomsort);
+			for (let i = 0; i < randomArr.length; i++) {
+				let chooseArrItem = {}
+				chooseArrItem.id = i
+				chooseArrItem.content = randomArr[i]
+				this.chooseArr.push(chooseArrItem)
 			}
 		},
 		methods: {
+			randomsort(a, b) {
+			    return Math.random()>.5 ? -1 : 1;
+			   },
 			goRegiester() {
-				uni.navigateTo({
-					url: './register'
+				uni.navigateBack({
+					delta: 1
 				});
 			},
 			login() {
-				uni.switchTab({
+				let pp = []
+				for(let i =0 ; i < this.writeArr.length; i++){
+					pp.push(this.writeArr[i].content)
+				}
+				console.log(this.originMnemonicArr.toString(),"111111")
+				console.log(pp.toString(),"777777")
+				if(this.originMnemonicArr.toString() == pp.toString()){
+					console.log("yes")
+				}else{
+					console.log("no")
+				}
+				console.log(pp)
+				/* uni.switchTab({
 					url: './home'
-				})
+				}) */
 			},
 			//清楚选项
-			deleteWrited(e){
+			deleteWrited(e) {
 				let deleteElement = e
-				for (let y = 0; y < this.chooseArr.length; y++){
-					if (this.chooseArr[y].content ==deleteElement.content ){
+				for (let y = 0; y < this.chooseArr.length; y++) {
+					if (this.chooseArr[y].content == deleteElement.content) {
 						this.chooseArr[y].isSlected = false
 						deleteElement.content = ""
 						break

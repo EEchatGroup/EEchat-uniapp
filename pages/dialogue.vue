@@ -41,22 +41,23 @@
 				</view>
 
 			</view>
-			<view class="left">
-				<image src="../static/exit.png" mode="" class="headIcon">
-				</image>
+			<view class="right">
+				<image src="../static/withdraw.png" mode="" v-if="withdrawnStatus" class="StatusIcon"></image>
 				<view class="contentArea">
+					<text class="mainContent"><img src="" alt="" id="kkk" class="sendImg"></text>
 					<view class="triangle">
 					</view>
-					<text class="mainContent">dddddddddddddddddddddddddddd</text>
+					<image src="../static/exit.png" mode="" class="headIcon">
+					</image>
 				</view>
+
 			</view>
 
+
 		</view>
-		<input accept="image/*" type="file">
-		<input accept="image/*" type="file" style="width: 100rpx;height: 100rpx;background-color: #007AFF;">
-		　<input type="file" accept="video/*" style="width: 100rpx;height: 100rpx;background-color: red;">
+
 		<view class="bottomArea">
-			<image src="../static/album.png" mode="" class="album"></image>
+			<image src="../static/album.png" mode="" class="album" @click="upload()"></image>
 			<input type="text" value="" />
 			<button type="primary" class="sentButton">发送</button>
 		</view>
@@ -80,10 +81,35 @@
 				nickname: "奥克斯公司",
 				remarks: "",
 				sentStatus: true,
-				withdrawnStatus: true
+				withdrawnStatus: true,
+				isSendImg: false
 			}
 		},
 		methods: {
+			websocketLin(){
+				var ws = new WebSocket("ws://47.112.160.66:10000");
+			},
+			upload() {
+				let input = document.createElement('input');
+				input.type = 'file';
+				input.accept = 'image/*';
+				input.click()
+				input.onchange = (event) => {
+					let preview = document.querySelector('#kkk');
+					let file = event.path[0].files[0];
+					let reader = new FileReader(); 
+					//新建 FileReader 对象
+					 reader.addEventListener("load", function() {
+						preview.src = reader.result;
+						console.log(reader.result)
+					}, false);
+					if (file) {
+						reader.readAsDataURL(file);
+					}
+
+				}
+			},
+
 			goBack() {
 				uni.switchTab({
 					url: "./home"
@@ -98,6 +124,9 @@
 			confirm() {
 				this.$refs.popup.close()
 			}
+		},
+		created() {
+			this.websocketLin()
 		}
 
 	}
@@ -119,6 +148,9 @@
 			white-space: normal;
 			word-break: break-all;
 			overflow: hidden;
+			.sendImg{
+				width: 100%;
+			}
 		}
 
 		.headIcon {
@@ -184,7 +216,7 @@
 					height: 30rpx;
 					margin-right: 20rpx;
 				}
-
+				
 				.contentArea {
 					display: flex;
 					align-items: flex-start;
