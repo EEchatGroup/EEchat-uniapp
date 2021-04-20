@@ -20,7 +20,7 @@
 				{{item.content}}
 			</view>
 		</view>
-		<view class="hh">
+		<view>
 			<button type="primary" @click="login" class="login">登录</button>
 		</view>
 
@@ -28,6 +28,9 @@
 </template>
 
 <script>
+	import {
+		loginApi
+	} from '../api'
 	export default {
 		data() {
 			return {
@@ -81,16 +84,17 @@
 					}
 				],
 				chooseArr: [],
-				originMnemonicArr:[]
-				
+				originMnemonicArr: [],
 			}
 		},
 		onLoad(options) {
 			//传参渲染
-			this.originMnemonicArr =  options.mnemonicInfo.split(" ")
-			console.log(this.originMnemonicArr.toString(),"44444")
-			
-			let randomArr = this.originMnemonicArr.sort(this.randomsort);
+			this.originMnemonicArr = options.mnemonicInfo.split(" ")
+			console.log(options.mnemonicInfo.toString(), "8888888")
+			console.log(this.originMnemonicArr.toString(), "原始助记词顺序")
+			//随机排序
+			let randomArr = options.mnemonicInfo.split(" ").sort(this.randomsort);
+
 			for (let i = 0; i < randomArr.length; i++) {
 				let chooseArrItem = {}
 				chooseArrItem.id = i
@@ -100,31 +104,33 @@
 		},
 		methods: {
 			randomsort(a, b) {
-			    return Math.random()>.5 ? -1 : 1;
-			   },
+				return Math.random() > .5 ? -1 : 1;
+			},
 			goRegiester() {
 				uni.navigateBack({
 					delta: 1
 				});
 			},
-			login() {
+			async login() {
 				let pp = []
-				for(let i =0 ; i < this.writeArr.length; i++){
+				for (let i = 0; i < this.writeArr.length; i++) {
 					pp.push(this.writeArr[i].content)
 				}
-				console.log(this.originMnemonicArr.toString(),"111111")
-				console.log(pp.toString(),"777777")
-				if(this.originMnemonicArr.toString() == pp.toString()){
-					console.log("yes")
-				}else{
-					console.log("no")
+				if (this.originMnemonicArr.toString() == pp.toString()) {
+					let accountInfo = {}
+					accountInfo.hh = "111111"
+					accountInfo.accountAddr = this.originMnemonicArr.toString()
+					accountInfo.password = this.originMnemonicArr.toString()
+					accountInfo.optionID = "123456"
+					this.$store.dispatch("getUserInfo", accountInfo)
+					
+				} else {
+					console.log(this.originMnemonicArr.split(" "))
+
 				}
-				console.log(pp)
-				/* uni.switchTab({
-					url: './home'
-				}) */
+
 			},
-			//清楚选项
+			//清除选项
 			deleteWrited(e) {
 				let deleteElement = e
 				for (let y = 0; y < this.chooseArr.length; y++) {
@@ -160,6 +166,11 @@
 						break
 					}
 				}
+			}
+		},
+		computed: {
+			userInfo() {
+				return this.$store.state.userInfo
 			}
 		}
 

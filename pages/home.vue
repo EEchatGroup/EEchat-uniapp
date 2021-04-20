@@ -22,7 +22,8 @@
 	export default {
 		data() {
 			return {
-				kk: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+				kk: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+				userInfo: null
 			}
 		},
 		methods: {
@@ -37,11 +38,23 @@
 				});
 			},
 			getList() {
-				var ws = new WebSocket('ws://47.112.160.66:7777');
+				this.userInfo = this.$store.state.userInfo
+				console.log(this.userInfo,"999977779")
+				var ws = new WebSocket('ws://47.112.160.66:7777?ReqIdentifier=1001&Token=' + this.userInfo.token.accessToken +
+					'&SendID=0&OptionID=' + this.userInfo.optionID + '&MsgIncr=0');
+				ws.onopen = function(evt) {
+					console.log("Connection open ...");
+					ws.send("Hello WebSockets!");
+				};
 			}
 		},
 		created() {
 			this.getList()
+		},
+		computed:{
+			ww(){
+				return this.$store.state.userInfo
+			}
 		}
 	}
 </script>

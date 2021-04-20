@@ -75,6 +75,9 @@
 </template>
 
 <script>
+	import {
+		changeAlias
+	} from '../api'
 	export default {
 		data() {
 			return {
@@ -86,7 +89,7 @@
 			}
 		},
 		methods: {
-			websocketLin(){
+			websocketLin() {
 				var ws = new WebSocket("ws://47.112.160.66:10000");
 			},
 			upload() {
@@ -97,9 +100,9 @@
 				input.onchange = (event) => {
 					let preview = document.querySelector('#kkk');
 					let file = event.path[0].files[0];
-					let reader = new FileReader(); 
+					let reader = new FileReader();
 					//新建 FileReader 对象
-					 reader.addEventListener("load", function() {
+					reader.addEventListener("load", function() {
 						preview.src = reader.result;
 						console.log(reader.result)
 					}, false);
@@ -122,7 +125,15 @@
 				this.$refs.popup.close()
 			},
 			confirm() {
-				this.$refs.popup.close()
+				let parameter = {}
+				parameter.optionID = ""
+				parameter.accountAddr = ""
+				parameter.nickName = this.remarks
+				changeAlias(parameter).then(res => {
+					console.log("res")
+					this.$refs.popup.close()
+				})
+				
 			}
 		},
 		created() {
@@ -148,7 +159,8 @@
 			white-space: normal;
 			word-break: break-all;
 			overflow: hidden;
-			.sendImg{
+
+			.sendImg {
 				width: 100%;
 			}
 		}
@@ -216,7 +228,7 @@
 					height: 30rpx;
 					margin-right: 20rpx;
 				}
-				
+
 				.contentArea {
 					display: flex;
 					align-items: flex-start;
