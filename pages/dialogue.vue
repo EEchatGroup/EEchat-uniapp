@@ -19,17 +19,17 @@
 						<image src="../static/exit.png" mode="" class="headIcon">
 						</image>
 					</view>
-				
+
 				</view>
 				<view v-if="item.SendID != $store.state.userInfo.userID" class="left">
-						<image src="../static/exit.png" mode="" class="headIcon">
-						</image>
-						<view class="contentArea">
-							<view class="triangle">
-							</view>
-							<text class="mainContent">{{item.Content}}</text>
+					<image src="../static/exit.png" mode="" class="headIcon">
+					</image>
+					<view class="contentArea">
+						<view class="triangle">
 						</view>
-					
+						<text class="mainContent">{{item.Content}}</text>
+					</view>
+
 				</view>
 			</view>
 			<!-- <view v-for="item in list" :class="item.SendID == $store.state.userInfo.userID? 'right':'left'">
@@ -132,19 +132,24 @@
 				let that = this
 				that.websockets.ws.onmessage = function(res) {
 					console.log(JSON.parse(res.data), "接收消息推送")
-					this.list.push(res.data)
+					let resData = JSON.parse(res.data)
+					if (resData.ReqIdentifier == 2001) {
+						this.list.push(resData)
+					}
+
 				}
 
 			},
 			sendInfo() {
 				this.userInfo = this.$store.state.userInfo
+				
 				let that = this
 				let parameter = {}
 				parameter.ReqIdentifier = 1003
 				parameter.Token = that.userInfo.token.accessToken
 				parameter.SendID = that.userInfo.userID
 				parameter.OptionID = that.userInfo.optionID
-				parameter.MsgIncr = 1
+				parameter.MsgIncr = that.$store.state.MsgIncr + 1
 				parameter.Data = {}
 				parameter.Data.ChatType = 1
 				parameter.Data.MsgType = 100
@@ -152,10 +157,21 @@
 				parameter.Data.RecvID = "ed3d2c21991e3bef5e069713af9fa6ca"
 				parameter.Data.Content = this.inputValue
 				parameter.Data.ClientMsgID = "777"
-				console.log(JSON.stringify(parameter), "发送输入消息")
-				that.websockets.ws.send(JSON.stringify(parameter));
+				if (parameter.Data.Content.length > 0) {
+					that.$store.commit("MsgIncrAdd")
+					console.log(JSON.stringify(parameter), "发送输入消息")
+					that.websockets.ws.send(JSON.stringify(parameter));
+				}else{
+					console.log("消息为空")
+				}
+
 				that.websockets.ws.onmessage = function(res) {
 					console.log(JSON.parse(res.data), "接收输入消息结果")
+					let resData = JSON.parse(res.data)
+					if (resData.ReqIdentifier == 1003) {
+
+						console.log("聊天用户信息")
+					}
 				}
 				let latest = {}
 				latest.SendID = that.userInfo.userID
@@ -166,10 +182,15 @@
 				latest.Content = this.inputValue
 				latest.Seq = 2
 				latest.ServerMsgID = "2021 - 04 - 21 17: 59: 38 - 5018949295715050020 "
-				this.inputValue = ""
-				this.list.push(latest)
-				console.log(this.list, "LIST消息")
+				if (parameter.Data.Content.length > 0) {
+					this.list.push(latest)
+					console.log(this.list, "LIST消息")
+					this.inputValue = ""
+				}else{
+					console.log("消息为空")
+				}
 				
+
 			},
 			upload() {
 				let input = document.createElement('input');

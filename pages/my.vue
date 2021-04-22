@@ -46,11 +46,12 @@
 		data() {
 			return {
 				linkValue: "1111122222222211111",
-				userInfo:null
+				userInfo: null,
+				tt: 0
 			}
 		},
 		onTabItemTap: function() {
-			console.log(this.$store.state.userInfo,"MY页面")
+			console.log(this.$store.state.userInfo, "MY页面")
 		},
 		methods: {
 			goEditNickname() {
@@ -104,7 +105,7 @@
 
 		},
 		created() {
-		this.userInfo =	this.$store.state.userInfo
+			this.userInfo = this.$store.state.userInfo
 		}
 	}
 </script>

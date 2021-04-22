@@ -1,6 +1,6 @@
 <template>
 	<view id="home">
-		<view class="head" @click="localSocket()">
+		<view class="head" @click="pullMsg">
 			<text class="title">EEchat</text>
 		</view>
 		<view class="main">
@@ -26,9 +26,9 @@
 				userInfo: null
 			}
 		},
-		onTabItemTap:function(){
+		/* onTabItemTap:function(){
 		   this.pullMsg()
-		},
+		}, */
 		methods: {
 			goRegiester() {
 				uni.navigateTo({
@@ -58,26 +58,17 @@
 					console.log(JSON.parse(res.data), "接收主动拉取的消息")
 				}
 			},
-			getList() {
-
-			},
-			localSocket() {
-
-			}
-
+			
 		},
 		watch: {
 			msgReceive(oldVal, newVal) {
-				console.log(newVal, "新接收的消息")
+				console.log(newVal, "新接收的推送消息")
 			}
 		},
 		created() {
-			// this.getList()
-			// this.localSocket()
-
 			this.websockets.ws.onmessage = function(evt) {
 				let msgReceive = JSON.parse(evt.data)
-				console.log(JSON.parse(evt.data), "新接收的消息")
+				console.log(JSON.parse(evt.data), "新接收的推送消息")
 			}
 		},
 		computed: {}

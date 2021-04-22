@@ -25,7 +25,7 @@
 	export default {
 		data() {
 			return {
-				account: "",
+				account: "rib put useful traffic execute giant age damage accuse alcohol hidden brass",
 			}
 		},
 		methods: {

@@ -32,7 +32,12 @@
 						that.websockets.ws.send(JSON.stringify(parameter));
 					};
 					that.websockets.ws.onmessage = function(res) {
-						console.log(JSON.parse(res.data), "接收最新seq")
+						let resData = JSON.parse(res.data)
+						console.log(resData.Data.Seq, "接收最新seq")
+						if( resData.ReqIdentifier= 1001 ){
+							that.$store.commit("seqValue",resData)
+						}
+						
 					}
 				}
 			}
