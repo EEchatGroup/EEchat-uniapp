@@ -111,7 +111,7 @@
 					delta: 1
 				});
 			},
-			async login() {
+			login() {
 				let pp = []
 				for (let i = 0; i < this.writeArr.length; i++) {
 					pp.push(this.writeArr[i].content)

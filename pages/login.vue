@@ -26,24 +26,27 @@
 		data() {
 			return {
 				account: "",
-				hh: {
-					kk: "777",
-					accountAddr: "12779117777684109",
-					password: "777c7dcc777",
-					optionID: "12358"
-				}
 			}
 		},
 		methods: {
 			login() {
-				loginApi(this.hh).then((res) => {
-					console.log(res)
+				let accountInfo = {}
+				accountInfo.hh = "111111"
+				accountInfo.accountAddr = this.account.toString()
+				accountInfo.password = this.account.toString()
+				accountInfo.optionID = "123456"
+				console.log(accountInfo,"参数")
+				loginApi(accountInfo).then(res => {
+					console.log(res,"返回值")
+					res.data.data.optionID = accountInfo.optionID
+					res.data.data.accountAddr = accountInfo.accountAddr
+					this.$store.commit("UserInfoValue", res.data.data)
+					if (res.data.errorCode == 0) {
+						uni.switchTab({
+							url: './home'
+						})
+					}
 				})
-				/* this.account= ""
-                uni.switchTab({
-                    url:'./home',
-					
-                }) */
 			},
 			goRegiester() {
 				uni.navigateTo({

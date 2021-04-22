@@ -9,16 +9,51 @@
 			</view>
 		</uni-nav-bar>
 		<view class="main">
-			<view class="left">
-				<image src="../static/exit.png" mode="" class="headIcon">
-				</image>
-				<view class="contentArea">
-					<view class="triangle">
+			<view class="hhhh" v-for="item in list">
+				<view v-if="item.SendID == $store.state.userInfo.userID" class="right">
+					<!-- <image src="../static/withdraw.png" mode="" v-if="withdrawnStatus" class="StatusIcon"></image> -->
+					<view class="contentArea">
+						<text class="mainContent">{{item.Content}}</text>
+						<view class="triangle">
+						</view>
+						<image src="../static/exit.png" mode="" class="headIcon">
+						</image>
 					</view>
-					<text class="mainContent">dddddddddddddddddddddddddddd</text>
+				
+				</view>
+				<view v-if="item.SendID != $store.state.userInfo.userID" class="left">
+						<image src="../static/exit.png" mode="" class="headIcon">
+						</image>
+						<view class="contentArea">
+							<view class="triangle">
+							</view>
+							<text class="mainContent">{{item.Content}}</text>
+						</view>
+					
 				</view>
 			</view>
-			<view class="right">
+			<!-- <view v-for="item in list" :class="item.SendID == $store.state.userInfo.userID? 'right':'left'">
+				<image src="../static/withdraw.png" mode="" v-if="withdrawnStatus" class="StatusIcon"></image>
+				<view class="contentArea">
+					<text class="mainContent">{{item.Content}}</text>
+					<view class="triangle">
+					</view>
+					<image src="../static/exit.png" mode="" class="headIcon">
+					</image>
+				</view>
+			
+			</view>
+			<view class="left">
+					<image src="../static/exit.png" mode="" class="headIcon">
+					</image>
+					<view class="contentArea">
+						<view class="triangle">
+						</view>
+						<text class="mainContent">dddddddddddddddddddddddddddd</text>
+					</view>
+				
+			</view> -->
+			<!-- <view class="right">
 				<image src="../static/sentFail.png" mode="" v-if="sentStatus" class="StatusIcon"></image>
 
 				<view class="contentArea">
@@ -51,15 +86,15 @@
 					</image>
 				</view>
 
-			</view>
+			</view> -->
 
 
 		</view>
 
 		<view class="bottomArea">
 			<image src="../static/album.png" mode="" class="album" @click="upload()"></image>
-			<input type="text" value="" />
-			<button type="primary" class="sentButton">发送</button>
+			<input type="text" value="" v-model="inputValue" />
+			<button type="primary" class="sentButton" @click="sendInfo">发送</button>
 		</view>
 		<uni-popup ref="popup">
 			<view class="popupMain">
@@ -85,12 +120,56 @@
 				remarks: "",
 				sentStatus: true,
 				withdrawnStatus: true,
-				isSendImg: false
+				isSendImg: false,
+				inputValue: "",
+				userInfo: {},
+				list: []
 			}
 		},
 		methods: {
-			websocketLin() {
-				var ws = new WebSocket("ws://47.112.160.66:10000");
+			wsLink() {
+				this.userInfo = this.$store.state.userInfo
+				let that = this
+				that.websockets.ws.onmessage = function(res) {
+					console.log(JSON.parse(res.data), "接收消息推送")
+					this.list.push(res.data)
+				}
+
+			},
+			sendInfo() {
+				this.userInfo = this.$store.state.userInfo
+				let that = this
+				let parameter = {}
+				parameter.ReqIdentifier = 1003
+				parameter.Token = that.userInfo.token.accessToken
+				parameter.SendID = that.userInfo.userID
+				parameter.OptionID = that.userInfo.optionID
+				parameter.MsgIncr = 1
+				parameter.Data = {}
+				parameter.Data.ChatType = 1
+				parameter.Data.MsgType = 100
+				parameter.Data.SubMsgType = 101
+				parameter.Data.RecvID = "ed3d2c21991e3bef5e069713af9fa6ca"
+				parameter.Data.Content = this.inputValue
+				parameter.Data.ClientMsgID = "777"
+				console.log(JSON.stringify(parameter), "发送输入消息")
+				that.websockets.ws.send(JSON.stringify(parameter));
+				that.websockets.ws.onmessage = function(res) {
+					console.log(JSON.parse(res.data), "接收输入消息结果")
+				}
+				let latest = {}
+				latest.SendID = that.userInfo.userID
+				latest.RecvID = "ed3d2c21991e3bef5e069713af9fa6ca"
+				latest.SendTime = 525656515
+				latest.SubMsgType = 101
+				latest.MsgType = 100
+				latest.Content = this.inputValue
+				latest.Seq = 2
+				latest.ServerMsgID = "2021 - 04 - 21 17: 59: 38 - 5018949295715050020 "
+				this.inputValue = ""
+				this.list.push(latest)
+				console.log(this.list, "LIST消息")
+				
 			},
 			upload() {
 				let input = document.createElement('input');
@@ -112,7 +191,6 @@
 
 				}
 			},
-
 			goBack() {
 				uni.switchTab({
 					url: "./home"
@@ -133,11 +211,11 @@
 					console.log("res")
 					this.$refs.popup.close()
 				})
-				
+
 			}
 		},
 		created() {
-			this.websocketLin()
+			// this.wsLink()
 		}
 
 	}

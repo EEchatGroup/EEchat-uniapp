@@ -1,6 +1,6 @@
 <template>
 	<view id="home">
-		<view class="head">
+		<view class="head" @click="localSocket()">
 			<text class="title">EEchat</text>
 		</view>
 		<view class="main">
@@ -22,9 +22,12 @@
 	export default {
 		data() {
 			return {
-				kk: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+				kk: [1],
 				userInfo: null
 			}
+		},
+		onTabItemTap:function(){
+		   this.pullMsg()
 		},
 		methods: {
 			goRegiester() {
@@ -37,25 +40,47 @@
 					url: './dialogue'
 				});
 			},
-			getList() {
+			pullMsg() {
 				this.userInfo = this.$store.state.userInfo
-				console.log(this.userInfo,"999977779")
-				var ws = new WebSocket('ws://47.112.160.66:7777?ReqIdentifier=1001&Token=' + this.userInfo.token.accessToken +
-					'&SendID=0&OptionID=' + this.userInfo.optionID + '&MsgIncr=0');
-				ws.onopen = function(evt) {
-					console.log("Connection open ...");
-					ws.send("Hello WebSockets!");
-				};
+				let that = this;
+				let parameter = {}
+				parameter.ReqIdentifier = 1002
+				parameter.Token = that.userInfo.token.accessToken
+				parameter.SendID = that.userInfo.userID
+				parameter.OptionID = that.userInfo.optionID
+				parameter.MsgIncr = 0
+				parameter.Data = {}
+				parameter.Data.SeqBegin = 0
+				parameter.Data.SeqEnd = 100
+				console.log(JSON.stringify(parameter), "主动拉取消息")
+				that.websockets.ws.send(JSON.stringify(parameter));
+				that.websockets.ws.onmessage = function(res) {
+					console.log(JSON.parse(res.data), "接收主动拉取的消息")
+				}
+			},
+			getList() {
+
+			},
+			localSocket() {
+
+			}
+
+		},
+		watch: {
+			msgReceive(oldVal, newVal) {
+				console.log(newVal, "新接收的消息")
 			}
 		},
 		created() {
-			this.getList()
-		},
-		computed:{
-			ww(){
-				return this.$store.state.userInfo
+			// this.getList()
+			// this.localSocket()
+
+			this.websockets.ws.onmessage = function(evt) {
+				let msgReceive = JSON.parse(evt.data)
+				console.log(JSON.parse(evt.data), "新接收的消息")
 			}
-		}
+		},
+		computed: {}
 	}
 </script>
 

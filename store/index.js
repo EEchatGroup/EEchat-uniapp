@@ -9,7 +9,12 @@ Vue.use(Vuex); //vue的插件机制
 //Vuex.Store 构造器选项
 const store = new Vuex.Store({
 	state: {
-		userInfo: {}
+		userInfo: {
+			token: {
+				accessToken: ""
+			},
+			SendID: ""
+		}
 
 	},
 	mutations: {
@@ -19,17 +24,17 @@ const store = new Vuex.Store({
 		}
 	},
 	actions: {
-		getUserInfo(store,data) {
-			 loginApi(data).then(res=>{
-				 res.data.data.optionID = data.optionID
-				 res.data.data.accountAddr = data.accountAddr
-				 store.commit("UserInfoValue",res.data.data)
-				 if(res.data.errorCode == 0){
-					 uni.switchTab({
-					 	url: './home'
-					 })
-				 }
-			 })
+		getUserInfo(store, data) {
+			loginApi(data).then(res => {
+				res.data.data.optionID = data.optionID
+				res.data.data.accountAddr = data.accountAddr
+				store.commit("UserInfoValue", res.data.data)
+				if (res.data.errorCode == 0) {
+					uni.switchTab({
+						url: './home'
+					})
+				}
+			})
 		}
 	}
 

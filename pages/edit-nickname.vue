@@ -18,8 +18,11 @@
 	export default {
 		data() {
 			return {
-				nickname: "陈华山"
+				nickname: ""
 			}
+		},
+		onShow() {
+			this.nickname = this.$store.state.userInfo.nickName
 		},
 		methods: {
 			goBack() {
@@ -33,7 +36,7 @@
 				parameter.token = this.$store.state.userInfo.token.accessToken
 				parameter.optionID = this.$store.state.userInfo.optionID
 				parameter.nickName = this.nickname
-
+				console.log(parameter,"参数")
 				changeNickname(parameter).then(res => {
 					console.log(res,"修改昵称返回值")
 				})
