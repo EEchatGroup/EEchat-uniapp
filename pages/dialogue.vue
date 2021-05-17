@@ -140,7 +140,7 @@
 				}
 
 			},
-			sendInfo() {
+			/* sendInfo() {
 				this.userInfo = this.$store.state.userInfo
 				
 				let that = this
@@ -192,7 +192,7 @@
 				
 
 			},
-			upload() {
+			 */upload() {
 				let input = document.createElement('input');
 				input.type = 'file';
 				input.accept = 'image/*';

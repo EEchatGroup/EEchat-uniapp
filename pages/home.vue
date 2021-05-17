@@ -40,7 +40,7 @@
 					url: './dialogue'
 				});
 			},
-			pullMsg() {
+			/* pullMsg() {
 				this.userInfo = this.$store.state.userInfo
 				let that = this;
 				let parameter = {}
@@ -58,7 +58,7 @@
 					console.log(JSON.parse(res.data), "接收主动拉取的消息")
 				}
 			},
-			
+			 */
 		},
 		watch: {
 			msgReceive(oldVal, newVal) {
@@ -66,6 +66,7 @@
 			}
 		},
 		created() {
+			console.log(this.$store.state.userInfo.mnemonic.toString().replace(/\s*/g,""), "xxxxxxxxx")
 			this.websockets.ws.onmessage = function(evt) {
 				let msgReceive = JSON.parse(evt.data)
 				console.log(JSON.parse(evt.data), "新接收的推送消息")

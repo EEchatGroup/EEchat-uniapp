@@ -29,7 +29,8 @@
 
 <script>
 	import {
-		loginApi
+		user_register,
+		user_token
 	} from '../api'
 	export default {
 		data() {
@@ -85,23 +86,10 @@
 				],
 				chooseArr: [],
 				originMnemonicArr: [],
+				mnemonic: ""
 			}
 		},
-		onLoad(options) {
-			//传参渲染
-			this.originMnemonicArr = options.mnemonicInfo.split(" ")
-			console.log(options.mnemonicInfo.toString(), "8888888")
-			console.log(this.originMnemonicArr.toString(), "原始助记词顺序")
-			//随机排序
-			let randomArr = options.mnemonicInfo.split(" ").sort(this.randomsort);
-
-			for (let i = 0; i < randomArr.length; i++) {
-				let chooseArrItem = {}
-				chooseArrItem.id = i
-				chooseArrItem.content = randomArr[i]
-				this.chooseArr.push(chooseArrItem)
-			}
-		},
+		
 		methods: {
 			randomsort(a, b) {
 				return Math.random() > .5 ? -1 : 1;
@@ -118,12 +106,24 @@
 				}
 				if (this.originMnemonicArr.toString() == pp.toString()) {
 					let accountInfo = {}
-					accountInfo.hh = "111111"
-					accountInfo.accountAddr = this.originMnemonicArr.toString()
-					accountInfo.password = this.originMnemonicArr.toString()
-					accountInfo.optionID = "123456"
-					this.$store.dispatch("getUserInfo", accountInfo)
-					
+					accountInfo.secret = "tuoyun"
+					accountInfo.uid = this.mnemonic
+					accountInfo.name = "newUser"
+					accountInfo.platform = 5
+					user_register(accountInfo).then(res => {
+						console.log(accountInfo,"hhh")
+						if (res.data.errCode == 0) {
+							delete accountInfo.name
+							user_token(accountInfo).then(res => {
+								console.log(res.data.data)
+								sessionStorage.setItem('token',res.data.data.token)
+								uni.switchTab({
+									url: './home'
+								})
+							})
+							
+						}
+					})
 				} else {
 					console.log(this.originMnemonicArr.split(" "))
 
@@ -169,8 +169,22 @@
 			}
 		},
 		computed: {
-			userInfo() {
-				return this.$store.state.userInfo
+
+		},
+		mounted() {
+			console.log(this.$store.state.userInfo, "注册信息")
+			//传参渲染
+			this.originMnemonicArr = this.$store.state.userInfo.mnemonic.split(" ")
+			this.mnemonic = this.$store.state.userInfo.mnemonic.toString().replace(/\s*/g,"");
+			//随机排序
+			// let randomArr = this.$store.state.userInfo.mnemonic.split(" ").sort(this.randomsort);
+			let randomArr = this.$store.state.userInfo.mnemonic.split(" ");
+
+			for (let i = 0; i < randomArr.length; i++) {
+				let chooseArrItem = {}
+				chooseArrItem.id = i
+				chooseArrItem.content = randomArr[i]
+				this.chooseArr.push(chooseArrItem)
 			}
 		}
 

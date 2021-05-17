@@ -12,7 +12,7 @@
 		</view>
 		<view class="copyArea">
 			<text>复制您的助记词：</text><br />
-			<text>{{mnemonic}}</text>
+			<text>{{registerInfo.mnemonic}}</text>
 		</view>
 		<button type="primary" class="nextStep" @click="goConfirm">下一步</button>
 	</view>
@@ -27,7 +27,11 @@
 	export default {
 		data() {
 			return {
-				mnemonic: "",
+				registerInfo: {
+					mnemonic: "",
+					publicKey: "",
+					address: "",
+				},
 				mnemonicArr: []
 			}
 		},
@@ -35,11 +39,11 @@
 			//生成私钥，公钥，账户
 			async obtainAccount() {
 				// 1.1 生成助记词 ;
-				this.mnemonic = bip39.generateMnemonic();
-				console.log(this.mnemonic)
-				this.mnemonicArr = this.mnemonic.split(" ")
+				this.registerInfo.mnemonic = bip39.generateMnemonic();
+				console.log(this.registerInfo.mnemonic)
+				this.mnemonicArr = this.registerInfo.mnemonic.split(" ")
 				//2.将助记词转成seed
-				let seed = await bip39.mnemonicToSeed(this.mnemonic);
+				let seed = await bip39.mnemonicToSeed(this.registerInfo.mnemonic);
 				//3.通过hdkey将seed生成HD Wallet
 				let hdWallet = await hdkey.fromMasterSeed(seed);
 				//4.生成钱包中在m/44'/60'/0'/0/0路径的keypair
@@ -47,10 +51,12 @@
 				//5.从keypair中获取私钥
 				console.log("私钥：" + util.bufferToHex(key._hdkey._privateKey));
 				//6.从keypair中获取公钥
+				this.registerInfo.publicKey = util.bufferToHex(key._hdkey._publicKey)
 				console.log("公钥：" + util.bufferToHex(key._hdkey._publicKey));
 				//7.使用keypair中的公钥生成地址
 				let address = await util.pubToAddress(key._hdkey._publicKey, true);
 				//编码地址
+				this.registerInfo.address = address.toString("hex")
 				console.log("账户地址", "0x" + address.toString("hex"));
 			},
 			goLogin() {
@@ -59,15 +65,16 @@
 				});
 			},
 			goConfirm() {
+				this.$store.commit("UserInfoValue", this.registerInfo)
 				uni.navigateTo({
-					url: './confirm?mnemonicInfo='+ this.mnemonic
+					url: './confirm'
 				})
 			}
 		},
 		created() {
 			this.obtainAccount()
 		},
-		
+
 	}
 </script>
 

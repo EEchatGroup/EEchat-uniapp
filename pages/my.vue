@@ -2,12 +2,12 @@
 	<view id="my">
 		<view class="head">
 			<view class="headCircle">
-				<view class="lastname">{{userInfo.nickName.slice(0,1)}}</view>
+				<view class="lastname">{{userInfo.nickName}}</view>
 			</view>
 			<view class="headInfo">
 				<text>{{userInfo.nickName}}</text>
 				<text>公钥地址:</text>
-				<text>{{userInfo.accountAddr}}</text>
+				<text>{{userInfo.publicKey}}</text>
 			</view>
 		</view>
 		<view class="funtionArea">
@@ -51,7 +51,7 @@
 			}
 		},
 		onTabItemTap: function() {
-			console.log(this.$store.state.userInfo, "MY页面")
+			console.log(this.userInfo, "MY页面")
 		},
 		methods: {
 			goEditNickname() {

@@ -15,22 +15,23 @@ service.interceptors.request.use(config => {
 	config.data = JSON.stringify(config.data); //数据转化,也可以使用qs转换
 	config.headers = {
 		// 'Content-Type': 'application/json',
-		'Content-Type': 'application/x-www-form-urlencoded',
+		'Content-Type': 'application/json',
 		// 'Content-Type': 'multipart/form-data',
 		//配置请求头
 	}
 	//res.data
-	axios.interceptors.response.use(res => {
-	  return res.data;
+	axios.interceptors.response.use(response => {
+		const res = response.data
+		return res
 	})
 	//注意使用token的时候需要引入cookie方法或者用本地localStorage等方法，推荐js-cookie
-	const token = localStorage.getItem("token"); //这里取token之前，你肯定需要先拿到token,存一下
-	if (token) {
-		config.params = {
-			'token': token
-		} //如果要求携带在参数中
-		config.headers.token = token; //如果要求携带在请求头中
-	}
+	if (sessionStorage.getItem("token")) {
+	      // let each request carry token
+	      // ['X-Token'] is a custom headers key
+	      // please modify it according to the actual situation
+	      config.headers['token'] = sessionStorage.getItem("token")
+	    }
+	
 	return config
 }, error => {
 	Promise.reject(error)

@@ -30,7 +30,7 @@
 					url: './my'
 				});
 			},
-			submit() {
+			/* submit() {
 				let parameter = {}
 				parameter.hh = "11111"
 				parameter.token = this.$store.state.userInfo.token.accessToken
@@ -44,7 +44,7 @@
 					url: './my'
 				});
 			}
-		}
+		 */}
 	}
 </script>
 

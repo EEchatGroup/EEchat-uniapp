@@ -18,35 +18,53 @@
 </template>
 
 <script>
+	const bip39 = require("bip39");
+	const {
+		hdkey
+	} = require("ethereumjs-wallet");
+	const util = require("ethereumjs-util");
 	import qs from 'qs'
 	import {
-		loginApi
+		loginApi,
+		user_token
 	} from "../api"
 	export default {
 		data() {
 			return {
-				account: "rib put useful traffic execute giant age damage accuse alcohol hidden brass",
+				account: "waspbeforeflavorwhalenestathletehalfratherloanwidthyoungcoil",
+				loginInfo: {
+					mnemonic: "",
+					publicKey: "",
+					address: "",
+				},
 			}
 		},
 		methods: {
-			login() {
+			async login() {
+				this.loginInfo.mnemonic = this.account
+				//将助记词转成seed
+				let seed = await bip39.mnemonicToSeed(this.account);
+				//3.通过hdkey将seed生成HD Wallet
+				let hdWallet = await hdkey.fromMasterSeed(seed);
+				//4.生成钱包中在m/44'/60'/0'/0/0路径的keypair
+				let key = await hdWallet.derivePath("m/44'/60'/0'/0/0");
+				//6.从keypair中获取公钥
+				this.loginInfo.publicKey = util.bufferToHex(key._hdkey._publicKey)
+				let address = await util.pubToAddress(key._hdkey._publicKey, true);
+				//编码地址
+				this.loginInfo.address = address.toString("hex")
+				this.$store.commit("UserInfoValue", this.loginInfo)
 				let accountInfo = {}
-				accountInfo.hh = "111111"
-				accountInfo.accountAddr = this.account.toString()
-				accountInfo.password = this.account.toString()
-				accountInfo.optionID = "123456"
-				console.log(accountInfo,"参数")
-				loginApi(accountInfo).then(res => {
-					console.log(res,"返回值")
-					res.data.data.optionID = accountInfo.optionID
-					res.data.data.accountAddr = accountInfo.accountAddr
-					this.$store.commit("UserInfoValue", res.data.data)
-					if (res.data.errorCode == 0) {
-						uni.switchTab({
-							url: './home'
-						})
-					}
+				accountInfo.secret = "tuoyun"
+				accountInfo.uid = this.account.replace(/\s*/g, "")
+				accountInfo.platform = 5
+				user_token(accountInfo).then(res => {
+					sessionStorage.setItem('token', res.data.data.token)
+					uni.switchTab({
+						url: './home'
+					})
 				})
+				
 			},
 			goRegiester() {
 				uni.navigateTo({
