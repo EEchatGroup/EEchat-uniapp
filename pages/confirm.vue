@@ -28,6 +28,11 @@
 </template>
 
 <script>
+	const bip39 = require("bip39");
+	const {
+		hdkey
+	} = require("ethereumjs-wallet");
+	const util = require("ethereumjs-util");
 	import {
 		user_register,
 		user_token
@@ -86,10 +91,15 @@
 				],
 				chooseArr: [],
 				originMnemonicArr: [],
-				mnemonic: ""
+				mnemonic: "",
+				loginInfo: {
+					mnemonic: "",
+					publicKey: "",
+					address: "",
+				},
 			}
 		},
-		
+
 		methods: {
 			randomsort(a, b) {
 				return Math.random() > .5 ? -1 : 1;
@@ -99,29 +109,40 @@
 					delta: 1
 				});
 			},
-			login() {
+			async login() {
 				let pp = []
 				for (let i = 0; i < this.writeArr.length; i++) {
 					pp.push(this.writeArr[i].content)
 				}
 				if (this.originMnemonicArr.toString() == pp.toString()) {
+					this.loginInfo.mnemonic = this.account
+					let seed = await bip39.mnemonicToSeed(this.mnemonic);
+					//3.通过hdkey将seed生成HD Wallet
+					let hdWallet = await hdkey.fromMasterSeed(seed);
+					//4.生成钱包中在m/44'/60'/0'/0/0路径的keypair
+					let key = await hdWallet.derivePath("m/44'/60'/0'/0/0");
+						this.loginInfo.publicKey = util.bufferToHex(key._hdkey._publicKey)
+					let address = await util.pubToAddress(key._hdkey._publicKey, true);
+					this.loginInfo.address = address.toString("hex")
+					//编码地址
+					let uidAdress = address.toString("hex")
 					let accountInfo = {}
 					accountInfo.secret = "tuoyun"
-					accountInfo.uid = this.mnemonic
+					accountInfo.uid = uidAdress
 					accountInfo.name = "newUser"
 					accountInfo.platform = 5
 					user_register(accountInfo).then(res => {
-						console.log(accountInfo,"hhh")
+						console.log(accountInfo, "hhh")
 						if (res.data.errCode == 0) {
 							delete accountInfo.name
-							user_token(accountInfo).then(res => {
+							user_token(accountInfo).then(async res => {
 								console.log(res.data.data)
-								sessionStorage.setItem('token',res.data.data.token)
+								await sessionStorage.setItem('token', res.data.data.token)
 								uni.switchTab({
 									url: './home'
 								})
 							})
-							
+
 						}
 					})
 				} else {
@@ -175,7 +196,7 @@
 			console.log(this.$store.state.userInfo, "注册信息")
 			//传参渲染
 			this.originMnemonicArr = this.$store.state.userInfo.mnemonic.split(" ")
-			this.mnemonic = this.$store.state.userInfo.mnemonic.toString().replace(/\s*/g,"");
+			this.mnemonic = this.$store.state.userInfo.mnemonic.toString().replace(/\s*/g, "");
 			//随机排序
 			// let randomArr = this.$store.state.userInfo.mnemonic.split(" ").sort(this.randomsort);
 			let randomArr = this.$store.state.userInfo.mnemonic.split(" ");

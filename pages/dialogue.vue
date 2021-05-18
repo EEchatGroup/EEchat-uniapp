@@ -10,10 +10,10 @@
 		</uni-nav-bar>
 		<view class="main">
 			<view class="hhhh" v-for="item in list">
-				<view v-if="item.SendID == $store.state.userInfo.userID" class="right">
+				<view v-if="item.sendID == $store.state.userInfo.address" class="right">
 					<!-- <image src="../static/withdraw.png" mode="" v-if="withdrawnStatus" class="StatusIcon"></image> -->
 					<view class="contentArea">
-						<text class="mainContent">{{item.Content}}</text>
+						<text class="maincontent">{{item.content}}</text>
 						<view class="triangle">
 						</view>
 						<image src="../static/exit.png" mode="" class="headIcon">
@@ -21,21 +21,21 @@
 					</view>
 
 				</view>
-				<view v-if="item.SendID != $store.state.userInfo.userID" class="left">
+				<view v-if="item.sendID != $store.state.userInfo.address" class="left">
 					<image src="../static/exit.png" mode="" class="headIcon">
 					</image>
 					<view class="contentArea">
 						<view class="triangle">
 						</view>
-						<text class="mainContent">{{item.Content}}</text>
+						<text class="maincontent">{{item.content}}</text>
 					</view>
 
 				</view>
 			</view>
-			<!-- <view v-for="item in list" :class="item.SendID == $store.state.userInfo.userID? 'right':'left'">
+			<!-- <view v-for="item in list" :class="item.sendID == $store.state.userInfo.userID? 'right':'left'">
 				<image src="../static/withdraw.png" mode="" v-if="withdrawnStatus" class="StatusIcon"></image>
 				<view class="contentArea">
-					<text class="mainContent">{{item.Content}}</text>
+					<text class="maincontent">{{item.content}}</text>
 					<view class="triangle">
 					</view>
 					<image src="../static/exit.png" mode="" class="headIcon">
@@ -49,7 +49,7 @@
 					<view class="contentArea">
 						<view class="triangle">
 						</view>
-						<text class="mainContent">dddddddddddddddddddddddddddd</text>
+						<text class="maincontent">dddddddddddddddddddddddddddd</text>
 					</view>
 				
 			</view> -->
@@ -57,7 +57,7 @@
 				<image src="../static/sentFail.png" mode="" v-if="sentStatus" class="StatusIcon"></image>
 
 				<view class="contentArea">
-					<text class="mainContent">ddddddddddddddddddddddddddddddddddddddddddddddd</text>
+					<text class="maincontent">ddddddddddddddddddddddddddddddddddddddddddddddd</text>
 					<view class="triangle">
 					</view>
 					<image src="../static/exit.png" mode="" class="headIcon">
@@ -68,7 +68,7 @@
 			<view class="right">
 				<image src="../static/withdraw.png" mode="" v-if="withdrawnStatus" class="StatusIcon"></image>
 				<view class="contentArea">
-					<text class="mainContent">dddddddddddddd</text>
+					<text class="maincontent">dddddddddddddd</text>
 					<view class="triangle">
 					</view>
 					<image src="../static/exit.png" mode="" class="headIcon">
@@ -79,7 +79,7 @@
 			<view class="right">
 				<image src="../static/withdraw.png" mode="" v-if="withdrawnStatus" class="StatusIcon"></image>
 				<view class="contentArea">
-					<text class="mainContent"><img src="" alt="" id="kkk" class="sendImg"></text>
+					<text class="maincontent"><img src="" alt="" id="kkk" class="sendImg"></text>
 					<view class="triangle">
 					</view>
 					<image src="../static/exit.png" mode="" class="headIcon">
@@ -111,7 +111,9 @@
 
 <script>
 	import {
-		changeAlias
+		changeAlias,
+		send_msg,
+		newest_seq
 	} from '../api'
 	export default {
 		data() {
@@ -127,7 +129,8 @@
 			}
 		},
 		methods: {
-			wsLink() {
+			
+			/* wsLink() {
 				this.userInfo = this.$store.state.userInfo
 				let that = this
 				that.websockets.ws.onmessage = function(res) {
@@ -136,63 +139,61 @@
 					if (resData.ReqIdentifier == 2001) {
 						this.list.push(resData)
 					}
-
 				}
-
-			},
-			/* sendInfo() {
+			}, */
+			async sendInfo() {
 				this.userInfo = this.$store.state.userInfo
-				
 				let that = this
+				console.log(that.userInfo, "hhhhhhhhh")
 				let parameter = {}
-				parameter.ReqIdentifier = 1003
-				parameter.Token = that.userInfo.token.accessToken
-				parameter.SendID = that.userInfo.userID
-				parameter.OptionID = that.userInfo.optionID
-				parameter.MsgIncr = that.$store.state.MsgIncr + 1
-				parameter.Data = {}
-				parameter.Data.ChatType = 1
-				parameter.Data.MsgType = 100
-				parameter.Data.SubMsgType = 101
-				parameter.Data.RecvID = "ed3d2c21991e3bef5e069713af9fa6ca"
-				parameter.Data.Content = this.inputValue
-				parameter.Data.ClientMsgID = "777"
-				if (parameter.Data.Content.length > 0) {
+				parameter.reqIdentifier = 1003
+				parameter.platformID = 5
+				parameter.token = sessionStorage.getItem('token')
+				parameter.sendID = that.userInfo.address
+				parameter.operationID = that.userInfo.address + await Date.now().toString();
+				parameter.msgIncr = that.$store.state.MsgIncr + 1;
+				parameter.data = {}
+				parameter.data.sessionType = 1
+				parameter.data.msgFrom = 100
+				parameter.data.contentType = 101
+				parameter.data.recvID = "56d5bee7d8c774e66b771b2865ae3d92d145a54a"
+				parameter.data.content = this.inputValue
+				parameter.data.clientMsgID = "222"
+				parameter.data.offlineInfo = {}
+				parameter.data.forceList = []
+				parameter.data.options = {}
+				parameter.data.ext = {}
+
+				if (parameter.data.content.length > 0) {
 					that.$store.commit("MsgIncrAdd")
-					console.log(JSON.stringify(parameter), "发送输入消息")
-					that.websockets.ws.send(JSON.stringify(parameter));
-				}else{
+					send_msg(parameter).then(res => {
+						console.log(res)
+					})
+					console.log(parameter, "发送输入消息")
+					/* that.websockets.ws.send(JSON.stringify(parameter)); */
+				} else {
 					console.log("消息为空")
-				}
-
-				that.websockets.ws.onmessage = function(res) {
-					console.log(JSON.parse(res.data), "接收输入消息结果")
-					let resData = JSON.parse(res.data)
-					if (resData.ReqIdentifier == 1003) {
-
-						console.log("聊天用户信息")
-					}
 				}
 				let latest = {}
-				latest.SendID = that.userInfo.userID
-				latest.RecvID = "ed3d2c21991e3bef5e069713af9fa6ca"
-				latest.SendTime = 525656515
-				latest.SubMsgType = 101
-				latest.MsgType = 100
-				latest.Content = this.inputValue
-				latest.Seq = 2
-				latest.ServerMsgID = "2021 - 04 - 21 17: 59: 38 - 5018949295715050020 "
-				if (parameter.Data.Content.length > 0) {
+				latest.sendID = that.userInfo.address
+				latest.recvID = "ed3d2c21991e3bef5e069713af9fa6ca"
+				latest.sendTime = Date.now()
+				latest.subMsgType = 101
+				latest.msgType = 100
+				latest.content = this.inputValue
+				latest.seq = 2
+				// latest.serverMsgID = "2021 - 04 - 21 17: 59: 38 - 5018949295715050020 "
+				if (parameter.data.content.length > 0) {
 					this.list.push(latest)
-					console.log(this.list, "LIST消息")
+					console.log(this.list, "本地消息列表")
 					this.inputValue = ""
-				}else{
+				} else {
 					console.log("消息为空")
 				}
 				
 
 			},
-			 */upload() {
+			upload() {
 				let input = document.createElement('input');
 				input.type = 'file';
 				input.accept = 'image/*';
@@ -235,8 +236,8 @@
 
 			}
 		},
-		created() {
-			// this.wsLink()
+		mounted() {
+		
 		}
 
 	}
@@ -246,7 +247,7 @@
 	#dialogue {
 
 		//公用样式
-		.mainContent {
+		.maincontent {
 			max-width: 384rpx;
 			font-size: 28rpx;
 			font-weight: 400;

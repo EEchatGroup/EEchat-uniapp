@@ -32,7 +32,7 @@ export function pull_msg(data) {
 		method: 'post',
 		data: data
 	})
-} 
+}
 //用户聊天接口
 export function send_msg(data) {
 	return request({
@@ -46,7 +46,7 @@ export function changeNickname(data) {
 	return request({
 		url: '/modify_user_info/change_nickname',
 		method: 'post',
-		data: qs.stringify(data)
+		data: data
 	})
 }
 //设置备注
@@ -54,7 +54,7 @@ export function changeAlias(data) {
 	return request({
 		url: '/modify_user_info/change_alias',
 		method: 'post',
-		data: qs.stringify(data)
+		data: data
 	})
 }
 //获取黑名单
@@ -62,7 +62,7 @@ export function getBlacklist(data) {
 	return request({
 		url: '/friend/get_blacklist',
 		method: 'post',
-		data: qs.stringify(data)
+		data: data
 	})
 }
 //移除黑名单
@@ -70,6 +70,6 @@ export function removeBlacklist(data) {
 	return request({
 		url: '/friend/remove_blacklist',
 		method: 'post',
-		data: qs.stringify(data)
+		data: data
 	})
 }

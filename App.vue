@@ -15,29 +15,18 @@
 			"$store.state.userInfo": {
 				deep: true, //深度监听设置为 true
 				handler: function(newVal, oldVal) {
-					this.userInfo = this.$store.state.userInfo
 					let that = this;
 					that.ws = new WebSocket('ws://47.112.160.66:7778?token=' + sessionStorage.getItem("token") +
-						'&sendID=' + that.userInfo.mnemonic.toString().replace(/\s*/g,"")+ '&platformID=5');
+						'&sendID=' + that.$store.state.userInfo.address + '&platformID=5');
 					that.websockets.setWs(that.ws);
 					that.ws.onopen = function(evt) {
 						console.log("打开ws链接");
-						/* let parameter = {}
-						parameter.ReqIdentifier = 1001
-						parameter.Token = that.userInfo.token.accessToken
-						parameter.SendID = that.userInfo.userID
-						parameter.OptionID = that.userInfo.optionID
-						parameter.MsgIncr = 0
-						console.log(JSON.stringify(parameter), "请求最新seq")
-						that.websockets.ws.send(JSON.stringify(parameter)); */
-					};
-					that.websockets.ws.onmessage = function(res) {
-						let resData = JSON.parse(res.data)
-						console.log(resData.Data.Seq, "接收最新seq")
-						if( resData.ReqIdentifier= 1001 ){
-							that.$store.commit("seqValue",resData)
-						}
-						
+					}
+					
+					// console.log(this.$store.state.userInfo.mnemonic.toString().replace(/\s*/g, ""), "xxxxxxxxx")
+					this.websockets.ws.onmessage = function(evt) {
+						let msgReceive = JSON.parse(evt.data)
+						console.log(JSON.parse(evt.data), "新接收的推送消息")
 					}
 				}
 			}

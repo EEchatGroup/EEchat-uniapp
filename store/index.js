@@ -13,7 +13,7 @@ const store = new Vuex.Store({
 
 		},
 		userInfo: {
-			
+			//address,mnemonic,publicKey
 		},
 		MsgIncr: 0,
 		seq: 0
@@ -31,7 +31,7 @@ const store = new Vuex.Store({
 			console.log(state.MsgIncr, "MsgIncr值")
 		},
 		seqValue(state, data) {
-			state.seq = data.Data.Seq
+			state.seq = data
 			console.log(state.seq, "seq值")
 		}
 

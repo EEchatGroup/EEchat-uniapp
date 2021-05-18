@@ -31,7 +31,7 @@
 	export default {
 		data() {
 			return {
-				account: "waspbeforeflavorwhalenestathletehalfratherloanwidthyoungcoil",
+				account: "sunsetintactgluerampperfectscaremeshwaspolivethrivebossupgrade",
 				loginInfo: {
 					mnemonic: "",
 					publicKey: "",
@@ -56,15 +56,17 @@
 				this.$store.commit("UserInfoValue", this.loginInfo)
 				let accountInfo = {}
 				accountInfo.secret = "tuoyun"
-				accountInfo.uid = this.account.replace(/\s*/g, "")
+				accountInfo.uid = this.loginInfo.address
 				accountInfo.platform = 5
-				user_token(accountInfo).then(res => {
-					sessionStorage.setItem('token', res.data.data.token)
+				user_token(accountInfo).then(async res => {
+					console.log(accountInfo, "账户信息")
+					console.log(res, "返回")
+					await sessionStorage.setItem('token', res.data.data.token)
 					uni.switchTab({
 						url: './home'
 					})
 				})
-				
+
 			},
 			goRegiester() {
 				uni.navigateTo({
