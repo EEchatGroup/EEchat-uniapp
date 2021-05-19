@@ -50,9 +50,7 @@
 				tt: 0
 			}
 		},
-		onTabItemTap: function() {
-			console.log(this.userInfo, "MY页面")
-		},
+
 		methods: {
 			goEditNickname() {
 				uni.navigateTo({
@@ -98,6 +96,7 @@
 			},
 			logout() {
 				this.$refs.logoutPopup.close()
+				sessionStorage.removeItem('token')
 				uni.navigateTo({
 					url: './login'
 				})

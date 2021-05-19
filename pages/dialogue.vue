@@ -125,11 +125,29 @@
 				isSendImg: false,
 				inputValue: "",
 				userInfo: {},
-				list: []
+				list: [],
+				recipientID:""
+			}
+		},
+		onLoad: function(option) {
+			if (option.id.length > 10) {
+				this.nickname = option.id.slice(0, 10) + "..."
+			}else{
+				this.nickname = option.id
+			}
+			this.recipientID = option.id
+			let messages = this.$store.state.recentMessages
+			for (let i = 0; i < messages.length; i++) {
+				if (messages[i].ID == option.id) {
+					this.list = messages[i].List
+					console.log(this.list)
+					break
+				}
+
 			}
 		},
 		methods: {
-			
+
 			/* wsLink() {
 				this.userInfo = this.$store.state.userInfo
 				let that = this
@@ -166,6 +184,7 @@
 
 				if (parameter.data.content.length > 0) {
 					that.$store.commit("MsgIncrAdd")
+					console.log(parameter,"消息发送参数")
 					send_msg(parameter).then(res => {
 						console.log(res)
 					})
@@ -176,12 +195,12 @@
 				}
 				let latest = {}
 				latest.sendID = that.userInfo.address
-				latest.recvID = "ed3d2c21991e3bef5e069713af9fa6ca"
+				latest.recvID = "56d5bee7d8c774e66b771b2865ae3d92d145a54a"
 				latest.sendTime = Date.now()
 				latest.subMsgType = 101
 				latest.msgType = 100
 				latest.content = this.inputValue
-				latest.seq = 2
+				// latest.seq = 2
 				// latest.serverMsgID = "2021 - 04 - 21 17: 59: 38 - 5018949295715050020 "
 				if (parameter.data.content.length > 0) {
 					this.list.push(latest)
@@ -190,11 +209,33 @@
 				} else {
 					console.log("消息为空")
 				}
-				
+
 
 			},
 			upload() {
-				let input = document.createElement('input');
+				uni.chooseImage({
+					count: 6, //默认9
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					sourceType: ['album'], //从相册选择
+					success: function(res) {
+						console.log(res.tempFilePaths);
+						uni.getImageInfo({
+							src: res.tempFilePaths[0],
+							success: function(image) {
+								console.log(image.width);
+								console.log(image.height);
+								console.log(image.path);
+							}
+						});
+
+					}
+				});
+
+
+
+
+
+				/* let input = document.createElement('input');
 				input.type = 'file';
 				input.accept = 'image/*';
 				input.click()
@@ -211,7 +252,7 @@
 						reader.readAsDataURL(file);
 					}
 
-				}
+				} */
 			},
 			goBack() {
 				uni.switchTab({
@@ -237,7 +278,7 @@
 			}
 		},
 		mounted() {
-		
+
 		}
 
 	}

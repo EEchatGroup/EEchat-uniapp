@@ -16,7 +16,8 @@ const store = new Vuex.Store({
 			//address,mnemonic,publicKey
 		},
 		MsgIncr: 0,
-		seq: 0
+		seq: 0,
+		recentMessages:[]
 
 	},
 	mutations: {
@@ -33,6 +34,9 @@ const store = new Vuex.Store({
 		seqValue(state, data) {
 			state.seq = data
 			console.log(state.seq, "seq值")
+		},
+		getRecentMessages(state, data){
+			state.recentMessages = data
 		}
 
 	},

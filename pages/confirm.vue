@@ -20,8 +20,9 @@
 				{{item.content}}
 			</view>
 		</view>
-		<view>
+		<view class="footerArea">
 			<button type="primary" @click="login" class="login">登录</button>
+			<text class="promptInfo" v-show="inputCheck">助记词顺序错误，请重新输入</text>
 		</view>
 
 	</view>
@@ -97,6 +98,7 @@
 					publicKey: "",
 					address: "",
 				},
+				inputCheck: false
 			}
 		},
 
@@ -121,7 +123,7 @@
 					let hdWallet = await hdkey.fromMasterSeed(seed);
 					//4.生成钱包中在m/44'/60'/0'/0/0路径的keypair
 					let key = await hdWallet.derivePath("m/44'/60'/0'/0/0");
-						this.loginInfo.publicKey = util.bufferToHex(key._hdkey._publicKey)
+					this.loginInfo.publicKey = util.bufferToHex(key._hdkey._publicKey)
 					let address = await util.pubToAddress(key._hdkey._publicKey, true);
 					this.loginInfo.address = address.toString("hex")
 					//编码地址
@@ -146,8 +148,13 @@
 						}
 					})
 				} else {
-					console.log(this.originMnemonicArr.split(" "))
 
+					this.inputCheck = true
+					console.log(this.inputCheck)
+					let _this = this;
+					setTimeout(() => {
+						_this.inputCheck = false
+					}, 5000)
 				}
 
 			},
@@ -312,16 +319,30 @@
 			}
 		}
 
-		.login {
-			width: 320rpx;
-			height: 80rpx;
-			padding: 0;
-			font-size: 32rpx;
-			font-weight: 600;
-			color: #FFFFFF;
-			line-height: 80rpx;
+		.footerArea {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
 			margin-top: 90rpx;
 			margin-bottom: 180rpx;
+
+			.login {
+				width: 320rpx;
+				height: 80rpx;
+				padding: 0;
+				font-size: 32rpx;
+				font-weight: 600;
+				color: #FFFFFF;
+				line-height: 80rpx;
+				margin-bottom: 60rpx;
+			}
+
+			.promptInfo {
+				font-size: 36rpx;
+				font-weight: 400;
+				color: #FF0000;
+
+			}
 		}
 
 

@@ -5,6 +5,9 @@
 		data() {
 			return {}
 		},
+		mounted(){
+			
+		},
 		onLaunch: function() {
 
 		},
@@ -24,7 +27,7 @@
 					}
 					
 					// console.log(this.$store.state.userInfo.mnemonic.toString().replace(/\s*/g, ""), "xxxxxxxxx")
-					this.websockets.ws.onmessage = function(evt) {
+					that.websockets.ws.onmessage = function(evt) {
 						let msgReceive = JSON.parse(evt.data)
 						console.log(JSON.parse(evt.data), "新接收的推送消息")
 					}

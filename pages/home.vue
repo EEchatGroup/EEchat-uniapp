@@ -6,11 +6,19 @@
 		<view class="main">
 			<uni-list>
 
-				<uni-list-chat v-for=" item in sessionList" title="uni-app"
+				<uni-list-chat v-for="item in sessionList" :title="item.id"
 					avatar="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
-					note="item.content" time="2020-02-02 20:20" badge-text="12" clickable @click="goDialogue">
-				</uni-list-chat>
+					:note="item.content" clickable @click="goDialogue(item.id)">
 
+					<view class="chat-custom-right">
+						<text style="color: #9A9A9A; font-size: 12px;">{{item.time}}</text>
+						<uni-badge text="" type="error" />
+					</view>
+
+				</uni-list-chat>
+				
+				<view class="" style="width: 600px;height: 100px;background-color: #007AFF;" @click="goDialogue(222)"></view>
+				
 			</uni-list>
 		</view>
 
@@ -26,7 +34,7 @@
 	export default {
 		data() {
 			return {
-				sessionList: [1],
+				sessionList: [],
 				userInfo: null
 			}
 		},
@@ -39,10 +47,13 @@
 					url: './register'
 				});
 			},
-			goDialogue() {
+			goDialogue(e) {
 				uni.navigateTo({
-					url: './dialogue'
+					url: './dialogue?id=' + e
 				});
+			},
+			sortNumber(a, b) {
+				return b.UNIXValue - a.UNIXValue
 			},
 			async getInfoList() {
 				this.userInfo = this.$store.state.userInfo
@@ -55,7 +66,6 @@
 				await newest_seq(parameter).then(res => {
 					this.$store.commit('seqValue', res.data.data.seq)
 				})
-
 
 				let parameter2 = {}
 				parameter2.reqIdentifier = 1002
@@ -71,11 +81,29 @@
 				}
 
 				parameter2.data.seqEnd = this.$store.state.seq
-				console.log(parameter2, "拉取消息（参数）")
+				
 				pull_msg(parameter2).then(res => {
-					console.log(res, "拉取消息")
-					console.log(res.data.data.single, "拉取消息")
-					this.sessionList.push(res.data.data.single.list)
+					console.log(parameter2,"参数")
+					this.sessionList = []
+					console.log(res.data, "拉取消息")
+					let single = res.data.data.single
+					for (let i = 0; i < single.length; i++) {
+						let item = {}
+						item.id = single[i].ID
+						item.time = single[i].List.pop().ServerMsgID.slice(11, 16)
+						item.content = single[i].List.pop().Content
+						item.UNIXValue = single[i].List.pop().SendTime
+						item.seq = single[i].List.pop().Seq
+						this.sessionList.push(item)
+					}
+					//用时间戳大小进行排序，按时间顺序渲染消息
+					this.sessionList = this.sessionList.sort(this.sortNumber)
+					this.$store.commit('getRecentMessages', single)
+					console.log(this.sessionList, "liebiao")
+					for(let o = 0; o <this.sessionList.length; o++){
+						console.log(this.sessionList[o].content)
+					}
+
 				})
 
 			},
