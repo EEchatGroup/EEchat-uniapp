@@ -15,6 +15,7 @@ const store = new Vuex.Store({
 		userInfo: {
 			//address,mnemonic,publicKey
 		},
+		token:"",
 		MsgIncr: 0,
 		seq: 0,
 		recentMessages:[]
@@ -27,13 +28,16 @@ const store = new Vuex.Store({
 		UserInfoValue(state, data) {
 			state.userInfo = data
 		},
+		getToken(state, data){
+			state.token = data
+		},
 		MsgIncrAdd(state) {
 			state.MsgIncr = state.MsgIncr + 1
-			console.log(state.MsgIncr, "MsgIncr值")
+			// console.log(state.MsgIncr, "MsgIncr值")
 		},
 		seqValue(state, data) {
 			state.seq = data
-			console.log(state.seq, "seq值")
+			// console.log(state.seq, "seq值")
 		},
 		getRecentMessages(state, data){
 			state.recentMessages = data

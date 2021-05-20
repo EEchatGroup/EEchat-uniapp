@@ -5,8 +5,15 @@
 		data() {
 			return {}
 		},
-		mounted(){
-			
+		methods: {
+			//深拷贝
+			deepClone(obj) {
+				let _obj = JSON.stringify(obj)
+				return JSON.parse(_obj);
+			},
+		},
+		mounted() {
+
 		},
 		onLaunch: function() {
 
@@ -25,11 +32,20 @@
 					that.ws.onopen = function(evt) {
 						console.log("打开ws链接");
 					}
-					
+
 					// console.log(this.$store.state.userInfo.mnemonic.toString().replace(/\s*/g, ""), "xxxxxxxxx")
 					that.websockets.ws.onmessage = function(evt) {
 						let msgReceive = JSON.parse(evt.data)
-						console.log(JSON.parse(evt.data), "新接收的推送消息")
+						console.log(msgReceive, "新接收的推送消息")
+						let messages = that.deepClone(that.$store.state.recentMessages)
+						for (let i = 0; i < messages.length; i++) {
+							if (messages[i].ID == msgReceive.data.sendID) {
+								messages[i].List.push(msgReceive)
+								console.log(messages, "newMessages")
+								break
+							}
+
+						}
 					}
 				}
 			}

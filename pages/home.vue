@@ -16,9 +16,10 @@
 					</view>
 
 				</uni-list-chat>
-				
-				<view class="" style="width: 600px;height: 100px;background-color: #007AFF;" @click="goDialogue(222)"></view>
-				
+
+				<!-- <view class="" style="width: 600px;height: 100px;background-color: #007AFF;" @click="goDialogue(222)">
+				</view> -->
+
 			</uni-list>
 		</view>
 
@@ -38,10 +39,22 @@
 				userInfo: null
 			}
 		},
-		onTabItemTap: function() {
+		onLoad(){
+			
+			
+		},
+		
+		onShow() {
 			this.getInfoList()
+			console.log(this.$store.state.recentMessages,"vuex")
+			
 		},
 		methods: {
+			//深拷贝
+			deepClone(obj) {
+				let _obj = JSON.stringify(obj)
+				return JSON.parse(_obj);
+			},
 			goRegiester() {
 				uni.navigateTo({
 					url: './register'
@@ -59,7 +72,7 @@
 				this.userInfo = this.$store.state.userInfo
 				let parameter = {}
 				parameter.reqIdentifier = 1001
-				parameter.token = sessionStorage.getItem('token')
+				parameter.token = sessionStorage.getItem("token")
 				parameter.sendID = this.userInfo.address
 				parameter.operationID = this.userInfo.address + await Date.now().toString()
 				parameter.msgIncr = this.$store.state.MsgIncr
@@ -69,7 +82,7 @@
 
 				let parameter2 = {}
 				parameter2.reqIdentifier = 1002
-				parameter2.token = sessionStorage.getItem('token')
+				parameter2.token = sessionStorage.getItem("token")
 				parameter2.sendID = this.userInfo.address
 				parameter2.operationID = this.userInfo.address + await Date.now().toString();
 				parameter2.msgIncr = this.$store.state.MsgIncr
@@ -81,28 +94,26 @@
 				}
 
 				parameter2.data.seqEnd = this.$store.state.seq
-				
+
 				pull_msg(parameter2).then(res => {
-					console.log(parameter2,"参数")
+					// console.log(parameter2, "参数")
+					// console.log(res.data.data.single, "拉取消息返回值")
+
+					let single = this.deepClone(res.data.data.single)
 					this.sessionList = []
-					console.log(res.data, "拉取消息")
-					let single = res.data.data.single
-					for (let i = 0; i < single.length; i++) {
+					//截取每个用户最新一条用来显示
+					for (let i = 0; i < res.data.data.single.length; i++) {
 						let item = {}
+						let last = single[i].List.pop()
 						item.id = single[i].ID
-						item.time = single[i].List.pop().ServerMsgID.slice(11, 16)
-						item.content = single[i].List.pop().Content
-						item.UNIXValue = single[i].List.pop().SendTime
-						item.seq = single[i].List.pop().Seq
+						item.time = last.ServerMsgID.slice(11, 16)
+						item.content = last.Content
+						item.UNIXValue = last.SendTime
 						this.sessionList.push(item)
 					}
 					//用时间戳大小进行排序，按时间顺序渲染消息
 					this.sessionList = this.sessionList.sort(this.sortNumber)
-					this.$store.commit('getRecentMessages', single)
-					console.log(this.sessionList, "liebiao")
-					for(let o = 0; o <this.sessionList.length; o++){
-						console.log(this.sessionList[o].content)
-					}
+					this.$store.commit('getRecentMessages', res.data.data.single)
 
 				})
 
@@ -125,7 +136,7 @@
 			// that.ws.onopen = function(evt) {
 			// 	console.log("打开ws链接");
 			// }
-
+			
 			// // console.log(this.$store.state.userInfo.mnemonic.toString().replace(/\s*/g, ""), "xxxxxxxxx")
 			// this.websockets.ws.onmessage = function(evt) {
 			// 	let msgReceive = JSON.parse(evt.data)

@@ -1,6 +1,6 @@
 // 导入axios
 import axios from 'axios'
-
+import store from '../store/index.js'
 //1. 创建新的axios实例，
 const service = axios.create({
 	// 公共接口--这里注意后面会讲

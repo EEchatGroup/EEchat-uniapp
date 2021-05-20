@@ -1,6 +1,6 @@
 <template>
 	<view id="dialogue">
-		<uni-nav-bar left-icon="back" @clickLeft="goBack">
+		<uni-nav-bar left-icon="back" @clickLeft="goBack" fixed="true" style="width: 100%;">
 			<view slot="default" class="middle">
 				<view class="headInfo">
 					<text>{{nickname}}</text>
@@ -9,11 +9,12 @@
 			</view>
 		</uni-nav-bar>
 		<view class="main">
-			<view class="hhhh" v-for="item in list">
-				<view v-if="item.sendID == $store.state.userInfo.address" class="right">
+			<view v-for="item in list">
+				<view v-if="item.sendID == $store.state.userInfo.address
+				|| item.SendID == $store.state.userInfo.address" class="right">
 					<!-- <image src="../static/withdraw.png" mode="" v-if="withdrawnStatus" class="StatusIcon"></image> -->
 					<view class="contentArea">
-						<text class="maincontent">{{item.content}}</text>
+						<text class="maincontent">{{item.content || item.Content}}</text>
 						<view class="triangle">
 						</view>
 						<image src="../static/exit.png" mode="" class="headIcon">
@@ -21,7 +22,9 @@
 					</view>
 
 				</view>
-				<view v-if="item.sendID != $store.state.userInfo.address" class="left">
+				<view
+					v-if="(item.sendID && item.sendID!= $store.state.userInfo.address) || (item.SendID && item.SendID!= $store.state.userInfo.address)"
+					class="left">
 					<image src="../static/exit.png" mode="" class="headIcon">
 					</image>
 					<view class="contentArea">
@@ -32,6 +35,18 @@
 
 				</view>
 			</view>
+			<!-- <view class="left">
+				<image src="../static/exit.png" mode="" class="headIcon">
+				</image>
+				<view class="contentArea">
+					<view class="triangle">
+					</view>
+					<text class="maincontent">
+						dddddddddd
+					</text>
+				</view>
+
+			</view> -->
 			<!-- <view v-for="item in list" :class="item.sendID == $store.state.userInfo.userID? 'right':'left'">
 				<image src="../static/withdraw.png" mode="" v-if="withdrawnStatus" class="StatusIcon"></image>
 				<view class="contentArea">
@@ -53,40 +68,7 @@
 					</view>
 				
 			</view> -->
-			<!-- <view class="right">
-				<image src="../static/sentFail.png" mode="" v-if="sentStatus" class="StatusIcon"></image>
 
-				<view class="contentArea">
-					<text class="maincontent">ddddddddddddddddddddddddddddddddddddddddddddddd</text>
-					<view class="triangle">
-					</view>
-					<image src="../static/exit.png" mode="" class="headIcon">
-					</image>
-				</view>
-
-			</view>
-			<view class="right">
-				<image src="../static/withdraw.png" mode="" v-if="withdrawnStatus" class="StatusIcon"></image>
-				<view class="contentArea">
-					<text class="maincontent">dddddddddddddd</text>
-					<view class="triangle">
-					</view>
-					<image src="../static/exit.png" mode="" class="headIcon">
-					</image>
-				</view>
-
-			</view>
-			<view class="right">
-				<image src="../static/withdraw.png" mode="" v-if="withdrawnStatus" class="StatusIcon"></image>
-				<view class="contentArea">
-					<text class="maincontent"><img src="" alt="" id="kkk" class="sendImg"></text>
-					<view class="triangle">
-					</view>
-					<image src="../static/exit.png" mode="" class="headIcon">
-					</image>
-				</view>
-
-			</view> -->
 
 
 		</view>
@@ -126,13 +108,14 @@
 				inputValue: "",
 				userInfo: {},
 				list: [],
-				recipientID:""
+				recipientID: "",
+				tupian: ""
 			}
 		},
 		onLoad: function(option) {
-			if (option.id.length > 10) {
-				this.nickname = option.id.slice(0, 10) + "..."
-			}else{
+			if (option.id.length > 25) {
+				this.nickname = option.id.slice(0, 25) + "..."
+			} else {
 				this.nickname = option.id
 			}
 			this.recipientID = option.id
@@ -140,25 +123,13 @@
 			for (let i = 0; i < messages.length; i++) {
 				if (messages[i].ID == option.id) {
 					this.list = messages[i].List
-					console.log(this.list)
+					console.log(this.list, "duihua")
 					break
 				}
 
 			}
 		},
 		methods: {
-
-			/* wsLink() {
-				this.userInfo = this.$store.state.userInfo
-				let that = this
-				that.websockets.ws.onmessage = function(res) {
-					console.log(JSON.parse(res.data), "接收消息推送")
-					let resData = JSON.parse(res.data)
-					if (resData.ReqIdentifier == 2001) {
-						this.list.push(resData)
-					}
-				}
-			}, */
 			async sendInfo() {
 				this.userInfo = this.$store.state.userInfo
 				let that = this
@@ -166,7 +137,7 @@
 				let parameter = {}
 				parameter.reqIdentifier = 1003
 				parameter.platformID = 5
-				parameter.token = sessionStorage.getItem('token')
+				parameter.token = sessionStorage.getItem("token")
 				parameter.sendID = that.userInfo.address
 				parameter.operationID = that.userInfo.address + await Date.now().toString();
 				parameter.msgIncr = that.$store.state.MsgIncr + 1;
@@ -174,7 +145,7 @@
 				parameter.data.sessionType = 1
 				parameter.data.msgFrom = 100
 				parameter.data.contentType = 101
-				parameter.data.recvID = "56d5bee7d8c774e66b771b2865ae3d92d145a54a"
+				parameter.data.recvID = this.recipientID
 				parameter.data.content = this.inputValue
 				parameter.data.clientMsgID = "222"
 				parameter.data.offlineInfo = {}
@@ -184,7 +155,7 @@
 
 				if (parameter.data.content.length > 0) {
 					that.$store.commit("MsgIncrAdd")
-					console.log(parameter,"消息发送参数")
+					console.log(parameter, "消息发送参数")
 					send_msg(parameter).then(res => {
 						console.log(res)
 					})
@@ -195,7 +166,7 @@
 				}
 				let latest = {}
 				latest.sendID = that.userInfo.address
-				latest.recvID = "56d5bee7d8c774e66b771b2865ae3d92d145a54a"
+				latest.recvID = this.recipientID
 				latest.sendTime = Date.now()
 				latest.subMsgType = 101
 				latest.msgType = 100
@@ -219,14 +190,6 @@
 					sourceType: ['album'], //从相册选择
 					success: function(res) {
 						console.log(res.tempFilePaths);
-						uni.getImageInfo({
-							src: res.tempFilePaths[0],
-							success: function(image) {
-								console.log(image.width);
-								console.log(image.height);
-								console.log(image.path);
-							}
-						});
 
 					}
 				});
@@ -328,6 +291,7 @@
 
 
 		.main {
+			padding-bottom: 140rpx;
 
 			.left {
 				margin-left: 44rpx;

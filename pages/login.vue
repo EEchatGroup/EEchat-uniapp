@@ -62,6 +62,7 @@
 					console.log(accountInfo, "账户信息")
 					console.log(res, "返回")
 					await sessionStorage.setItem('token', res.data.data.token)
+					await this.$store.commit('getToken', res.data.data.token)
 					uni.switchTab({
 						url: './home'
 					})
