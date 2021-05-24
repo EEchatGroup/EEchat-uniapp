@@ -3,7 +3,7 @@
 		<uni-nav-bar left-icon="back" @clickLeft="goBack" fixed="true">
 			<view slot="default" class="middle">
 				<view class="headInfo">
-					<text>{{nickname}}</text>
+					<text>{{nickname.length>20?nickname.slice(0,20)+"...":nickname}}</text>
 					<image src="../static/modify.png" mode="" class="modify" @click="modifyRemarks"></image>
 				</view>
 			</view>
@@ -12,7 +12,9 @@
 			<view v-for="item in list">
 				<view v-if="item.sendID == $store.state.userInfo.address
 				|| item.SendID == $store.state.userInfo.address" class="right">
-					<!-- <image src="../static/withdraw.png" mode="" v-if="withdrawnStatus" class="StatusIcon"></image> -->
+					<!-- <image src="../static/withdraw.png" mode=""  class="StatusIcon"></image> -->
+					<image src="../static/sentFail.png" mode="" v-if="item.sentFail" class="StatusIcon"></image>
+
 					<view class="contentArea">
 						<text class="maincontent">{{item.content || item.Content}}</text>
 						<view class="triangle">
@@ -102,45 +104,44 @@
 			return {
 				nickname: "奥克斯公司",
 				remarks: "",
-				sentStatus: true,
 				withdrawnStatus: true,
 				isSendImg: false,
 				inputValue: "",
 				userInfo: {},
 				list: [],
 				recipientID: "",
-				tupian: ""
+				tupian: "",
+
 			}
 		},
 		onLoad: function(option) {
-			if (option.id.length > 25) {
-				this.nickname = option.id.slice(0, 25) + "..."
-			} else {
-				this.nickname = option.id
-			}
+
+			this.nickname = option.id
 			this.recipientID = option.id
 			let messages = this.$store.state.recentMessages
 			for (let i = 0; i < messages.length; i++) {
-				if (messages[i].ID == option.id) {
-					this.list = messages[i].List
+				if (messages[i].id == option.id) {
+					this.list = messages[i].list
 					console.log(this.list, "duihua")
 					break
 				}
 
 			}
-			
+
 		},
 		methods: {
 			async sendInfo() {
 				this.userInfo = this.$store.state.userInfo
-				let that = this
+				// let that = this
 				let parameter = {}
+				let latest = {}
+				latest.sentFail = false
 				parameter.reqIdentifier = 1003
 				parameter.platformID = 5
 				parameter.token = sessionStorage.getItem("token")
-				parameter.sendID = that.userInfo.address
-				parameter.operationID = that.userInfo.address + await Date.now().toString();
-				parameter.msgIncr = that.$store.state.MsgIncr + 1;
+				parameter.sendID = this.userInfo.address
+				parameter.operationID = this.userInfo.address + await Date.now().toString();
+				parameter.msgIncr = this.$store.state.MsgIncr + 1;
 				parameter.data = {}
 				parameter.data.sessionType = 1
 				parameter.data.msgFrom = 100
@@ -154,30 +155,45 @@
 				parameter.data.ext = {}
 
 				if (parameter.data.content.length > 0) {
-					that.$store.commit("MsgIncrAdd")
+					this.$store.commit("MsgIncrAdd")
 					console.log(parameter, "消息发送参数")
 					send_msg(parameter).then(res => {
-						console.log(res)
-					})
-					console.log(parameter, "发送输入消息")
-					/* that.websockets.ws.send(JSON.stringify(parameter)); */
+							console.log(res, "44444")
+							latest.sentFail = false
+
+						})
+						.catch(function(error) {
+							latest.sentFail = true
+							console.log("7777")
+						});
+					/* .catch(err=>{
+						
+					}) */
 				} else {
-					console.log("消息为空")
+					uni.showToast({
+						title: '消息为空',
+						icon: "none",
+						duration: 1500
+					});
 				}
-				let latest = {}
-				latest.sendID = that.userInfo.address
+
+				latest.sendID = this.userInfo.address
 				latest.recvID = this.recipientID
 				latest.sendTime = Date.now()
 				latest.subMsgType = 101
 				latest.msgType = 100
 				latest.content = this.inputValue
-				// latest.seq = 2
-				// latest.serverMsgID = "2021 - 04 - 21 17: 59: 38 - 5018949295715050020 "
+				/* if (sendStatus == true) {
+					latest.sentFail = false
+				} else {
+					latest.sentFail = true
+				} */
+
 				if (parameter.data.content.length > 0) {
 					this.list.push(latest)
 					console.log(this.list, "本地消息列表")
 					this.inputValue = ""
-					
+
 					const query = uni.createSelectorQuery().in(this);
 					query.select('#main').boundingClientRect(data => {
 						uni.pageScrollTo({
@@ -187,8 +203,6 @@
 					}).exec();
 
 
-				} else {
-					console.log("消息为空")
 				}
 
 

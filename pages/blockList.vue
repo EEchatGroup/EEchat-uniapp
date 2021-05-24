@@ -3,39 +3,19 @@
 		<uni-nav-bar left-icon="back" title="屏蔽名单" @clickLeft="goBack"></uni-nav-bar>
 
 		<view class="">
-			<view class="list-item">
+			<view class="list-item" v-for="item in list">
 				<view class="headCircle">
 					<text class="lastname">
-						奥
+						{{item.uid.slice(0,1)}}
 					</text>
 				</view>
 				<view class="infoArea">
-					<text class="name">奥尼克李姐</text>
+					<text class="name">{{item.uid.length>10?item.uid.slice(0,10):item.uid}}</text>
 					<button type="primary" class="removeButton" @click="remove(item)">移除</button>
 				</view>
 			</view>
-			<view class="list-item">
-				<view class="headCircle">
-					<text class="lastname">
-						奥
-					</text>
-				</view>
-				<view class="infoArea">
-					<text class="name">奥尼克李姐</text>
-					<button type="primary" class="removeButton">移除</button>
-				</view>
-			</view>
-			<view class="list-item">
-				<view class="headCircle">
-					<text class="lastname">
-						奥
-					</text>
-				</view>
-				<view class="infoArea">
-					<text class="name">奥尼克李姐</text>
-					<button type="primary" class="removeButton">移除</button>
-				</view>
-			</view>
+
+
 		</view>
 
 
@@ -44,13 +24,13 @@
 
 <script>
 	import {
-		getBlacklist,
-		removeBlacklist
+		get_blacklist,
+		remove_blacklist
 	} from '../api'
 	export default {
 		data() {
 			return {
-
+				list: []
 			}
 		},
 		methods: {
@@ -59,23 +39,27 @@
 					url: './my'
 				});
 			},
-			remove(e) {
+			async getList(){
 				let parameter = {}
-				parameter.userID = ""
-				parameter.optionID = ""
-				parameter.token = ""
-				removeBlacklist(parameter).then(res => {
+				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
+				get_blacklist(parameter).then(res => {
 					console.log(res)
+					this.list = res.data.data
+				})
+			},
+			async remove(e) {
+				let parameter = {}
+				parameter.uid = e.uid
+				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
+				
+				remove_blacklist(parameter).then(res => {
+					console.log(res)
+					this.getList()
 				})
 			}
 		},
 		onShow() {
-			let parameter = {}
-			parameter.token = ""
-			parameter.optionID = ""
-			getBlacklist(parameter).then(res => {
-				console.log(res)
-			})
+			this.getList()
 		}
 	}
 </script>
@@ -97,13 +81,13 @@
 				border-radius: 80rpx;
 				background-image: linear-gradient(to right bottom, #A8C0FF, #3F2B96);
 				margin-left: 44rpx;
-
+				text-align: center;
 				.lastname {
 					font-size: 36rpx;
 					font-weight: 500;
 					color: #FFFFFF;
 					line-height: 80rpx;
-					margin-left: 22rpx;
+					
 				}
 			}
 

@@ -58,15 +58,23 @@ export function changeAlias(data) {
 	})
 }
 //获取黑名单
-export function getBlacklist(data) {
+export function get_blacklist(data) {
 	return request({
-		url: '/friend/get_blacklist',
+		url: 'friend/get_blacklist',
+		method: 'post',
+		data: data
+	})
+}
+//加入黑名单
+export function add_blacklist(data) {
+	return request({
+		url: '/friend/add_blacklist',
 		method: 'post',
 		data: data
 	})
 }
 //移除黑名单
-export function removeBlacklist(data) {
+export function remove_blacklist(data) {
 	return request({
 		url: '/friend/remove_blacklist',
 		method: 'post',

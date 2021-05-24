@@ -16,7 +16,7 @@ const store = new Vuex.Store({
 			//address,mnemonic,publicKey
 		},
 		token: "",
-		MsgIncr: 0,
+		MsgIncr: 1,
 		seq: 0,
 		recentMessages: [],
 		newInfoJudgeValue: 0,

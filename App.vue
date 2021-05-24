@@ -35,8 +35,14 @@
 							that.linkWS()
 						}, 3000)
 					}
-
-
+				};
+				that.ws.onerror = function(event) {
+					console.log(event, '聊天服务器连接错误');
+					if (event) {
+						setTimeout(() => {
+							that.linkWS()
+						}, 3000)
+					}
 				};
 			}
 		},

@@ -1,26 +1,53 @@
 <template>
 	<view id="home">
-		<view class="head" @click="pullMsg">
+		<view class="head">
 			<text class="title">EEchat</text>
 		</view>
 		<view class="main">
-			<uni-list>
+			<!-- <uni-list>
 
-				<uni-list-chat v-for="item in sessionList" :title="item.id"
+				<uni-list-chat v-for="item in sessionList" :title="item.id" @longpress.native="logoTime(item)"
 					avatar="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
 					:note="item.content" clickable @click="goDialogue(item.id)">
 
 					<view class="chat-custom-right">
 						<text style="color: #9A9A9A; font-size: 12px;">{{item.time}}</text>
 						<uni-badge text="" type="error" />
+
 					</view>
+
 
 				</uni-list-chat>
 
-				<!-- <view class="" style="width: 600px;height: 100px;background-color: #007AFF;" @click="goDialogue(222)">
-				</view> -->
+			</uni-list> -->
+			<view class="chatList">
+				<view class="chatItem" v-for="item in sessionList" @longtap.prevent="showOperation(item)"
+					@click="goDialogue(item.id)">
+					<image
+						src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
+						mode="" class="portrait"></image>
+					<view class="chatItemMain">
+						<view class="mainHead">
+							<text class="nickName">{{item.id.length>20?item.id.slice(0,20)+"...":item.id}}</text>
+							<text class="latestTime">{{item.time}}</text>
+						</view>
+						<text class="latestContent">{{item.content}}</text>
+					</view>
+					<view class="operationBox" :ref="item.id" v-show="item.isShow">
+						<view class="transparent" @click.stop="item.isShow = false">
 
-			</uni-list>
+						</view>
+						<view class="operationBox-left" @click.stop="shield(item)">
+							<text>屏蔽该人</text>
+						</view>
+						<view class="operationBox-right">
+							<text>删除</text>
+						</view>
+					</view>
+				</view>
+			</view>
+
+
 		</view>
 
 
@@ -30,27 +57,42 @@
 <script>
 	import {
 		newest_seq,
-		pull_msg
+		pull_msg,
+		add_blacklist
 	} from '../api'
 	export default {
 		data() {
 			return {
 				sessionList: [],
-				userInfo: null
+				userInfo: null,
+				startData: {},
 			}
 		},
-		onLoad(){
-			
-			
+		onLoad() {
+
+
 		},
-		
+
 		onShow() {
 			this.getInfoList()
-			console.log(this.$store.state.recentMessages,"vuex")
-			
+			console.log(this.$store.state.recentMessages, "vuex")
+
 		},
 		methods: {
-			//深拷贝
+			showOperation(e) {
+				e.isShow = true
+			},
+			async shield(e) {
+				e.isShow = false
+				let parameter = {}
+				parameter.uid = e.id
+				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
+
+				add_blacklist(parameter).then(res => {
+					console.log(res)
+				})
+			},
+			//depep clone
 			deepClone(obj) {
 				let _obj = JSON.stringify(obj)
 				return JSON.parse(_obj);
@@ -76,7 +118,9 @@
 				parameter.sendID = this.userInfo.address
 				parameter.operationID = this.userInfo.address + await Date.now().toString()
 				parameter.msgIncr = this.$store.state.MsgIncr
+
 				await newest_seq(parameter).then(res => {
+					console.log(res, "seq参数")
 					this.$store.commit('seqValue', res.data.data.seq)
 				})
 
@@ -87,10 +131,10 @@
 				parameter2.operationID = this.userInfo.address + await Date.now().toString();
 				parameter2.msgIncr = this.$store.state.MsgIncr
 				parameter2.data = {}
-				if (this.$store.state.seq - 100 >= 0) {
+				if (this.$store.state.seq - 100 > 0) {
 					parameter2.data.seqBegin = this.$store.state.seq - 100
 				} else {
-					parameter2.data.seqBegin = 0
+					parameter2.data.seqBegin = 1
 				}
 
 				parameter2.data.seqEnd = this.$store.state.seq
@@ -104,11 +148,19 @@
 					//截取每个用户最新一条用来显示
 					for (let i = 0; i < res.data.data.single.length; i++) {
 						let item = {}
-						let last = single[i].List.pop()
-						item.id = single[i].ID
-						item.time = last.ServerMsgID.slice(11, 16)
-						item.content = last.Content
-						item.UNIXValue = last.SendTime
+
+						let last = single[i].list.pop()
+
+						item.id = single[i].id
+						item.time = last.serverMsgID.slice(11, 16)
+						if (last.content.length > 20) {
+							item.content = last.content.slice(0, 20) + "..."
+						} else {
+							item.content = last.content
+						}
+
+						item.UNIXValue = last.sendTime
+						item.isShow = false
 						this.sessionList.push(item)
 					}
 					//用时间戳大小进行排序，按时间顺序渲染消息
@@ -122,8 +174,8 @@
 
 		},
 		watch: {
-			"$store.state.newInfo": {
-				deep: true, 
+			"$store.state.newInfoJudgeValue": {
+				deep: true,
 				handler: function(newVal, oldVal) {
 					this.getInfoList()
 				}
@@ -139,7 +191,7 @@
 			// that.ws.onopen = function(evt) {
 			// 	console.log("打开ws链接");
 			// }
-			
+
 			// // console.log(this.$store.state.userInfo.mnemonic.toString().replace(/\s*/g, ""), "xxxxxxxxx")
 			// this.websockets.ws.onmessage = function(evt) {
 			// 	let msgReceive = JSON.parse(evt.data)
@@ -170,20 +222,100 @@
 		.main {
 			padding-bottom: 120rpx;
 
-			.chat-custom-right {
-				flex: 1;
-				/* #ifndef APP-NVUE */
-				display: flex;
-				/* #endif */
-				flex-direction: column;
-				justify-content: space-between;
-				align-items: flex-end;
+			.chatList {
+				margin-top: 6rpx;
+
+				.chatItem {
+					background-color: #fff;
+					height: 146rpx;
+					display: flex;
+					align-items: center;
+
+
+					.portrait {
+						flex-shrink: 0;
+						width: 92rpx;
+						height: 92rpx;
+						border-radius: 92rpx;
+						margin-left: 44rpx;
+					}
+
+
+					.chatItemMain {
+						height: 144rpx;
+						display: flex;
+						flex-direction: column;
+						width: 100%;
+						margin-left: 28rpx;
+						border-bottom: 1px solid #E5EBFF;
+						margin-right: 44rpx;
+
+						.mainHead {
+							display: flex;
+							justify-content: space-between;
+							margin-top: 38rpx;
+
+							.nickName {
+								font-size: 28rpx;
+								font-weight: 600;
+								color: #333333;
+							}
+
+							.latestTime {
+								font-size: 24rpx;
+								font-weight: 600;
+								color: #999999;
+							}
+						}
+
+						.latestContent {
+							font-size: 24rpx;
+							font-weight: 500;
+							color: #666666;
+							margin-top: 10rpx;
+						}
+					}
+
+					.operationBox {
+						width: 100%;
+						height: 136rpx;
+						position: absolute;
+						z-index: 99;
+						right: 0;
+						display: flex;
+						font-size: 28rpx;
+						font-weight: 500;
+						color: #FFFFFF;
+						text-align: center;
+						line-height: 136rpx;
+
+						.transparent {
+							width: 100%;
+							height: 100%;
+						}
+
+						&-left {
+							flex-shrink: 0;
+							width: 160rpx;
+							height: 100%;
+							background-image: linear-gradient(to right bottom, #7CBAFF, #1B72EC);
+							box-shadow: 0px 2px 4px 0px;
+
+						}
+
+						&-right {
+							flex-shrink: 0;
+							width: 160rpx;
+							height: 100%;
+							background-image: linear-gradient(to right bottom, #FFD576, #FFAB41);
+							box-shadow: 0px 2px 4px 0px;
+						}
+					}
+
+
+				}
 			}
 
-			.chat-custom-text {
-				font-size: 12px;
-				color: #999;
-			}
 		}
 
 	}
