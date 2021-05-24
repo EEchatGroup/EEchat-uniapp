@@ -65,7 +65,7 @@
 				});
 			},
 			goConfirm() {
-				this.$store.commit("UserInfoValue", this.registerInfo)
+				this.$store.commit("getRegisterInfo", this.registerInfo)
 				uni.navigateTo({
 					url: './confirm'
 				})

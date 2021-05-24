@@ -1,6 +1,6 @@
 <template>
 	<view id="dialogue">
-		<uni-nav-bar left-icon="back" @clickLeft="goBack" fixed="true" style="width: 100%;">
+		<uni-nav-bar left-icon="back" @clickLeft="goBack" fixed="true">
 			<view slot="default" class="middle">
 				<view class="headInfo">
 					<text>{{nickname}}</text>
@@ -8,7 +8,7 @@
 				</view>
 			</view>
 		</uni-nav-bar>
-		<view class="main">
+		<view class="main" id="main">
 			<view v-for="item in list">
 				<view v-if="item.sendID == $store.state.userInfo.address
 				|| item.SendID == $store.state.userInfo.address" class="right">
@@ -30,7 +30,7 @@
 					<view class="contentArea">
 						<view class="triangle">
 						</view>
-						<text class="maincontent">{{item.content}}</text>
+						<text class="maincontent">{{item.content || item.Content}}</text>
 					</view>
 
 				</view>
@@ -128,12 +128,12 @@
 				}
 
 			}
+			
 		},
 		methods: {
 			async sendInfo() {
 				this.userInfo = this.$store.state.userInfo
 				let that = this
-				console.log(that.userInfo, "hhhhhhhhh")
 				let parameter = {}
 				parameter.reqIdentifier = 1003
 				parameter.platformID = 5
@@ -177,6 +177,16 @@
 					this.list.push(latest)
 					console.log(this.list, "本地消息列表")
 					this.inputValue = ""
+					
+					const query = uni.createSelectorQuery().in(this);
+					query.select('#main').boundingClientRect(data => {
+						uni.pageScrollTo({
+							scrollTop: data.height,
+							duration: 100
+						});
+					}).exec();
+
+
 				} else {
 					console.log("消息为空")
 				}
@@ -240,8 +250,27 @@
 
 			}
 		},
-		mounted() {
+		watch: {
+			"$store.state.newInfoJudgeValue": {
+				deep: true,
+				handler: function(newVal, oldVal) {
+					if (this.$store.state.latestNews.sendID == this.recipientID) {
 
+						this.list.push(this.$store.state.latestNews)
+						console.log(this.list, "消息列表")
+					}
+
+				}
+			}
+		},
+		mounted() {
+			const query = uni.createSelectorQuery().in(this);
+			query.select('#main').boundingClientRect(data => {
+				uni.pageScrollTo({
+					scrollTop: data.height,
+					duration: 1
+				});
+			}).exec();
 		}
 
 	}
@@ -249,8 +278,10 @@
 
 <style lang="scss" scoped>
 	#dialogue {
+		/deep/.uni-navbar__content {
+			width: 100%;
+		}
 
-		//公用样式
 		.maincontent {
 			max-width: 384rpx;
 			font-size: 28rpx;
@@ -291,7 +322,7 @@
 
 
 		.main {
-			padding-bottom: 140rpx;
+			padding-bottom: 220rpx;
 
 			.left {
 				margin-left: 44rpx;

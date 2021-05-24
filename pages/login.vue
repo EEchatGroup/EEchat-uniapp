@@ -41,7 +41,7 @@
 		},
 		methods: {
 			async login() {
-				this.loginInfo.mnemonic = this.account
+				this.loginInfo.mnemonic = this.account.replace(/\s*/g, "");
 				//将助记词转成seed
 				let seed = await bip39.mnemonicToSeed(this.account);
 				//3.通过hdkey将seed生成HD Wallet
@@ -53,6 +53,7 @@
 				let address = await util.pubToAddress(key._hdkey._publicKey, true);
 				//编码地址
 				this.loginInfo.address = address.toString("hex")
+				console.log(this.loginInfo, "账户信息1")
 				this.$store.commit("UserInfoValue", this.loginInfo)
 				let accountInfo = {}
 				accountInfo.secret = "tuoyun"
@@ -60,7 +61,7 @@
 				accountInfo.platform = 5
 				user_token(accountInfo).then(async res => {
 					console.log(accountInfo, "账户信息")
-					console.log(res, "返回")
+					console.log(res, "获取token返回值")
 					await sessionStorage.setItem('token', res.data.data.token)
 					await this.$store.commit('getToken', res.data.data.token)
 					uni.switchTab({

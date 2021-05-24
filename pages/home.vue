@@ -96,8 +96,8 @@
 				parameter2.data.seqEnd = this.$store.state.seq
 
 				pull_msg(parameter2).then(res => {
-					// console.log(parameter2, "参数")
-					// console.log(res.data.data.single, "拉取消息返回值")
+					console.log(parameter2, "参数")
+					console.log(res.data.data.single, "拉取消息返回值")
 
 					let single = this.deepClone(res.data.data.single)
 					this.sessionList = []
@@ -122,8 +122,11 @@
 
 		},
 		watch: {
-			msgReceive(oldVal, newVal) {
-				console.log(newVal, "新接收的推送消息")
+			"$store.state.newInfo": {
+				deep: true, 
+				handler: function(newVal, oldVal) {
+					this.getInfoList()
+				}
 			}
 		},
 		mounted() {

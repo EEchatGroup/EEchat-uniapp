@@ -117,28 +117,19 @@
 					pp.push(this.writeArr[i].content)
 				}
 				if (this.originMnemonicArr.toString() == pp.toString()) {
-					this.loginInfo.mnemonic = this.account
-					let seed = await bip39.mnemonicToSeed(this.mnemonic);
-					//3.通过hdkey将seed生成HD Wallet
-					let hdWallet = await hdkey.fromMasterSeed(seed);
-					//4.生成钱包中在m/44'/60'/0'/0/0路径的keypair
-					let key = await hdWallet.derivePath("m/44'/60'/0'/0/0");
-					this.loginInfo.publicKey = util.bufferToHex(key._hdkey._publicKey)
-					let address = await util.pubToAddress(key._hdkey._publicKey, true);
-					this.loginInfo.address = address.toString("hex")
-					//编码地址
-					let uidAdress = address.toString("hex")
 					let accountInfo = {}
 					accountInfo.secret = "tuoyun"
-					accountInfo.uid = uidAdress
+					accountInfo.uid = this.$store.state.registerInfo.address
 					accountInfo.name = "newUser"
 					accountInfo.platform = 5
 					user_register(accountInfo).then(res => {
-						console.log(accountInfo, "hhh")
 						if (res.data.errCode == 0) {
 							delete accountInfo.name
 							user_token(accountInfo).then(async res => {
-								console.log(res.data.data)
+								/* console.log(accountInfo, "user_token接口参数")
+								console.log(res.data.data, "user_token接口返回值") */
+								let userInfo = this.$store.state.registerInfo
+								await this.$store.commit("UserInfoValue", userInfo)
 								await sessionStorage.setItem('token', res.data.data.token)
 								uni.switchTab({
 									url: './home'
@@ -200,13 +191,12 @@
 
 		},
 		mounted() {
-			console.log(this.$store.state.userInfo, "注册信息")
+			console.log(this.$store.state.registerInfo, "注册信息")
 			//传参渲染
-			this.originMnemonicArr = this.$store.state.userInfo.mnemonic.split(" ")
-			this.mnemonic = this.$store.state.userInfo.mnemonic.toString().replace(/\s*/g, "");
+			this.originMnemonicArr = this.$store.state.registerInfo.mnemonic.split(" ")
 			//随机排序
-			// let randomArr = this.$store.state.userInfo.mnemonic.split(" ").sort(this.randomsort);
-			let randomArr = this.$store.state.userInfo.mnemonic.split(" ");
+			// let randomArr = this.$store.state.registerInfo.mnemonic.split(" ").sort(this.randomsort);
+			let randomArr = this.$store.state.registerInfo.mnemonic.split(" ");
 
 			for (let i = 0; i < randomArr.length; i++) {
 				let chooseArrItem = {}

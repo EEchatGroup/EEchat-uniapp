@@ -10,16 +10,17 @@ Vue.use(Vuex); //vue的插件机制
 const store = new Vuex.Store({
 	state: {
 		registerInfo: {
-
+			//address,mnemonic,publicKey
 		},
 		userInfo: {
 			//address,mnemonic,publicKey
 		},
-		token:"",
+		token: "",
 		MsgIncr: 0,
 		seq: 0,
-		recentMessages:[]
-
+		recentMessages: [],
+		newInfoJudgeValue: 0,
+		latestNews:{}
 	},
 	mutations: {
 		getRegisterInfo(state, data) {
@@ -28,7 +29,7 @@ const store = new Vuex.Store({
 		UserInfoValue(state, data) {
 			state.userInfo = data
 		},
-		getToken(state, data){
+		getToken(state, data) {
 			state.token = data
 		},
 		MsgIncrAdd(state) {
@@ -39,9 +40,17 @@ const store = new Vuex.Store({
 			state.seq = data
 			// console.log(state.seq, "seq值")
 		},
-		getRecentMessages(state, data){
+		getRecentMessages(state, data) {
 			state.recentMessages = data
-		}
+		},
+		newInfoJudge(state,data) {
+			state.newInfoJudgeValue = state.newInfoJudgeValue + 1
+			console.log(state.newInfoJudgeValue,"有新消息")
+		},
+		getLatestNews(state,data) {
+			state.latestNews = data
+			console.log(state.latestNews,"新消息内容")
+		},
 
 	},
 	actions: {
