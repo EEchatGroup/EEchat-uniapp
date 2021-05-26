@@ -20,7 +20,9 @@ const store = new Vuex.Store({
 		seq: 0,
 		recentMessages: [],
 		newInfoJudgeValue: 0,
-		latestNews:{}
+		latestNews: {},
+		reconnectionTimes: 0,
+		isLogin:false
 	},
 	mutations: {
 		getRegisterInfo(state, data) {
@@ -43,15 +45,22 @@ const store = new Vuex.Store({
 		getRecentMessages(state, data) {
 			state.recentMessages = data
 		},
-		newInfoJudge(state,data) {
+		newInfoJudge(state, data) {
 			state.newInfoJudgeValue = state.newInfoJudgeValue + 1
-			console.log(state.newInfoJudgeValue,"有新消息")
+			console.log(state.newInfoJudgeValue, "有新消息")
 		},
-		getLatestNews(state,data) {
+		getLatestNews(state, data) {
 			state.latestNews = data
-			console.log(state.latestNews,"新消息内容")
+			console.log(state.latestNews, "新消息内容")
 		},
-
+		addReconnectionTimes(state, data) {
+			state.reconnectionTimes = state.reconnectionTimes + 1
+			
+		},
+		logOn(state, data) {
+			state.isLogin = true
+		},
+		
 	},
 	actions: {
 		setSeq(state, data) {

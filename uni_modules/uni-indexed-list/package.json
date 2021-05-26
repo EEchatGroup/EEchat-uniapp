@@ -1,12 +1,11 @@
 {
   "id": "uni-indexed-list",
-  "displayName": "IndexedList 索引列表",
-  "version": "1.0.9",
+  "displayName": "uni-indexed-list 索引列表",
+  "version": "1.0.11",
   "description": "索引列表",
   "keywords": [
     "uni-ui",
-    "indexed-list",
-    "uni-indexed-list",
+    "uniui",
     "索引列表"
 ],
   "repository": "https://github.com/dcloudio/uni-ui",
@@ -40,7 +39,9 @@
     "npmurl": "https://www.npmjs.com/package/@dcloudio/uni-ui"
   },
   "uni_modules": {
-    "dependencies": [],
+    "dependencies": [
+			"uni-icons"
+		],
     "encrypt": [],
     "platforms": {
       "cloud": {

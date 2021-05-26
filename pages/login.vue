@@ -1,7 +1,7 @@
 <template>
 	<view id="login">
 		<image src="../static/logo.png" mode="" class="logo"></image>
-		<text class="title">数字货币地址聊天 EEchat</text>
+		<text class="title" @click="ddd">数字货币地址聊天 EEchat</text>
 		<view class="tipsArea">
 			<view class="blackDot"></view>
 			<text>助记词登录，身份匿名</text>
@@ -40,6 +40,9 @@
 			}
 		},
 		methods: {
+			ddd(){
+				uni.clearStorage();
+			},
 			async login() {
 				this.loginInfo.mnemonic = this.account.replace(/\s*/g, "");
 				//将助记词转成seed
@@ -60,10 +63,21 @@
 				accountInfo.uid = this.loginInfo.address
 				accountInfo.platform = 5
 				user_token(accountInfo).then(async res => {
-					console.log(accountInfo, "账户信息")
-					console.log(res, "获取token返回值")
 					await sessionStorage.setItem('token', res.data.data.token)
 					await this.$store.commit('getToken', res.data.data.token)
+					await this.$store.commit('logOn', res.data.data.token)
+					console.log(res.data.data.token)
+					console.log(accountInfo.uid)
+					await uni.setStorage({
+						key: 'token',
+						data: res.data.data.token,
+						success: function() {
+							console.log('setsuccess');
+						},
+						fail: function() {
+							console.log('setfail');
+						}
+					});
 					uni.switchTab({
 						url: './home'
 					})

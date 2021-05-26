@@ -126,11 +126,19 @@
 						if (res.data.errCode == 0) {
 							delete accountInfo.name
 							user_token(accountInfo).then(async res => {
-								/* console.log(accountInfo, "user_token接口参数")
-								console.log(res.data.data, "user_token接口返回值") */
 								let userInfo = this.$store.state.registerInfo
 								await this.$store.commit("UserInfoValue", userInfo)
 								await sessionStorage.setItem('token', res.data.data.token)
+								await uni.setStorage({
+									key: 'token',
+									data: res.data.data.token,
+									success: function() {
+										console.log('setsuccess');
+									},
+									fail: function() {
+										console.log('setfail');
+									}
+								});
 								uni.switchTab({
 									url: './home'
 								})

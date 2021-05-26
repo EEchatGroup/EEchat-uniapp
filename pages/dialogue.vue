@@ -118,7 +118,44 @@
 
 			this.nickname = option.id
 			this.recipientID = option.id
-			let messages = this.$store.state.recentMessages
+
+			try {
+				let messages = uni.getStorageSync(this.$store.state.userInfo.address +
+					'localMessage');
+				for (let i = 0; i < messages.length; i++) {
+					if (messages[i].id == option.id) {
+						this.list = messages[i].list
+						console.log(this.list, "duihua")
+						break
+					}
+
+				}
+
+			} catch (e) {
+				// error
+			}
+
+
+			/* uni.getStorage({
+			    key: this.$store.state.userInfo.address +
+								'localMessage',
+			    success: function (res) {
+			        console.log(res.data,"11111111111");
+					let messages = res.data
+					for (let i = 0; i < messages.length; i++) {
+						if (messages[i].id == option.id) {
+							this.list = messages[i].list
+							console.log(this.list, "duihua")
+							break
+						}
+					
+					}
+			    }
+			}); */
+
+
+			/* let messages = uni.getStorageSync(this.$store.state.userInfo.address +
+								'sessionList')
 			for (let i = 0; i < messages.length; i++) {
 				if (messages[i].id == option.id) {
 					this.list = messages[i].list
@@ -126,7 +163,7 @@
 					break
 				}
 
-			}
+			} */
 
 		},
 		methods: {
@@ -138,7 +175,7 @@
 				latest.sentFail = false
 				parameter.reqIdentifier = 1003
 				parameter.platformID = 5
-				parameter.token = sessionStorage.getItem("token")
+				parameter.token = uni.getStorageSync('token')
 				parameter.sendID = this.userInfo.address
 				parameter.operationID = this.userInfo.address + await Date.now().toString();
 				parameter.msgIncr = this.$store.state.MsgIncr + 1;

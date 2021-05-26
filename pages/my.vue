@@ -97,6 +97,11 @@
 			logout() {
 				this.$refs.logoutPopup.close()
 				sessionStorage.removeItem('token')
+				try {
+				    uni.removeStorageSync('token');
+				} catch (e) {
+				    // error
+				}
 				uni.navigateTo({
 					url: './login'
 				})

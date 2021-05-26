@@ -25,12 +25,18 @@ service.interceptors.request.use(config => {
 		return res
 	})
 	//注意使用token的时候需要引入cookie方法或者用本地localStorage等方法，推荐js-cookie
-	if (sessionStorage.getItem("token")) {
-	      // let each request carry token
-	      // ['X-Token'] is a custom headers key
-	      // please modify it according to the actual situation
-	      config.headers['token'] = sessionStorage.getItem("token")
+	uni.getStorage({
+	    key: 'token',
+	    success: function (res) {
+	        config.headers['token'] = res.data
 	    }
+	});
+	// if (sessionStorage.getItem("token")) {
+	//       // let each request carry token
+	//       // ['X-Token'] is a custom headers key
+	//       // please modify it according to the actual situation
+	      
+	//     }
 	
 	return config
 }, error => {

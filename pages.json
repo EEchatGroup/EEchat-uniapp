@@ -35,6 +35,11 @@
             "path": "pages/dialogue"
 
         }
+        ,
+		{
+            "path" : "pages/mailList"
+            
+        }
     ],
     "globalStyle": {
         "app-plus": {
@@ -50,12 +55,19 @@
                 "iconPath": "static/tab-home.png",
                 "selectedIconPath": "static/tab-home-selected.png"
             },
+			{
+			    "text": "通讯录",
+			    "pagePath": "pages/mailList",
+			    "iconPath": "static/tab-my.png",
+			    "selectedIconPath": "static/tab-my-selected.png"
+			},
             {
                 "text": "我的",
                 "pagePath": "pages/my",
                 "iconPath": "static/tab-my.png",
                 "selectedIconPath": "static/tab-my-selected.png"
             }
+            
         ]
     }
 

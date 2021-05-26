@@ -7,7 +7,7 @@
 		<text class="tipsInfo">EEchat不会保存您的助记词，一旦丢失无法找回</text>
 		<text class="tipsInfo">请记录您的助记词，并保存在安全的地方</text>
 		<view class="mnemonic-words-area">
-			<view class="mnemonic-words-item" v-for="item in mnemonicArr">{{item}}</view>
+			<view class="mnemonic-words-item" v-for="item in mnemonicArr" :key="item">{{item}}</view>
 
 		</view>
 		<view class="copyArea">
