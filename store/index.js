@@ -1,10 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {
-	user_register
-} from '../api'
 
-Vue.use(Vuex); //vue的插件机制
+
+Vue.use(Vuex);
 
 //Vuex.Store 构造器选项
 const store = new Vuex.Store({
@@ -22,7 +20,9 @@ const store = new Vuex.Store({
 		newInfoJudgeValue: 0,
 		latestNews: {},
 		reconnectionTimes: 0,
-		isLogin:false
+		isLogin:false,
+		searchFriendData:{},
+		setFriendData:{}
 	},
 	mutations: {
 		getRegisterInfo(state, data) {
@@ -60,15 +60,16 @@ const store = new Vuex.Store({
 		logOn(state, data) {
 			state.isLogin = true
 		},
+		getSearchFriendData(state, data) {
+			state.searchFriendData = data
+		},
+		getSetFriendData(state, data) {
+			state.setFriendData = data
+		}
 		
 	},
 	actions: {
-		setSeq(state, data) {
-			that.websockets.ws.send(data);
-			that.websockets.ws.onmessage = function(res) {
-				console.log(JSON.parse(res.data), "接收最新seq")
-			}
-		}
+		
 	}
 
 })

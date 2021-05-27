@@ -26,10 +26,11 @@
 				that.ws.onmessage = function(evt) {
 					let msgReceive = JSON.parse(evt.data)
 					console.log(msgReceive, "新接收的推送消息")
+					console.log(evt.data, "新接收的推送消息")
+					
 					that.$store.commit("newInfoJudge")
 					that.$store.commit("getLatestNews", msgReceive.data)
 					
-				
 					let localMessage = uni.getStorageSync(that.$store.state.userInfo.address + 'localMessage');
 					for (let i = 0; i < localMessage.length; i++) {
 						
@@ -54,7 +55,6 @@
 
 				}
 				that.ws.onclose = function(event) {
-					console.log(that.$store.state.reconnectionTimes)
 					if (that.$store.state.reconnectionTimes == 2) {
 						uni.showToast({
 							title: 'connection failed',

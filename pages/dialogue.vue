@@ -10,29 +10,29 @@
 		</uni-nav-bar>
 		<view class="main" id="main">
 			<view v-for="item in list">
-				<view v-if="item.sendID == $store.state.userInfo.address
-				|| item.SendID == $store.state.userInfo.address" class="right">
+				<view v-if="item.sendID == $store.state.userInfo.address && item.msgFrom==100
+				" class="right">
 					<!-- <image src="../static/withdraw.png" mode=""  class="StatusIcon"></image> -->
 					<image src="../static/sentFail.png" mode="" v-if="item.sentFail" class="StatusIcon"></image>
 
 					<view class="contentArea">
-						<text class="maincontent">{{item.content || item.Content}}</text>
+						<text class="maincontent">{{item.content }}</text>
 						<view class="triangle">
 						</view>
-						<image src="../static/exit.png" mode="" class="headIcon">
+						<image src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png" mode="" class="headIcon">
 						</image>
 					</view>
 
 				</view>
 				<view
-					v-if="(item.sendID && item.sendID!= $store.state.userInfo.address) || (item.SendID && item.SendID!= $store.state.userInfo.address)"
+					v-if="item.sendID!= $store.state.userInfo.address && item.msgFrom==100"
 					class="left">
-					<image src="../static/exit.png" mode="" class="headIcon">
+					<image src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png" mode="" class="headIcon">
 					</image>
 					<view class="contentArea">
 						<view class="triangle">
 						</view>
-						<text class="maincontent">{{item.content || item.Content}}</text>
+						<text class="maincontent">{{item.content}}</text>
 					</view>
 
 				</view>
@@ -96,8 +96,7 @@
 <script>
 	import {
 		changeAlias,
-		send_msg,
-		newest_seq
+		send_msg
 	} from '../api'
 	export default {
 		data() {
@@ -203,9 +202,7 @@
 							latest.sentFail = true
 							console.log("7777")
 						});
-					/* .catch(err=>{
-						
-					}) */
+					
 				} else {
 					uni.showToast({
 						title: '消息为空',
@@ -217,8 +214,8 @@
 				latest.sendID = this.userInfo.address
 				latest.recvID = this.recipientID
 				latest.sendTime = Date.now()
-				latest.subMsgType = 101
-				latest.msgType = 100
+				latest.contentType = 101
+				latest.msgFrom = 100
 				latest.content = this.inputValue
 				/* if (sendStatus == true) {
 					latest.sentFail = false

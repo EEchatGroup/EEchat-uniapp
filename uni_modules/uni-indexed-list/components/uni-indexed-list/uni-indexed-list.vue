@@ -282,7 +282,7 @@
 	.uni-indexed-list {
 		position: absolute;
 		left: 0;
-		top: 96rpx;
+		top: 232rpx;
 		right: 0;
 		bottom: 0;
 		/* #ifndef APP-NVUE */

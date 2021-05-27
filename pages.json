@@ -34,10 +34,25 @@
         {
             "path": "pages/dialogue"
 
-        }
-        ,
+        },
 		{
             "path" : "pages/mailList"
+            
+        },
+		{
+            "path" : "pages/addFriend"
+            
+        },
+		{
+            "path" : "pages/addFriendDetail"
+            
+        },
+		{
+            "path" : "pages/newFriends"
+            
+        },
+		{
+            "path" : "pages/setFriend"
             
         }
     ],
@@ -58,8 +73,8 @@
 			{
 			    "text": "通讯录",
 			    "pagePath": "pages/mailList",
-			    "iconPath": "static/tab-my.png",
-			    "selectedIconPath": "static/tab-my-selected.png"
+			    "iconPath": "static/tab-mailList.png",
+			    "selectedIconPath": "static/tab-mailList-selected.png"
 			},
             {
                 "text": "我的",

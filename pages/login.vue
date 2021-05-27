@@ -42,6 +42,7 @@
 		methods: {
 			ddd(){
 				uni.clearStorage();
+				console.log("清除存储")
 			},
 			async login() {
 				this.loginInfo.mnemonic = this.account.replace(/\s*/g, "");
@@ -66,8 +67,6 @@
 					await sessionStorage.setItem('token', res.data.data.token)
 					await this.$store.commit('getToken', res.data.data.token)
 					await this.$store.commit('logOn', res.data.data.token)
-					console.log(res.data.data.token)
-					console.log(accountInfo.uid)
 					await uni.setStorage({
 						key: 'token',
 						data: res.data.data.token,

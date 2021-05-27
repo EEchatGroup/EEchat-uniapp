@@ -81,3 +81,52 @@ export function remove_blacklist(data) {
 		data: data
 	})
 }
+//获取好友列表
+export function get_friend_list(data) {
+	return request({
+		url: '/friend/get_friend_list',
+		method: 'post',
+		data: data
+	})
+}
+//查找好友
+export function search_friend(data) {
+	return request({
+		url: '/friend/search_friend',
+		method: 'post',
+		data: data
+	})
+}
+//删除好友
+export function delete_friend(data) {
+	return request({
+		url: '/friend/delete_friend',
+		method: 'post',
+		data: data
+	})
+}
+//添加好友
+export function add_friend(data) {
+	return request({
+		url: '/friend/add_friend',
+		method: 'post',
+		data: data
+	})
+}
+//回应添加好友
+export function add_friend_response(data) {
+	return request({
+		url: '/friend/add_friend_response',
+		method: 'post',
+		data: data
+	})
+}
+//获取好友请求列表
+export function get_friend_apply_list(data) {
+	return request({
+		url: '/friend/get_friend_apply_list',
+		method: 'post',
+		data: data
+	})
+}
+

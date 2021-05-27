@@ -75,10 +75,10 @@
 
 		},
 
-		onShow() {
+		onShow: function() {
 			this.getInfoList()
-			console.log(this.$store.state.recentMessages, "vuex")
-			
+			console.log(uni.getStorageSync(this.userInfo.address + 'localMessage'), "ddddddd")
+
 		},
 		methods: {
 
@@ -127,12 +127,25 @@
 
 
 				await newest_seq(parameter).then(async res => {
+					console.log(res.data.data.seq, "qqqqqq")
+					console.log(uni.getStorageSync(this.userInfo.address + 'latestSeq'), "qqqqqq2222")
 
 					let that = this
 					if (res.data.data.seq >= 1 && uni.getStorageSync(that.userInfo.address +
 							'latestSeq').length == 0) {
 						console.log("老用户 换机登录")
-						uni.setStorage({
+						uni.setStorageSync(that.userInfo.address + 'latestSeq', res.data.data.seq);
+						parameter2.data.seqBegin = 1
+						parameter2.data.seqEnd = uni.getStorageSync(that.userInfo
+							.address + 'latestSeq');
+						that.isLatestSeq = false
+						that.addNewMessage = false
+
+
+						console.log(uni.getStorageSync(that.userInfo.address +
+							'latestSeq'), "换机登录seq")
+
+						/* uni.setStorage({
 							key: that.userInfo.address + 'latestSeq',
 							data: res.data.data.seq,
 							success: function() {
@@ -143,7 +156,7 @@
 								that.isLatestSeq = false
 								that.addNewMessage = false
 							}
-						});
+						}); */
 
 					} else if (res.data.data.seq == 0) {
 						that.sessionList = []
@@ -151,60 +164,62 @@
 						console.log("新用户 没消息")
 						that.isLatestSeq = true
 					} else if (res.data.data.seq == uni.getStorageSync(that.userInfo.address +
-							'latestSeq')) {
-						let value = uni.getStorageSync(that.userInfo.address + 'latestSeq')
-						if (value == res.data.data.seq) {
+						'latestSeq')) {
 							console.log("老用户 seq正常")
-							
 							that.isLatestSeq = true
-							that.sessionList = []
-
-							try {
-								let localMessageValue = uni.getStorageSync(this.userInfo.address + 'localMessage')
-
-								//截取每个用户最新一条用来显示
-								for (let i = 0; i < localMessageValue.length; i++) {
-
-									let item = {}
-									let l = localMessageValue[i].list.length - 1
-									let last = localMessageValue[i].list[l]
-									item.id = localMessageValue[i].id
+							// that.sessionList = uni.getStorageSync(that.userInfo.address + 'sessionList')
+							
+							
+							let localMessage = uni.getStorageSync(this.userInfo.address + 'localMessage')
+							
+							this.sessionList = []
+							//截取每个用户最新一条用来显示
+							for (let i = 0; i < localMessage.length; i++) {
+							
+								let item = {}
+								let l = localMessage[i].list.length - 1
+							
+								while (localMessage[i].list[l].msgFrom == 200 && l > 0) {
+									l = l - 1
+								}
+								if (localMessage[i].list[l].msgFrom == 200 && l == 0) {
+									console.log("系统消息")
+								} else {
+									let last = localMessage[i].list[l]
+									item.id = localMessage[i].id
 									item.time = last.serverMsgID.slice(11, 16)
 									if (last.content.length > 20) {
 										item.content = last.content.slice(0, 20) + "..."
 									} else {
 										item.content = last.content
 									}
-
+							
 									item.UNIXValue = last.sendTime
 									item.isShow = false
-									that.sessionList.push(item)
+									this.sessionList.push(item)
 								}
-								//sort
-								that.sessionList = that.sessionList.sort(that.sortNumber)
-
-							} catch (e) {
-								// error
+							
+							
 							}
-
-
+							//sort
+							this.sessionList = this.sessionList.sort(this.sortNumber)
 							try {
-								uni.setStorageSync(that.userInfo.address + 'sessionList', that
-								.sessionList);
+								uni.setStorageSync(this.userInfo.address + 'sessionList', this.sessionList);
 							} catch (e) {
 								// error
 							}
+							
 
-
-
-
-
-
-						} else {
+						
+					}else if (res.data.data.seq != uni.getStorageSync(this.userInfo.address + 'latestSeq')) {
 							console.log("老用户 seq没对齐")
+							console.log(parameter2, "没对齐参数")
 							parameter2.data.seqBegin = uni.getStorageSync(that.userInfo.address +
 								'latestSeq')
 							parameter2.data.seqEnd = res.data.data.seq
+							
+
+
 							that.addNewMessage = true
 							uni.setStorage({
 								key: that.userInfo.address + 'latestSeq',
@@ -216,9 +231,8 @@
 							});
 
 						}
-					}
 
-
+				
 
 
 				})
@@ -279,18 +293,28 @@
 
 							let item = {}
 							let l = value[i].list.length - 1
-							let last = value[i].list[l]
-							item.id = value[i].id
-							item.time = last.serverMsgID.slice(11, 16)
-							if (last.content.length > 20) {
-								item.content = last.content.slice(0, 20) + "..."
+
+							while (value[i].list[l].msgFrom == 200 && l > 0) {
+								l = l - 1
+							}
+							if (value[i].list[l].msgFrom == 200 && l == 0) {
+								console.log("系统消息")
 							} else {
-								item.content = last.content
+								let last = value[i].list[l]
+								item.id = value[i].id
+								item.time = last.serverMsgID.slice(11, 16)
+								if (last.content.length > 20) {
+									item.content = last.content.slice(0, 20) + "..."
+								} else {
+									item.content = last.content
+								}
+
+								item.UNIXValue = last.sendTime
+								item.isShow = false
+								this.sessionList.push(item)
 							}
 
-							item.UNIXValue = last.sendTime
-							item.isShow = false
-							this.sessionList.push(item)
+
 						}
 						//sort
 						this.sessionList = this.sessionList.sort(this.sortNumber)
@@ -319,7 +343,7 @@
 		},
 		mounted() {
 			console.log(this.userInfo, "userinfo")
-		
+
 		}
 	}
 </script>
