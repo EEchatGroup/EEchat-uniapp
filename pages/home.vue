@@ -188,10 +188,12 @@
 									let last = localMessage[i].list[l]
 									item.id = localMessage[i].id
 									item.time = last.serverMsgID.slice(11, 16)
-									if (last.content.length > 20) {
+									if(last.contentType==101 && last.content.length > 20){
 										item.content = last.content.slice(0, 20) + "..."
-									} else {
+									}else if(last.contentType==101 && last.content.length <=20) {
 										item.content = last.content
+									}else if(last.contentType==102){
+										item.content = "[图片]"
 									}
 							
 									item.UNIXValue = last.sendTime
@@ -303,12 +305,15 @@
 								let last = value[i].list[l]
 								item.id = value[i].id
 								item.time = last.serverMsgID.slice(11, 16)
-								if (last.content.length > 20) {
+								if(last.contentType==101 && last.content.length > 20){
 									item.content = last.content.slice(0, 20) + "..."
-								} else {
+								}else if(last.contentType==101 && last.content.length <=20) {
 									item.content = last.content
+								}else if(last.contentType==102){
+									item.content = "[图片]"
 								}
-
+								
+								
 								item.UNIXValue = last.sendTime
 								item.isShow = false
 								this.sessionList.push(item)

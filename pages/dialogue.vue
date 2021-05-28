@@ -16,62 +16,33 @@
 					<image src="../static/sentFail.png" mode="" v-if="item.sentFail" class="StatusIcon"></image>
 
 					<view class="contentArea">
-						<text class="maincontent">{{item.content }}</text>
+						<view class="maincontent" v-show="item.contentType == 101">{{item.content}}</view>
+						<view class="maincontent" v-show="item.contentType == 102"><image :src="item.content.thumbnail" mode=""></image></view>
 						<view class="triangle">
 						</view>
-						<image src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png" mode="" class="headIcon">
+						<image
+							src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
+							mode="" class="headIcon">
 						</image>
 					</view>
 
 				</view>
-				<view
-					v-if="item.sendID!= $store.state.userInfo.address && item.msgFrom==100"
-					class="left">
-					<image src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png" mode="" class="headIcon">
-					</image>
+				<view v-if="item.sendID!= $store.state.userInfo.address && item.msgFrom==100" class="left">
+					
 					<view class="contentArea">
+						<image
+							src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
+							mode="" class="headIcon">
+						</image>
 						<view class="triangle">
 						</view>
-						<text class="maincontent">{{item.content}}</text>
+						<view class="maincontent" v-show="item.contentType == 101">{{item.content}}</view>
+						<view class="maincontent" v-show="item.contentType == 102"><image :src="item.content.thumbnail" mode=""></image></view>
+						
 					</view>
 
 				</view>
 			</view>
-			<!-- <view class="left">
-				<image src="../static/exit.png" mode="" class="headIcon">
-				</image>
-				<view class="contentArea">
-					<view class="triangle">
-					</view>
-					<text class="maincontent">
-						dddddddddd
-					</text>
-				</view>
-
-			</view> -->
-			<!-- <view v-for="item in list" :class="item.sendID == $store.state.userInfo.userID? 'right':'left'">
-				<image src="../static/withdraw.png" mode="" v-if="withdrawnStatus" class="StatusIcon"></image>
-				<view class="contentArea">
-					<text class="maincontent">{{item.content}}</text>
-					<view class="triangle">
-					</view>
-					<image src="../static/exit.png" mode="" class="headIcon">
-					</image>
-				</view>
-			
-			</view>
-			<view class="left">
-					<image src="../static/exit.png" mode="" class="headIcon">
-					</image>
-					<view class="contentArea">
-						<view class="triangle">
-						</view>
-						<text class="maincontent">dddddddddddddddddddddddddddd</text>
-					</view>
-				
-			</view> -->
-
-
 
 		</view>
 
@@ -98,6 +69,7 @@
 		changeAlias,
 		send_msg
 	} from '../api'
+	import uploadFile from '../uploadFile/index.js'
 	export default {
 		data() {
 			return {
@@ -110,6 +82,7 @@
 				list: [],
 				recipientID: "",
 				tupian: "",
+				imgContent:{}
 
 			}
 		},
@@ -135,40 +108,12 @@
 			}
 
 
-			/* uni.getStorage({
-			    key: this.$store.state.userInfo.address +
-								'localMessage',
-			    success: function (res) {
-			        console.log(res.data,"11111111111");
-					let messages = res.data
-					for (let i = 0; i < messages.length; i++) {
-						if (messages[i].id == option.id) {
-							this.list = messages[i].list
-							console.log(this.list, "duihua")
-							break
-						}
-					
-					}
-			    }
-			}); */
 
-
-			/* let messages = uni.getStorageSync(this.$store.state.userInfo.address +
-								'sessionList')
-			for (let i = 0; i < messages.length; i++) {
-				if (messages[i].id == option.id) {
-					this.list = messages[i].list
-					console.log(this.list, "duihua")
-					break
-				}
-
-			} */
 
 		},
 		methods: {
 			async sendInfo() {
-				this.userInfo = this.$store.state.userInfo
-				// let that = this
+
 				let parameter = {}
 				let latest = {}
 				latest.sentFail = false
@@ -202,7 +147,7 @@
 							latest.sentFail = true
 							console.log("7777")
 						});
-					
+
 				} else {
 					uni.showToast({
 						title: '消息为空',
@@ -242,12 +187,89 @@
 
 			},
 			upload() {
+				let that = this
+				// 选择文件
 				uni.chooseImage({
-					count: 6, //默认9
-					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					count: 1, //默认9
+					sizeType: ['original', 'compressed'],
 					sourceType: ['album'], //从相册选择
-					success: function(res) {
-						console.log(res.tempFilePaths);
+					success: async function(res) {
+						const tempFilePaths = res.tempFilePaths;
+						let suffix = res.tempFiles[0].name.substring(res.tempFiles[0].name.length - 4)
+						await uploadFile(tempFilePaths[0], suffix)
+						console.log(res, "5555645656")
+						uni.getImageInfo({
+							src: res.tempFilePaths[0],
+							success: function(image) {
+								console.log(image.width);
+								var imgWidth = image.width
+								console.log(image.height);
+								var imageHeight = image.height
+								let parameter = {}
+								let latest = {}
+								latest.sentFail = false
+								parameter.reqIdentifier = 1003
+								parameter.platformID = 5
+								parameter.token = uni.getStorageSync('token')
+								parameter.sendID = that.userInfo.address
+								parameter.operationID = that.userInfo.address + Date.now()
+									.toString();
+								parameter.msgIncr = that.$store.state.MsgIncr + 1;
+								parameter.data = {}
+								parameter.data.sessionType = 1
+								parameter.data.msgFrom = 100
+								parameter.data.contentType = 102
+								parameter.data.recvID = that.recipientID
+								parameter.data.content = {}
+								parameter.data.content.url = that.$store.state.upLoadImgUrl
+								parameter.data.content.thumbnail = that.$store.state.upLoadImgUrl +
+									"?imageView2/2/w/300/h/300"
+								parameter.data.content.width = imgWidth
+								parameter.data.content.height = imageHeight
+								this.imgContent = parameter.data.content
+								parameter.data.content = parameter.data.content.toString()
+								parameter.data.clientMsgID = "222"
+								parameter.data.offlineInfo = {}
+								parameter.data.forceList = []
+								parameter.data.options = {}
+								parameter.data.ext = {}
+
+								that.$store.commit("MsgIncrAdd")
+								console.log(parameter, "消息发送参数")
+								send_msg(parameter).then(res => {
+										console.log(res, "44444")
+										latest.sentFail = false
+
+									})
+									.catch(function(error) {
+										latest.sentFail = true
+										console.log("7777")
+									});
+
+								latest.sendID = that.userInfo.address
+								latest.recvID = that.recipientID
+								latest.sendTime = Date.now()
+								latest.contentType = 102
+								latest.msgFrom = 100
+								latest.content = this.imgContent 
+								that.list.push(latest)
+								console.log(that.list, "本地消息列表")
+								that.$store.commit('getUpLoadImgUrl', "")
+
+								const query = uni.createSelectorQuery().in(that);
+								query.select('#main').boundingClientRect(data => {
+									uni.pageScrollTo({
+										scrollTop: data.height,
+										duration: 100
+									});
+								}).exec();
+
+							}
+
+						});
+
+
+
 
 					}
 				});
@@ -256,24 +278,9 @@
 
 
 
-				/* let input = document.createElement('input');
-				input.type = 'file';
-				input.accept = 'image/*';
-				input.click()
-				input.onchange = (event) => {
-					let preview = document.querySelector('#kkk');
-					let file = event.path[0].files[0];
-					let reader = new FileReader();
-					//新建 FileReader 对象
-					reader.addEventListener("load", function() {
-						preview.src = reader.result;
-						console.log(reader.result)
-					}, false);
-					if (file) {
-						reader.readAsDataURL(file);
-					}
 
-				} */
+
+
 			},
 			goBack() {
 				uni.switchTab({
@@ -312,6 +319,7 @@
 			}
 		},
 		mounted() {
+			this.userInfo = this.$store.state.userInfo
 			const query = uni.createSelectorQuery().in(this);
 			query.select('#main').boundingClientRect(data => {
 				uni.pageScrollTo({

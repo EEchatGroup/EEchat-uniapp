@@ -20,7 +20,7 @@
 						height: 76rpx;
 						border-radius: 76rpx;"></image>
 						</view>
-						<text class="uni-indexed-list__item-content"style="margin-left: -460rpx;" >{{ item.name.name }}</text>
+						<text class="uni-indexed-list__item-content"style="margin-left: -460rpx;" >{{ item.name.uid.slice(0,20)+'...' }}</text>
 					</view>
 				</view>
 			</view>

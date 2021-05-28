@@ -129,4 +129,12 @@ export function get_friend_apply_list(data) {
 		data: data
 	})
 }
+//腾讯云COS存储
+export function tencent_cloud_storage_credential(data) {
+	return request({
+		url: '/third/tencent_cloud_storage_credential',
+		method: 'post',
+		data: data
+	})
+}
 

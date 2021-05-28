@@ -22,7 +22,8 @@ const store = new Vuex.Store({
 		reconnectionTimes: 0,
 		isLogin:false,
 		searchFriendData:{},
-		setFriendData:{}
+		setFriendData:{},
+		upLoadImgUrl:"",
 	},
 	mutations: {
 		getRegisterInfo(state, data) {
@@ -65,7 +66,11 @@ const store = new Vuex.Store({
 		},
 		getSetFriendData(state, data) {
 			state.setFriendData = data
-		}
+		},
+		getUpLoadImgUrl(state, data) {
+			state.upLoadImgUrl = data
+			console.log(state.upLoadImgUrl, "vueX图片url")
+		},
 		
 	},
 	actions: {

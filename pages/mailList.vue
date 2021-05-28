@@ -5,12 +5,30 @@
 			<view class="headRight">
 				<image src="../static/search.png" mode="" class="headIcon"></image>
 				<image src="../static/more-operations.png" mode="" class="headIcon" @click="controlDisplay"></image>
-				<view class="operationsMenu" v-show="showOperationsMenu">
-					<view class="operationsMenu-item" @click="goAddFriend">
-						<image src="../static/addFriend.png" mode="" class="itemImg"></image>
-						<text>添加好友</text>
+				<view class="menuCon" v-show="showOperationsMenu">
+					<view class="triangle" >
+						
 					</view>
+					<view class="operationsMenu">
+						<view class="operationsMenu-item" @click="goAddFriend">
+							<image src="../static/addFriend.png" mode="" class="itemImg"></image>
+							<text>添加朋友</text>
+						</view><view class="operationsMenu-item" @click="goAddFriend">
+							<image src="../static/groupChat.png" mode="" class="itemImg"></image>
+							<text>发起群聊</text>
+						</view><view class="operationsMenu-item" @click="goAddFriend">
+							<image src="../static/feedback.png" mode="" class="itemImg"></image>
+							<text>帮助与反馈</text>
+						</view>
+					</view>
+					
+					
+					
 				</view>
+				
+				
+
+
 
 			</view>
 		</view>
@@ -86,33 +104,52 @@
 		background-color: #E8E8E8;
 		height: 100% !important;
 
-		.operationsMenu {
-			width: 222rpx;
-			height: 260rpx;
-			background-color: #1B72EC;
-			box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.5);
-			border-radius: 24rpx;
+		.menuCon{
 			z-index: 99;
 			position: absolute;
-			top: 8%;
-			right: 6%;
-			padding: 0 46rpx;
-
-			.operationsMenu-item {
-				display: flex;
-				align-items: center;
-				font-size: 30rpx;
-				font-weight: 600;
-				color: #FFFFFF;
-				margin-top: 26rpx;
-
-				.itemImg {
-					width: 44rpx;
-					height: 44rpx;
-					margin-right: 28rpx;
+			top: 5%;
+			right: 1.5%;
+			display: flex;
+			flex-direction: column;
+			
+			.triangle{
+				width: 0px;
+				height: 0px;
+				border-top: 18rpx solid transparent;
+				border-bottom: 18rpx solid #1B72EC;
+				border-left: 18rpx solid transparent;
+				border-right: 18rpx solid transparent;
+				
+				margin-left: 78%;
+			}
+			
+			.operationsMenu {
+				width: 222rpx;
+				height: 240rpx;
+				background-color: #1B72EC;
+				box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.5);
+				border-radius: 18rpx;
+				
+				padding: 0 46rpx;
+			
+				.operationsMenu-item {
+					display: flex;
+					align-items: center;
+					font-size: 30rpx;
+					font-weight: 600;
+					color: #FFFFFF;
+					margin-top: 26rpx;
+			
+					.itemImg {
+						width: 44rpx;
+						height: 44rpx;
+						margin-right: 28rpx;
+					}
 				}
 			}
 		}
+	
+		
 
 		.head {
 			height: 90rpx;
