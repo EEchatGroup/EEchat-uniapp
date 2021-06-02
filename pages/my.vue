@@ -12,11 +12,17 @@
 		</view>
 		<view class="funtionArea">
 			<uni-list>
-				<uni-list-item thumb="/static/edit.png" title="修改昵称" clickable @click="goEditNickname"></uni-list-item>
-				<uni-list-item thumb="/static/nameList.png" title="屏蔽名单" clickable @click="goBlockList"></uni-list-item>
-				<uni-list-item thumb="/static/link.png" title="生成会话链接" clickable @click="showLinkPopup"></uni-list-item>
-				<uni-list-item thumb="/static/exit.png" title="退出登录" clickable @click="logoutConfirm"></uni-list-item>
+				<uni-list-item thumb="../static/changeAvatar.png" title="修改头像" clickable @click="goEditNickname"></uni-list-item>
+				<uni-list-item thumb="../static/edit.png" title="修改昵称" clickable @click="goEditNickname"></uni-list-item>
+				<uni-list-item thumb="../static/blockList.png" title="通讯录黑名单" clickable @click="goBlockList"></uni-list-item>
+				<!-- <uni-list-item thumb="../static/link.png" title="生成会话链接" clickable @click="showLinkPopup"></uni-list-item>
+				<uni-list-item thumb="../static/exit.png" title="退出登录" clickable @click="logoutConfirm"></uni-list-item> -->
 			</uni-list>
+			
+			<view class="logOutArea" @click="logoutConfirm">
+				<image src="../static/logOut.png" mode="" class="logOutIcon"></image>
+				<text class="logOutText">退出登录</text>
+			</view>
 		</view>
 		<uni-popup ref="popup">
 			<view class="linkPopup">
@@ -175,6 +181,24 @@
 
 		.funtionArea {
 			margin-top: 28rpx;
+			.logOutArea{
+				height: 112rpx;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background-color: #fff;
+				margin-top: 440rpx;
+				.logOutIcon{
+					width: 40rpx;
+					height: 40rpx;
+				}
+				.logOutText{
+					font-size: 36rpx;
+					font-weight: 500;
+					color: #1B72EC;
+					margin-left: 20rpx;
+				}
+			}
 		}
 
 		.linkPopup {

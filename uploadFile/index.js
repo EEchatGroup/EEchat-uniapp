@@ -39,7 +39,7 @@ var getCredentials = async function() {
 	}
 	return stsCache && stsCache.Credentials
 
-	
+
 
 
 
@@ -61,10 +61,10 @@ var getAuthorization = function(options, callback) {
 };
 
 // 上传文件
-var uploadFile = async function(filePath,suffix) {
+var uploadFile = async function(filePath, suffix) {
 	var Key = filePath.substr(filePath.lastIndexOf('/') + 1) + suffix; // 这里指定上传的文件名
 	const credentials = await getCredentials()
-	
+
 	const AuthData = {
 		XCosSecurityToken: credentials.Token,
 		Authorization: CosAuth({
@@ -85,10 +85,10 @@ var uploadFile = async function(filePath,suffix) {
 			'x-cos-security-token': AuthData.XCosSecurityToken,
 			'Content-Type': '',
 		},
-		success: (uploadFileRes) => {
+		success: async (uploadFileRes) => {
 			var url = prefix + camSafeUrlEncode(Key).replace(/%2F/g, '/');
-			store.commit('getUpLoadImgUrl',url)
-			console.log(url,'图片url');
+			await store.commit('getUpLoadImgUrl', url)
+			console.log(url, '图片url');
 		}
 	});
 

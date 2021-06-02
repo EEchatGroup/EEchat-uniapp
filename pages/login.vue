@@ -40,7 +40,7 @@
 			}
 		},
 		methods: {
-			ddd(){
+			ddd() {
 				uni.clearStorage();
 				console.log("清除存储")
 			},
@@ -64,17 +64,20 @@
 				accountInfo.uid = this.loginInfo.address
 				accountInfo.platform = 5
 				user_token(accountInfo).then(async res => {
+
 					await sessionStorage.setItem('token', res.data.data.token)
 					await this.$store.commit('getToken', res.data.data.token)
-					await this.$store.commit('logOn', res.data.data.token)
+					await this.$store.commit('logOn')
 					await uni.setStorage({
 						key: 'token',
 						data: res.data.data.token,
 						success: function() {
 							console.log('setsuccess');
+
 						},
 						fail: function() {
 							console.log('setfail');
+
 						}
 					});
 					uni.switchTab({

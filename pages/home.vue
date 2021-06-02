@@ -2,6 +2,21 @@
 	<view id="home">
 		<view class="head">
 			<text class="title">EEchat</text>
+			<view class="headRight">
+				<image src="../static/more-operations.png" mode="" class="headIcon" @click="controlDisplay"></image>
+				<view class="menuCon" v-show="showOperationsMenu">
+					<view class="triangle">
+
+					</view>
+					<view class="operationsMenu">
+						<view class="operationsMenu-item" @click="goAddFriend">
+							<image src="../static/addFriend.png" mode="" class="itemImg"></image>
+							<text>添加朋友</text>
+						</view>
+					</view>
+
+				</view>
+			</view>
 		</view>
 		<view class="main">
 			<!-- <uni-list>
@@ -22,7 +37,7 @@
 			</uni-list> -->
 			<view class="chatList">
 				<view class="chatItem" v-for="item in sessionList" @longtap.prevent="showOperation(item)"
-					@click="goDialogue(item.id)">
+					@click="goDialogue(item)">
 					<image
 						src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
 						mode="" class="portrait"></image>
@@ -67,7 +82,8 @@
 				userInfo: null,
 				startData: {},
 				isLatestSeq: true,
-				addNewMessage: false
+				addNewMessage: false,
+				showOperationsMenu: false,
 			}
 		},
 		onLoad() {
@@ -78,10 +94,19 @@
 		onShow: function() {
 			this.getInfoList()
 			console.log(uni.getStorageSync(this.userInfo.address + 'localMessage'), "ddddddd")
+			console.log(uni.getStorageSync(this.userInfo.address + 'latestSeq'), "ffffffffff")
 
 		},
 		methods: {
-
+			controlDisplay() {
+				this.showOperationsMenu = !this.showOperationsMenu
+			},
+			goAddFriend() {
+				uni.navigateTo({
+					url: './addFriend'
+				});
+				this.showOperationsMenu = false
+			},
 			showOperation(e) {
 				e.isShow = true
 			},
@@ -105,9 +130,10 @@
 					url: './register'
 				});
 			},
-			goDialogue(e) {
+			async goDialogue(e) {
+				await this.$store.commit('getSetFriendData', e)
 				uni.navigateTo({
-					url: './dialogue?id=' + e
+					url: './dialogue?id=' + e.id
 				});
 			},
 			sortNumber(a, b) {
@@ -164,77 +190,79 @@
 						console.log("新用户 没消息")
 						that.isLatestSeq = true
 					} else if (res.data.data.seq == uni.getStorageSync(that.userInfo.address +
-						'latestSeq')) {
-							console.log("老用户 seq正常")
-							that.isLatestSeq = true
-							// that.sessionList = uni.getStorageSync(that.userInfo.address + 'sessionList')
-							
-							
-							let localMessage = uni.getStorageSync(this.userInfo.address + 'localMessage')
-							
-							this.sessionList = []
-							//截取每个用户最新一条用来显示
-							for (let i = 0; i < localMessage.length; i++) {
-							
-								let item = {}
-								let l = localMessage[i].list.length - 1
-							
-								while (localMessage[i].list[l].msgFrom == 200 && l > 0) {
-									l = l - 1
-								}
-								if (localMessage[i].list[l].msgFrom == 200 && l == 0) {
-									console.log("系统消息")
-								} else {
-									let last = localMessage[i].list[l]
-									item.id = localMessage[i].id
-									item.time = last.serverMsgID.slice(11, 16)
-									if(last.contentType==101 && last.content.length > 20){
-										item.content = last.content.slice(0, 20) + "..."
-									}else if(last.contentType==101 && last.content.length <=20) {
-										item.content = last.content
-									}else if(last.contentType==102){
-										item.content = "[图片]"
-									}
-							
-									item.UNIXValue = last.sendTime
-									item.isShow = false
-									this.sessionList.push(item)
-								}
-							
-							
+							'latestSeq')) {
+						console.log("老用户 seq正常")
+						that.isLatestSeq = true
+						// that.sessionList = uni.getStorageSync(that.userInfo.address + 'sessionList')
+
+
+						let localMessage = uni.getStorageSync(this.userInfo.address + 'localMessage')
+
+						this.sessionList = []
+						//截取每个用户最新一条用来显示
+						for (let i = 0; i < localMessage.length; i++) {
+
+							let item = {}
+							let l = localMessage[i].list.length - 1
+
+							while (localMessage[i].list[l].msgFrom == 200 && l > 0) {
+								l = l - 1
 							}
-							//sort
-							this.sessionList = this.sessionList.sort(this.sortNumber)
-							try {
-								uni.setStorageSync(this.userInfo.address + 'sessionList', this.sessionList);
-							} catch (e) {
-								// error
-							}
-							
-
-						
-					}else if (res.data.data.seq != uni.getStorageSync(this.userInfo.address + 'latestSeq')) {
-							console.log("老用户 seq没对齐")
-							console.log(parameter2, "没对齐参数")
-							parameter2.data.seqBegin = uni.getStorageSync(that.userInfo.address +
-								'latestSeq')
-							parameter2.data.seqEnd = res.data.data.seq
-							
-
-
-							that.addNewMessage = true
-							uni.setStorage({
-								key: that.userInfo.address + 'latestSeq',
-								data: res.data.data.seq,
-								success: function() {
-									that.$store.commit('seqValue', res.data.data.seq)
-									that.isLatestSeq = false
+							if (localMessage[i].list[l].msgFrom == 200 && l == 0) {
+								console.log("系统消息")
+							} else {
+								let last = localMessage[i].list[l]
+								item.id = localMessage[i].id
+								item.name = localMessage[i].name
+								item.time = last.serverMsgID.slice(11, 16)
+								if (last.contentType == 101 && last.content.length > 20) {
+									item.content = last.content.slice(0, 20) + "..."
+								} else if (last.contentType == 101 && last.content.length <= 20) {
+									item.content = last.content
+								} else if (last.contentType == 102) {
+									item.content = "[图片]"
 								}
-							});
+
+								item.UNIXValue = last.sendTime
+								item.isShow = false
+								this.sessionList.push(item)
+							}
+
 
 						}
+						//sort
+						this.sessionList = this.sessionList.sort(this.sortNumber)
+						try {
+							uni.setStorageSync(this.userInfo.address + 'sessionList', this.sessionList);
+						} catch (e) {
+							// error
+						}
 
-				
+
+
+					} else if (res.data.data.seq != uni.getStorageSync(this.userInfo.address +
+							'latestSeq')) {
+						console.log("老用户 seq没对齐")
+						console.log(parameter2, "没对齐参数")
+						parameter2.data.seqBegin = uni.getStorageSync(that.userInfo.address +
+							'latestSeq')
+						parameter2.data.seqEnd = res.data.data.seq
+
+
+
+						that.addNewMessage = true
+						uni.setStorage({
+							key: that.userInfo.address + 'latestSeq',
+							data: res.data.data.seq,
+							success: function() {
+								that.$store.commit('seqValue', res.data.data.seq)
+								that.isLatestSeq = false
+							}
+						});
+
+					}
+
+
 
 
 				})
@@ -304,16 +332,17 @@
 							} else {
 								let last = value[i].list[l]
 								item.id = value[i].id
+								item.name = localMessage[i].name
 								item.time = last.serverMsgID.slice(11, 16)
-								if(last.contentType==101 && last.content.length > 20){
+								if (last.contentType == 101 && last.content.length > 20) {
 									item.content = last.content.slice(0, 20) + "..."
-								}else if(last.contentType==101 && last.content.length <=20) {
+								} else if (last.contentType == 101 && last.content.length <= 20) {
 									item.content = last.content
-								}else if(last.contentType==102){
+								} else if (last.contentType == 102) {
 									item.content = "[图片]"
 								}
-								
-								
+
+
 								item.UNIXValue = last.sendTime
 								item.isShow = false
 								this.sessionList.push(item)
@@ -355,12 +384,13 @@
 
 <style lang="scss" scoped>
 	#home {
-		background-color: #E8E8E8;
-		height: 100% !important;
-
 		.head {
 			height: 90rpx;
 			background-color: #fff;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.15);
 
 			.title {
 				font-size: 44rpx;
@@ -368,6 +398,62 @@
 				color: #1B72EC;
 				line-height: 90rpx;
 				margin-left: 44rpx;
+			}
+
+			.headRight {
+				.headIcon {
+					width: 48rpx;
+					height: 48rpx;
+					margin-right: 40rpx;
+
+				}
+
+				.menuCon {
+					z-index: 99;
+					position: absolute;
+					top: 5%;
+					right: 1.5%;
+					display: flex;
+					flex-direction: column;
+
+					.triangle {
+						width: 0px;
+						height: 0px;
+						border-top: 18rpx solid transparent;
+						border-bottom: 18rpx solid #1B72EC;
+						border-left: 18rpx solid transparent;
+						border-right: 18rpx solid transparent;
+
+						margin-left: 78%;
+					}
+
+					.operationsMenu {
+						width: 222rpx;
+						height: 100rpx;
+						background-color: #1B72EC;
+						box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.5);
+						border-radius: 18rpx;
+
+						padding: 0 46rpx;
+
+						.operationsMenu-item {
+							display: flex;
+							align-items: center;
+							font-size: 30rpx;
+							font-weight: 600;
+							color: #FFFFFF;
+							margin-top: 26rpx;
+
+							.itemImg {
+								width: 44rpx;
+								height: 44rpx;
+								margin-right: 28rpx;
+							}
+						}
+					}
+				}
+
+
 			}
 		}
 

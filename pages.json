@@ -54,6 +54,14 @@
 		{
             "path" : "pages/setFriend"
             
+        },
+		{
+            "path" : "pages/addFriendInput"
+            
+        },
+		{
+            "path" : "pages/searchFriend"
+            
         }
     ],
     "globalStyle": {

@@ -1,12 +1,13 @@
 <template>
 	<view id="dialogue">
-		<uni-nav-bar left-icon="back" @clickLeft="goBack" fixed="true">
+
+		<uni-nav-bar left-icon="back" @clickLeft="goBack" @clickRight="goSetFriend" fixed="true">
 			<view slot="default" class="middle">
 				<view class="headInfo">
 					<text>{{nickname.length>20?nickname.slice(0,20)+"...":nickname}}</text>
-					<image src="../static/modify.png" mode="" class="modify" @click="modifyRemarks"></image>
 				</view>
 			</view>
+			<view slot="right" class="headRight"><text class="more">···</text></view>
 		</uni-nav-bar>
 		<view class="main" id="main">
 			<view v-for="item in list">
@@ -17,7 +18,9 @@
 
 					<view class="contentArea">
 						<view class="maincontent" v-show="item.contentType == 101">{{item.content}}</view>
-						<view class="maincontent" v-show="item.contentType == 102"><image :src="item.content.thumbnail" mode=""></image></view>
+						<view class="maincontent" v-show="item.contentType == 102">
+							<image :src="item.content.thumbnail" mode=""></image>
+						</view>
 						<view class="triangle">
 						</view>
 						<image
@@ -28,7 +31,7 @@
 
 				</view>
 				<view v-if="item.sendID!= $store.state.userInfo.address && item.msgFrom==100" class="left">
-					
+
 					<view class="contentArea">
 						<image
 							src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
@@ -37,8 +40,10 @@
 						<view class="triangle">
 						</view>
 						<view class="maincontent" v-show="item.contentType == 101">{{item.content}}</view>
-						<view class="maincontent" v-show="item.contentType == 102"><image :src="item.content.thumbnail" mode=""></image></view>
-						
+						<view class="maincontent" v-show="item.contentType == 102">
+							<image :src="item.content.thumbnail" mode=""></image>
+						</view>
+
 					</view>
 
 				</view>
@@ -82,21 +87,27 @@
 				list: [],
 				recipientID: "",
 				tupian: "",
-				imgContent:{}
-
+				imgContent: {},
+				messages: []
 			}
 		},
 		onLoad: function(option) {
-
+			console.log(option, "wsxwswxwsx")
 			this.nickname = option.id
 			this.recipientID = option.id
 
 			try {
-				let messages = uni.getStorageSync(this.$store.state.userInfo.address +
+				this.messages = uni.getStorageSync(this.$store.state.userInfo.address +
 					'localMessage');
-				for (let i = 0; i < messages.length; i++) {
-					if (messages[i].id == option.id) {
-						this.list = messages[i].list
+				for (let i = 0; i < this.messages.length; i++) {
+					if (this.messages[i].id == option.id) {
+						/* for(let y = 0; y < messages[i].list.length; y++){
+							if(messages[i].list[y].contentType== 102) {
+							messages[i].list[y].content = JSON.parse(messages[i].list[y].content)
+							}
+						} */
+
+						this.list = this.messages[i].list
 						console.log(this.list, "duihua")
 						break
 					}
@@ -162,16 +173,48 @@
 				latest.contentType = 101
 				latest.msgFrom = 100
 				latest.content = this.inputValue
+				latest.seq = uni.getStorageSync(this.userInfo.address + 'latestSeq') + 1
+				latest.serverMsgID = "2021-06-01 09:37:46-4b134ea6ec423a385f96629ea4b6718304e3bd23-913761085841340441"
 				/* if (sendStatus == true) {
-					latest.sentFail = false
+				 latest.sentFail = false
 				} else {
-					latest.sentFail = true
+				 latest.sentFail = true
 				} */
 
 				if (parameter.data.content.length > 0) {
 					this.list.push(latest)
 					console.log(this.list, "本地消息列表")
 					this.inputValue = ""
+
+
+					for (let i = 0; i < this.messages.length; i++) {
+						if (this.messages[i].id == this.recipientID) {
+							this.messages[i].list = this.list
+							console.log(this.messages, "duihua")
+							break
+						}
+
+					}
+					try {
+						uni.setStorageSync(this.userInfo.address +
+							'localMessage', this.messages);
+						console.log(uni.getStorageSync(this.userInfo.address +
+							'localMessage'), "456123")
+					} catch (e) {
+						// error
+					}
+
+					if (latest.sentFail == false) {
+						try {
+							uni.setStorageSync(this.userInfo.address +
+								'latestSeq', latest.seq);
+						} catch (e) {
+							// error
+						}
+					}
+
+
+
 
 					const query = uni.createSelectorQuery().in(this);
 					query.select('#main').boundingClientRect(data => {
@@ -200,7 +243,7 @@
 						console.log(res, "5555645656")
 						uni.getImageInfo({
 							src: res.tempFilePaths[0],
-							success: function(image) {
+							success: async function(image) {
 								console.log(image.width);
 								var imgWidth = image.width
 								console.log(image.height);
@@ -251,10 +294,10 @@
 								latest.sendTime = Date.now()
 								latest.contentType = 102
 								latest.msgFrom = 100
-								latest.content = this.imgContent 
+								latest.content = this.imgContent
 								that.list.push(latest)
 								console.log(that.list, "本地消息列表")
-								that.$store.commit('getUpLoadImgUrl', "")
+								await that.$store.commit('getUpLoadImgUrl', "")
 
 								const query = uni.createSelectorQuery().in(that);
 								query.select('#main').boundingClientRect(data => {
@@ -286,6 +329,12 @@
 				uni.switchTab({
 					url: "./home"
 				})
+
+			},
+			goSetFriend() {
+				uni.navigateTo({
+					url: './setFriend'
+				});
 			},
 			modifyRemarks() {
 				this.$refs.popup.open()
@@ -338,6 +387,10 @@
 			width: 100%;
 		}
 
+		.uni-navbar {
+			box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.15);
+		}
+
 		.maincontent {
 			max-width: 384rpx;
 			font-size: 28rpx;
@@ -368,11 +421,16 @@
 				display: flex;
 				align-items: center;
 
-				.modify {
-					width: 28rpx;
-					height: 30rpx;
-					margin-left: 20rpx;
-				}
+
+			}
+		}
+
+		.headRight {
+			padding-top: 14rpx;
+
+			.more {
+				margin: 0;
+				font-size: 50px;
 			}
 		}
 

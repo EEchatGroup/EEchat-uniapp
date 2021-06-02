@@ -68,7 +68,9 @@
 	#blockList {
 		background-image: linear-gradient(#FFFFFF, #FFFFFF, #E4F3FF);
 		height: 100% !important;
-
+		.uni-navbar{
+			box-shadow: 0 0 4px 0 rgba(0,0,0,0.15);
+		}
 		.list-item {
 			display: flex;
 			align-items: center;

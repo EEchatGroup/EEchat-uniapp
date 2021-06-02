@@ -2,17 +2,16 @@
 	<view id="addFriend">
 		<uni-nav-bar left-icon="back" title="添加朋友" @clickLeft="goBack"></uni-nav-bar>
 		<view class="main">
-			<input type="text" value="" v-model="searchValue" class="searchInput" placeholder="请输入账号" />
+			<input type="text" value="" class="searchInput" placeholder="请输入账号" @focus="goInput" />
 			<view class="myUid"> <text>我的账号: </text> <text
 					class="uidValue">{{ this.$store.state.userInfo.address}}</text> </view>
-			<view class="searchResult" @click="searchFriend" v-show="searchValue.length>0">
-				<image src="../static/searchFriend.png" mode="" class="searchFriend"></image>
-				<text class="searchFriendTitle">搜索:</text>
-				<text class="searchFriendValue"> {{searchValue}}</text>
 
-
-			</view>
 		</view>
+
+
+
+
+
 
 	</view>
 </template>
@@ -24,24 +23,31 @@
 	export default {
 		data() {
 			return {
-				searchValue: "1e483ee4ca0a6503608b355125dfa4e2d22820c0"
-
+				noUser: false
 			}
 		},
 		methods: {
 			goBack() {
 				uni.navigateBack()
 			},
+			goInput() {
+				uni.navigateTo({
+					url: './addFriendInput'
+				});
+			},
 			async searchFriend() {
 				let parameter = {}
 				parameter.uid = this.searchValue
 				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
 				search_friend(parameter).then(async res => {
+					console.log(res)
 					if (res.data.errCode == 0) {
 						await this.$store.commit("getSearchFriendData", res.data.data)
 						uni.navigateTo({
 							url: './addFriendDetail'
 						});
+					} else {
+						this.noUser = true
 					}
 				})
 			}
@@ -51,6 +57,9 @@
 
 <style lang="scss" scoped>
 	#addFriend {
+		.uni-navbar{
+			box-shadow: 0 0 4px 0 rgba(0,0,0,0.15);
+		}
 		.main {
 			display: flex;
 			flex-direction: column;
@@ -92,24 +101,34 @@
 				background: #E8F2FF;
 				display: flex;
 				align-items: center;
+				justify-content: center;
 				margin-top: 40rpx;
+
 				.searchFriend {
 					width: 60rpx;
 					height: 60rpx;
 					flex-shrink: 0;
 					margin-left: 44rpx;
 				}
-				.searchFriendTitle{
+
+				.searchFriendTitle {
 					flex-shrink: 0;
 					margin-left: 20rpx;
 				}
-				.searchFriendValue{
+
+				.searchFriendValue {
 					word-wrap: break-word;
 					flex: 1;
 					width: 0;
 					margin-left: 20rpx;
+					margin-right: 30rpx;
 				}
 
+				.noUserTitle {
+					font-size: 32rpx;
+					font-weight: 500;
+					color: #666666;
+				}
 			}
 		}
 	}

@@ -8,12 +8,20 @@
 				<text class="name">{{searchFriendData.name}}</text>
 				<view class="uidCon">账号:<text class="uid">{{searchFriendData.uid}}</text>
 				</view>
-
-				<button type="primary" class="button" @click="addFriend" v-show="!alreadyAdd">添加好友</button>
-				<button type="primary" class="button" @click="sendMessage" v-show="alreadyAdd">发消息</button>
 				
-			</view>
+				<button type="primary" class="button" @click="addFriend">
+					<image src="../static/addFriend.png" mode="" class="buttonIcon"></image>添加好友
+				</button>
+				
+				<!-- <button type="primary" class="button" @click="addFriend" v-show="!alreadyAdd">
+					<image src="../static/addFriend.png" mode="" class="buttonIcon"></image>添加好友
+				</button>
+				<button type="primary" class="button" @click="sendMessage" v-show="alreadyAdd">
+					<image src="../static/groupChat.png" mode="" class="buttonIcon"></image>发消息
+				</button> -->
 
+			</view>
+			<text class="infoText" v-show="isSend">已发送好友申请</text>
 		</view>
 	</view>
 </template>
@@ -26,7 +34,8 @@
 		data() {
 			return {
 				searchFriendData: {},
-				alreadyAdd:false
+				alreadyAdd: false,
+				isSend: false
 			}
 		},
 		onShow: function() {
@@ -43,8 +52,12 @@
 				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString()
 				add_friend(parameter).then(res => {
 					console.log(res, "jiahaoyou返回")
-					if(res.data.errCode == 0){
+					if (res.data.errCode == 0) {
 						this.alreadyAdd = true
+						this.isSend = true
+						setTimeout(() => {
+							this.isSend = false
+						}, 3000)
 					}
 				})
 			}
@@ -54,6 +67,9 @@
 
 <style lang="scss" scoped>
 	#addFriendDetail {
+		.uni-navbar{
+			box-shadow: 0 0 4px 0 rgba(0,0,0,0.15);
+		}
 		.main {
 			display: flex;
 			flex-direction: column;
@@ -106,7 +122,25 @@
 					font-size: 24rpx;
 					font-weight: 500;
 					margin-top: 56rpx;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					padding: 4rpx;
+					.buttonIcon {
+						width: 28rpx;
+						height: 28rpx;
+						margin-right: 12rpx;
+					}
 				}
+
+			}
+
+			.infoText {
+				font-size: 32rpx;
+				font-weight: 400;
+				color: #1B72EC;
+				margin-top: 380rpx;
+				text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
 			}
 		}
 	}

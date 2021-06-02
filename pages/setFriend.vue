@@ -1,6 +1,57 @@
 <template>
 	<view id="setFriend">
-		<button type="primary" @click="deleteFriend">删除好友</button>
+		<uni-nav-bar left-icon="back" title="好友设置" @clickLeft="goBack"></uni-nav-bar>
+		<view class="main">
+			<view class="mainHead">
+				<view class="imageCon">
+					<image
+						src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
+						mode="" class="headIcon"></image>
+				</view>
+				<text>{{this.friendData.uid}}</text>
+
+			</view>
+			<view class="operationSet">
+				<view class="operationSetItem">
+					<text>设置备注</text>
+					<image src="../static/arrow.png" mode="" class="arrow"></image>
+				</view>
+				<view class="operationSetItem">
+					<text>置顶联系人</text>
+					<switch @change="topContact" />
+				</view>
+				<view class="operationSetItem">
+					<text>加入黑名单</text>
+					<switch @change="addBlockList" />
+				</view>
+				<view class="operationSetItem">
+					<text>清空聊天记录</text>
+					<image src="../static/arrow.png" mode="" class="arrow"></image>
+				</view>
+
+			</view>
+
+		</view>
+
+
+
+
+
+
+		<view class="deleteBtn" @click="deleteFriend">
+			删除好友
+		</view>
+
+		<uni-popup ref="confirm">
+			<view class="confirm">
+				<text class="deleteInfo">确定删除"{{this.friendData.name}}"吗</text>
+				<view class="footerArea">
+					<view type="primary" @click="confirmCancel" class="confirmCancel">取消</view>
+					<view type="primary" @click="deleteConfirm" class="deleteConfirm">删除</view>
+				</view>
+			</view>
+		</uni-popup>
+
 	</view>
 </template>
 
@@ -19,21 +70,147 @@
 			console.log(this.friendData, "好友设置信息")
 		},
 		methods: {
-			async deleteFriend() {
+			topContact(e){
+				console.log(e);
+			},
+			addBlockList(e){
+				console.log(e);
+			},
+			confirmCancel() {
+				this.$refs.confirm.close()
+			},
+			async deleteConfirm() {
 				let parameter = {}
 				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
 				parameter.uid = this.friendData.uid
 				delete_friend(parameter).then(res => {
 					console.log(res, "删除返回值")
-					if (res.data.data.errCode == 0) {
+					if (res.data.errCode == 0) {
 						uni.navigateBack()
 					}
 				})
+			},
+			goBack() {
+				uni.navigateBack()
+			},
+			async deleteFriend() {
+				this.$refs.confirm.open()
+
 			}
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
-	#setFriend {}
+	#setFriend {
+		.uni-navbar {
+			box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.15);
+		}
+
+		.confirm {
+			width: 500rpx;
+			background: #FFFFFF;
+			border-radius: 12rpx;
+			text-align: center;
+
+			.deleteInfo {
+				height: 140rpx;
+				line-height: 140rpx;
+
+			}
+
+			.footerArea {
+				height: 92rpx;
+				display: flex;
+				line-height: 92rpx;
+				font-size: 32rpx;
+				font-weight: 400;
+				border-top: 1px solid rgba(151, 151, 151, 0.5);
+
+				.confirmCancel {
+					width: 50%;
+					color: #333333;
+					border-right: 1px solid rgba(151, 151, 151, 0.5);
+				}
+
+				.deleteConfirm {
+					width: 50%;
+					color: #1B72EC;
+					background-color: #E8F2FF;
+					border-bottom-right-radius: 12rpx;
+				}
+			}
+		}
+
+		.main {
+			.mainHead {
+				height: 324rpx;
+				background-color: #fff;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				border-bottom: 2rpx solid rgba(153, 153, 153, 0.4);
+
+				.imageCon {
+					width: 160rpx;
+					height: 160rpx;
+					border-radius: 160rpx;
+					border: 6rpx solid #C0DCFF;
+
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					margin-bottom: 10rpx;
+					font-size: 36px;
+					font-weight: 500;
+					color: #333333;
+
+					.headIcon {
+						width: 114rpx;
+						height: 114rpx;
+						border-radius: 114rpx;
+					}
+				}
+
+			}
+
+			.operationSet {
+				.operationSetItem {
+					height: 88rpx;
+					display: flex;
+					align-items: center;
+					justify-content: space-between;
+					padding: 0 44rpx;
+					background-color: #fff;
+					border-bottom: 2rpx solid rgba(153, 153, 153, 0.4);
+					font-size: 32rpx;
+					font-weight: 400;
+					color: #333333;
+					.arrow{
+						width: 20rpx;
+						height: 34rpx;
+					}
+				}
+			}
+
+		}
+
+		.deleteBtn {
+			margin-top: 310rpx;
+			font-size: 32rpx;
+			font-weight: 500;
+			color: #1B72EC;
+			width: 100%;
+			height: 90rpx;
+			background: #E8F2FF;
+			text-align: center;
+			line-height: 90rpx;
+		}
+
+		.deleteBtn:active {
+			background: #1B72EC;
+			color: #FFFFFF;
+		}
+	}
 </style>
