@@ -2,19 +2,25 @@
 	<view id="blockList">
 		<uni-nav-bar left-icon="back" title="屏蔽名单" @clickLeft="goBack"></uni-nav-bar>
 
-		<view class="">
+		<view class="list">
 			<view class="list-item" v-for="item in list">
-				<view class="headCircle">
-					<text class="lastname">
-						{{item.uid.slice(0,1)}}
-					</text>
-				</view>
-				<view class="infoArea">
+				<image src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
+					mode="" class="portrait"></image>
+				<view class="listItemMain">
 					<text class="name">{{item.uid.length>10?item.uid.slice(0,10):item.uid}}</text>
-					<button type="primary" class="removeButton" @click="remove(item)">移除</button>
+					<button type="primary" class="remove" @click="remove(item)">移除</button>
 				</view>
 			</view>
+			
+			<!-- <view class="list-item">
+				<image src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
+					mode="" class="portrait"></image>
+				<view class="listItemMain">
+					<text class="name">xxx</text>
+					<button type="primary" class="remove">移除</button>
 
+				</view>
+			</view> -->
 
 		</view>
 
@@ -39,7 +45,7 @@
 					url: './my'
 				});
 			},
-			async getList(){
+			async getList() {
 				let parameter = {}
 				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
 				get_blacklist(parameter).then(res => {
@@ -51,7 +57,7 @@
 				let parameter = {}
 				parameter.uid = e.uid
 				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
-				
+
 				remove_blacklist(parameter).then(res => {
 					console.log(res)
 					this.getList()
@@ -66,61 +72,48 @@
 
 <style lang="scss" scoped>
 	#blockList {
-		background-image: linear-gradient(#FFFFFF, #FFFFFF, #E4F3FF);
-		height: 100% !important;
-		.uni-navbar{
-			box-shadow: 0 0 4px 0 rgba(0,0,0,0.15);
-		}
+
 		.list-item {
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
 			height: 130rpx;
 
-			.headCircle {
-				width: 80rpx;
-				height: 80rpx;
-				border-radius: 80rpx;
-				background-image: linear-gradient(to right bottom, #A8C0FF, #3F2B96);
+			.portrait {
+				flex-shrink: 0;
+				width: 90rpx;
+				height: 90rpx;
+				border-radius: 90rpx;
 				margin-left: 44rpx;
-				text-align: center;
-				.lastname {
-					font-size: 36rpx;
-					font-weight: 500;
-					color: #FFFFFF;
-					line-height: 80rpx;
-					
-				}
 			}
 
-			.infoArea {
-				width: 600rpx;
+			.listItemMain {
 				height: 130rpx;
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
-				border-bottom: 1px solid #E5EBFF;
+				width: 100%;
 				margin-left: 28rpx;
-
-				.name {
-					font-size: 32rpx;
-					font-weight: 600;
+				border-bottom: 1px solid #E5EBFF;
+				.name{
+					font-size: 28rpx;
+					font-weight: 400;
 					color: #333333;
-					border-bottom: none !important;
+				}
+				.remove {
+					padding: 0;
+					margin: 0;
+					width: 92rpx;
+					height: 52rpx;
+					font-size: 28rpx;
+					font-weight: 500;
+					line-height: 52rpx;
+					margin-right: 42rpx;
 				}
 
-				.removeButton {
-					width: 84rpx;
-					height: 46rpx;
-					padding: 0;
-					font-size: 24rpx;
-					font-weight: 500;
-					color: #FFFFFF;
-					line-height: 46rpx;
-					box-shadow: 0px 4rpx 8rpx rgba(0, 0, 0, 0.5);
-					margin-right: 44rpx;
-				}
+
 			}
+
 		}
 
 

@@ -49,9 +49,6 @@
 
 <style lang="scss" scoped>
 	#searchFriend {
-		.uni-navbar{
-			box-shadow: 0 0 4px 0 rgba(0,0,0,0.15);
-		}
 		.inputCon {
 			.searchInput {
 				width: 506rpx;

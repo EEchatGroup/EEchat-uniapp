@@ -18,11 +18,11 @@
 	export default {
 		data() {
 			return {
-				nickname: ""
+				nickname: "xxx"
 			}
 		},
 		onShow() {
-			this.nickname = this.$store.state.userInfo.nickName
+			// this.nickname = this.$store.state.userInfo.nickName
 		},
 		methods: {
 			goBack() {
@@ -50,11 +50,6 @@
 
 <style lang="scss" scoped>
 	#edit-nickname {
-		background-image: linear-gradient(#FFFFFF, #FFFFFF, #E4F3FF);
-		height: 100% !important;
-		.uni-navbar{
-			box-shadow: 0 0 4px 0 rgba(0,0,0,0.15);
-		}
 		.main {
 			display: flex;
 			align-items: center;

@@ -24,7 +24,7 @@
 				<text class="logOutText">退出登录</text>
 			</view>
 		</view>
-		<uni-popup ref="popup">
+		<!-- <uni-popup ref="popup">
 			<view class="linkPopup">
 				<text>生成链接</text>
 				<text>下一步将链接发送给小伙伴</text>
@@ -34,7 +34,7 @@
 					<button type="primary" @click="copyLink">复制链接</button>
 				</view>
 			</view>
-		</uni-popup>
+		</uni-popup> -->
 		<uni-popup ref="logoutPopup">
 			<view class="logout">
 				<text>确定退出登录吗</text>
@@ -60,7 +60,7 @@
 		methods: {
 			goEditNickname() {
 				uni.navigateTo({
-					url: './edit-nickname'
+					url: './editNickname'
 				})
 			},
 			goBlockList() {

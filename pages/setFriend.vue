@@ -24,7 +24,7 @@
 					<text>加入黑名单</text>
 					<switch @change="addBlockList" />
 				</view>
-				<view class="operationSetItem">
+				<view class="operationSetItem" @click="deleteRecord">
 					<text>清空聊天记录</text>
 					<image src="../static/arrow.png" mode="" class="arrow"></image>
 				</view>
@@ -42,12 +42,30 @@
 			删除好友
 		</view>
 
-		<uni-popup ref="confirm">
+		<uni-popup ref="deleteConfirm">
 			<view class="confirm">
-				<text class="deleteInfo">确定删除"{{this.friendData.name}}"吗</text>
+				<text class="titleInfo">确定删除"{{this.friendData.name}}"吗?</text>
 				<view class="footerArea">
 					<view type="primary" @click="confirmCancel" class="confirmCancel">取消</view>
 					<view type="primary" @click="deleteConfirm" class="deleteConfirm">删除</view>
+				</view>
+			</view>
+		</uni-popup>
+		<uni-popup ref="blockConfirm">
+			<view class="confirm">
+				<text class="titleInfo">确定把"{{this.friendData.name}}"加入黑名单吗?</text>
+				<view class="footerArea">
+					<view type="primary" @click="confirmCancel2" class="confirmCancel">取消</view>
+					<view type="primary" @click="deleteConfirm" class="deleteConfirm">确定</view>
+				</view>
+			</view>
+		</uni-popup>
+		<uni-popup ref="deleteRecordConfirm">
+			<view class="confirm">
+				<text class="titleInfo">确定删除和"{{this.friendData.name}}"的聊天记录吗?</text>
+				<view class="footerArea">
+					<view type="primary" @click="confirmCancel3" class="confirmCancel">取消</view>
+					<view type="primary" @click="deleteConfirm" class="deleteConfirm">清空</view>
 				</view>
 			</view>
 		</uni-popup>
@@ -72,13 +90,33 @@
 		methods: {
 			topContact(e){
 				console.log(e);
+				if(e.target.value){
+					console.log("qqq")
+				}
 			},
 			addBlockList(e){
-				console.log(e);
+				console.log(e.target.value);
+				if(e.target.value){
+					this.$refs.blockConfirm.open()
+				}
+			},
+			deleteFriend() {
+				this.$refs.deleteConfirm.open()
+			
+			},
+			deleteRecord(){
+				this.$refs.deleteRecordConfirm.open()
 			},
 			confirmCancel() {
-				this.$refs.confirm.close()
+				this.$refs.deleteConfirm.close()
 			},
+			confirmCancel2() {
+				this.$refs.blockConfirm.close()
+			},
+			confirmCancel3() {
+				this.$refs.deleteRecordConfirm.close()
+			},
+			
 			async deleteConfirm() {
 				let parameter = {}
 				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
@@ -93,19 +131,13 @@
 			goBack() {
 				uni.navigateBack()
 			},
-			async deleteFriend() {
-				this.$refs.confirm.open()
-
-			}
+			
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
 	#setFriend {
-		.uni-navbar {
-			box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.15);
-		}
 
 		.confirm {
 			width: 500rpx;
@@ -113,7 +145,7 @@
 			border-radius: 12rpx;
 			text-align: center;
 
-			.deleteInfo {
+			.titleInfo {
 				height: 140rpx;
 				line-height: 140rpx;
 

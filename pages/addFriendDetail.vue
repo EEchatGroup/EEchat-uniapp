@@ -67,9 +67,6 @@
 
 <style lang="scss" scoped>
 	#addFriendDetail {
-		.uni-navbar{
-			box-shadow: 0 0 4px 0 rgba(0,0,0,0.15);
-		}
 		.main {
 			display: flex;
 			flex-direction: column;

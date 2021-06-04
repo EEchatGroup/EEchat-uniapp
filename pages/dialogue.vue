@@ -1,24 +1,37 @@
 <template>
 	<view id="dialogue">
 
-		<uni-nav-bar left-icon="back" @clickLeft="goBack" @clickRight="goSetFriend" fixed="true">
-			<view slot="default" class="middle">
-				<view class="headInfo">
-					<text>{{nickname.length>20?nickname.slice(0,20)+"...":nickname}}</text>
-				</view>
-			</view>
-			<view slot="right" class="headRight"><text class="more">···</text></view>
-		</uni-nav-bar>
+		<view class="head">
+			<image src="../static/goBack.png" mode="" class="headleft" @click="goBack"></image>
+			<text class="headMiddle">{{nickname.length>20?nickname.slice(0,20)+"...":nickname}}</text>
+			<image src="../static/goDetails.png" mode="" class="headRight" @click="goSetFriend"></image>
+		</view>
+
 		<view class="main" id="main">
 			<view v-for="item in list">
 				<view v-if="item.sendID == $store.state.userInfo.address && item.msgFrom==100
 				" class="right">
 					<!-- <image src="../static/withdraw.png" mode=""  class="StatusIcon"></image> -->
 					<image src="../static/sentFail.png" mode="" v-if="item.sentFail" class="StatusIcon"></image>
+					<view class="blank
 
+" @click="chooseSeq = 0">
+
+					</view>
 					<view class="contentArea">
-						<view class="maincontent" v-show="item.contentType == 101">{{item.content}}</view>
-						<view class="maincontent" v-show="item.contentType == 102">
+						<view class="operationBox" v-if="item.seq == chooseSeq">
+							<view class="operationBoxMain">
+								<image src="../static/delete.png" mode="" class="operationIcon"></image>
+								<text class="operationText">delete</text>
+							</view>
+							<view class="operationBoxtriangle">
+
+							</view>
+						</view>
+						<view class="maincontent" v-show="item.contentType == 101"
+							@longtap.prevent="showOperation(item)">{{item.content}}</view>
+						<view class="maincontent" v-show="item.contentType == 102"
+							@longtap.prevent="showOperation(item)">
 							<image :src="item.content.thumbnail" mode=""></image>
 						</view>
 						<view class="triangle">
@@ -31,30 +44,75 @@
 
 				</view>
 				<view v-if="item.sendID!= $store.state.userInfo.address && item.msgFrom==100" class="left">
+					<view class="blank
+					
+					" @click="chooseSeq = 0">
 
+					</view>
 					<view class="contentArea">
+						<view class="operationBox" v-if="item.seq == chooseSeq">
+							<view class="operationBoxMain">
+								<view class="operationBoxMainItem">
+									<image src="../static/copy.png" mode="" class="operationIcon"></image>
+									<text class="operationText">copy</text>
+								</view>
+								<view class="operationBoxMainItem">
+									<image src="../static/delete.png" mode="" class="operationIcon"></image>
+									<text class="operationText">delete</text>
+								</view>
+								<view class="operationBoxMainItem">
+									<image src="../static/forward.png" mode="" class="operationIcon"></image>
+									<text class="operationText">forward</text>
+								</view>
+						
+							</view>
+							<view class="operationBoxtriangle">
+						
+							</view>
+						</view>
 						<image
 							src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
 							mode="" class="headIcon">
 						</image>
 						<view class="triangle">
 						</view>
-						<view class="maincontent" v-show="item.contentType == 101">{{item.content}}</view>
-						<view class="maincontent" v-show="item.contentType == 102">
+						<view class="maincontent" v-show="item.contentType == 101" @longtap.prevent="showOperation(item)">{{item.content}}</view>
+						<view class="maincontent" v-show="item.contentType == 102" @longtap.prevent="showOperation(item)">
 							<image :src="item.content.thumbnail" mode=""></image>
 						</view>
 
 					</view>
 
 				</view>
+				
 			</view>
 
 		</view>
 
 		<view class="bottomArea">
-			<image src="../static/album.png" mode="" class="album" @click="upload()"></image>
-			<input type="text" value="" v-model="inputValue" />
-			<button type="primary" class="sentButton" @click="sendInfo">发送</button>
+			<view class="bottomAreaTop">
+				<image src="../static/voice.png" mode="" class="voice"></image>
+				<input type="text" value="" v-model="inputValue" />
+				<image src="../static/moreOperation.png" mode="" class="moreOperation"
+					@click="isMoreOperation= !isMoreOperation"></image>
+				<button type="primary" class="sentButton" @click="sendInfo">发送</button>
+			</view>
+
+			<view class="bottomAreaBottom" v-show="isMoreOperation">
+				<view class="bottomAreaBottomItem" @click="album">
+					<image src="../static/camera.png" mode="" class="itemIcon"></image>
+					<text class="itemText">拍摄</text>
+				</view>
+
+				<view class="bottomAreaBottomItem" @click="album">
+					<image src="../static/album.png" mode="" class="itemIcon"></image>
+					<text class="itemText">相册</text>
+				</view>
+
+			</view>
+
+
+
 		</view>
 		<uni-popup ref="popup">
 			<view class="popupMain">
@@ -88,7 +146,9 @@
 				recipientID: "",
 				tupian: "",
 				imgContent: {},
-				messages: []
+				messages: [],
+				isMoreOperation: false,
+				chooseSeq: 0
 			}
 		},
 		onLoad: function(option) {
@@ -229,7 +289,7 @@
 
 
 			},
-			upload() {
+			album() {
 				let that = this
 				// 选择文件
 				uni.chooseImage({
@@ -311,17 +371,8 @@
 
 						});
 
-
-
-
 					}
 				});
-
-
-
-
-
-
 
 
 			},
@@ -352,6 +403,10 @@
 					this.$refs.popup.close()
 				})
 
+			},
+			showOperation(e) {
+				console.log(e)
+				this.chooseSeq = e.seq
 			}
 		},
 		watch: {
@@ -383,13 +438,36 @@
 
 <style lang="scss" scoped>
 	#dialogue {
-		/deep/.uni-navbar__content {
+
+		.head {
 			width: 100%;
+			height: 90rpx;
+			box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.15);
+			background-color: #FFFFFF;
+			display: flex;
+			align-items: center;
+			justify-content: space-around;
+			position: fixed;
+			top: 0;
+			z-index: 99;
+
+			.headleft {
+				width: 24rpx;
+				height: 42rpx;
+			}
+
+			.headMiddle {
+				font-size: 36rpx;
+				font-weight: 400;
+				color: #333333;
+			}
+
+			.headRight {
+				width: 56rpx;
+				height: 12rpx;
+			}
 		}
 
-		.uni-navbar {
-			box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.15);
-		}
 
 		.maincontent {
 			max-width: 384rpx;
@@ -410,33 +488,18 @@
 		}
 
 		.headIcon {
-			height: 88rpx;
-			width: 88rpx;
+			height: 84rpx;
+			width: 84rpx;
+			border-radius: 84rpx;
+			flex-shrink: 0;
 		}
 
-		.middle {
-			margin: 0 auto;
 
-			.headInfo {
-				display: flex;
-				align-items: center;
-
-
-			}
-		}
-
-		.headRight {
-			padding-top: 14rpx;
-
-			.more {
-				margin: 0;
-				font-size: 50px;
-			}
-		}
 
 
 		.main {
 			padding-bottom: 220rpx;
+			margin-top: 120rpx;
 
 			.left {
 				margin-left: 44rpx;
@@ -444,10 +507,69 @@
 				display: flex;
 				align-items: center;
 				justify-content: flex-start;
+				position: relative;
+
+				.blank {
+					background-color: blue;
+					position: absolute;
+					width: 100%;
+					height: 100%;
+					z-index: 0;
+				}
 
 				.contentArea {
 					display: flex;
 					align-items: flex-start;
+					z-index: 9;
+
+					.operationBox {
+						position: absolute;
+						left: 20%;
+						margin-top: -100rpx;
+
+						.operationBoxMain {
+							width: 264rpx;
+							height: 92rpx;
+							background-color: #666;
+							border-radius: 8rpx;
+							display: flex;
+							align-items: center;
+							justify-content: space-evenly;
+
+							.operationBoxMainItem {
+								display: flex;
+								flex-direction: column;
+								align-items: center;
+								justify-content: center;
+
+								.operationIcon {
+									width: 28rpx;
+									height: 28rpx;
+								}
+
+								.operationText {
+									font-size: 20rpx;
+									font-weight: 400;
+									color: #FFFFFF;
+									margin-top: 6rpx;
+								}
+							}
+
+						}
+
+						.operationBoxtriangle {
+
+							width: 0px;
+							height: 0px;
+							border-top: 16rpx solid #666;
+							border-bottom: 16rpx solid transparent;
+							border-left: 16rpx solid transparent;
+							border-right: 16rpx solid transparent;
+							margin-left: 37%;
+
+						}
+					}
+
 
 					.triangle {
 						width: 0px;
@@ -471,7 +593,7 @@
 				display: flex;
 				align-items: center;
 				justify-content: flex-end;
-
+				position: relative;
 
 				.StatusIcon {
 					width: 30rpx;
@@ -479,9 +601,58 @@
 					margin-right: 20rpx;
 				}
 
+				.blank {
+					position: absolute;
+					width: 100%;
+					height: 100%;
+					z-index: 0;
+				}
+
 				.contentArea {
 					display: flex;
 					align-items: flex-start;
+					z-index: 9;
+
+					.operationBox {
+						position: absolute;
+						right: 16%;
+						margin-top: -100rpx;
+
+						.operationBoxMain {
+							width: 110rpx;
+							height: 92rpx;
+							background-color: #666;
+							border-radius: 8rpx;
+							display: flex;
+							flex-direction: column;
+							align-items: center;
+							justify-content: center;
+
+							.operationIcon {
+								width: 28rpx;
+								height: 28rpx;
+							}
+
+							.operationText {
+								font-size: 20rpx;
+								font-weight: 400;
+								color: #FFFFFF;
+								margin-top: 6rpx;
+							}
+						}
+
+						.operationBoxtriangle {
+
+							width: 0px;
+							height: 0px;
+							border-top: 16rpx solid #666;
+							border-bottom: 16rpx solid transparent;
+							border-left: 16rpx solid transparent;
+							border-right: 16rpx solid transparent;
+							margin-left: 37%;
+
+						}
+					}
 
 					.triangle {
 						width: 0px;
@@ -502,39 +673,77 @@
 
 		.bottomArea {
 			width: 100%;
-			height: 100rpx;
-			background-color: #E8F2FF;
-			display: flex;
-			align-items: center;
 			position: fixed;
 			bottom: 0%;
+			z-index: 9;
 
-			.album {
-				width: 60rpx;
-				height: 60rpx;
-				margin-left: 24rpx;
+			.bottomAreaTop {
+				height: 100rpx;
+				background-color: #E8F2FF;
+				display: flex;
+				align-items: center;
+
+				.voice {
+					width: 52rpx;
+					height: 52rpx;
+					margin-left: 24rpx;
+				}
+
+				input {
+					width: 62%;
+					height: 62rpx;
+					background-color: #fff;
+					margin-left: 20rpx;
+					text-indent: 18rpx;
+				}
+
+				.moreOperation {
+					width: 52rpx;
+					height: 52rpx;
+					margin-left: 16rpx;
+				}
+
+				.sentButton {
+					width: 90rpx;
+					height: 56rpx;
+					padding: 0;
+					line-height: 56rpx;
+					font-size: 28rpx;
+					font-weight: 600;
+					color: #FFFFFF;
+					margin-left: 20rpx;
+				}
+
 			}
 
-			input {
-				width: 68%;
-				height: 62rpx;
+			.bottomAreaBottom {
+				height: 240rpx;
 				background-color: #fff;
-				margin-left: 20rpx;
-				text-indent: 18rpx;
-			}
+				display: flex;
+				align-items: center;
+				justify-content: space-around;
 
-			.sentButton {
-				width: 90rpx;
-				height: 56rpx;
-				padding: 0;
-				line-height: 56rpx;
-				font-size: 28rpx;
-				font-weight: 600;
-				color: #FFFFFF;
-				margin-left: 20rpx;
-			}
+				.bottomAreaBottomItem {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
 
+					.itemIcon {
+						width: 64rpx;
+						height: 58rpx;
+					}
+
+					.itemText {
+						font-size: 28rpx;
+						font-weight: 500;
+						color: #1B72EC;
+						margin-top: 12rpx;
+					}
+
+				}
+			}
 		}
+
 
 		.popupMain {
 			width: 464rpx;

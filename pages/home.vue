@@ -61,7 +61,9 @@
 					</view>
 				</view>
 			</view>
-
+			
+			
+			
 
 		</view>
 
@@ -332,7 +334,7 @@
 							} else {
 								let last = value[i].list[l]
 								item.id = value[i].id
-								item.name = localMessage[i].name
+								item.name = value[i].name
 								item.time = last.serverMsgID.slice(11, 16)
 								if (last.contentType == 101 && last.content.length > 20) {
 									item.content = last.content.slice(0, 20) + "..."
