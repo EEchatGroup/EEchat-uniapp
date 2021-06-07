@@ -74,7 +74,7 @@ var uploadFile = async function(filePath, suffix) {
 			Pathname: '/',
 		})
 	}
-	var uploadTask = uni.uploadFile({
+	var imgUrl = await uni.uploadFile({
 		url: prefix,
 		filePath: filePath,
 		name: 'file',
@@ -88,10 +88,8 @@ var uploadFile = async function(filePath, suffix) {
 		success: async (uploadFileRes) => {
 			var url = prefix + camSafeUrlEncode(Key).replace(/%2F/g, '/');
 			await store.commit('getUpLoadImgUrl', url)
-			console.log(url, '图片url');
 		}
 	});
-
 };
 
 

@@ -1,20 +1,38 @@
 <template>
 	<view id="register">
 		<view class="returnArea" @click="goLogin">
-			<image src="../static/return.png" mode="" class="returnIcon"></image><text class="returnText">您的助记词</text>
+			<image src="../static/return.png" mode="" class="returnIcon"></image><text class="returnText">Your mnemonics</text>
 		</view>
-		<text class="tipsInfo">它是您账户的唯一凭证</text>
-		<text class="tipsInfo">EEchat不会保存您的助记词，一旦丢失无法找回</text>
-		<text class="tipsInfo">请记录您的助记词，并保存在安全的地方</text>
+		<view class="tipsCon">
+			<view class="circle">
+				
+			</view>
+			<text class="tipsInfo">It is the only voucher for your account</text>
+		</view>
+		<view class="tipsCon">
+			<view class="circle">
+				
+			</view>
+			<text class="tipsInfo">Eechat will not save your mnemonics. Once lost, it cannot be retrieved</text>
+		</view>
+		<view class="tipsCon">
+			<view class="circle">
+				
+			</view>
+			<text class="tipsInfo">Please record your mnemonics and keep them in a safe place</text>
+		</view>
+		
+		
+		
 		<view class="mnemonic-words-area">
 			<view class="mnemonic-words-item" v-for="item in mnemonicArr" :key="item">{{item}}</view>
 
 		</view>
 		<view class="copyArea">
-			<text>复制您的助记词：</text><br />
+			<text>Copy your mnemonics:</text><br />
 			<text>{{registerInfo.mnemonic}}</text>
 		</view>
-		<button type="primary" class="nextStep" @click="goConfirm">下一步</button>
+		<button type="primary" class="nextStep" @click="goConfirm">next step</button>
 	</view>
 </template>
 
@@ -105,13 +123,27 @@
 				margin-left: 20rpx;
 			}
 		}
-
-		.tipsInfo {
-			font-size: 30rpx;
-			font-weight: 400;
-			color: #333333;
+		.tipsCon{
+			display: flex;
+			align-items: flex-start;
 			margin-top: 12rpx;
+			.circle{
+				width: 10rpx;
+				height: 10rpx;
+				border-radius: 10rpx;
+				background-color: #1D6BED;
+				flex-shrink: 0;
+				margin-top: 16rpx;
+				margin-right: 14rpx;
+			}
+			.tipsInfo {
+				font-size: 30rpx;
+				font-weight: 400;
+				color: #333333;
+				
+			}
 		}
+		
 
 		.mnemonic-words-area {
 			display: flex;

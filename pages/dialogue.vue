@@ -1,17 +1,35 @@
 <template>
 	<view id="dialogue">
 
-		<view class="head">
-			<image src="../static/goBack.png" mode="" class="headleft" @click="goBack"></image>
-			<text class="headMiddle">{{nickname.length>20?nickname.slice(0,20)+"...":nickname}}</text>
-			<image src="../static/goDetails.png" mode="" class="headRight" @click="goSetFriend"></image>
+		<view class="headCon">
+			<view class="head">
+				<image src="../static/goBack.png" mode="" class="headleft" @click="goBack"></image>
+				<view class="headMiddle">
+					<text class="headMiddleTop">{{nickname.length>20?nickname.slice(0,20)+"...":nickname}}</text>
+					<view class="headMiddleBottom" @click=" setStatusShow = true "><text>{{onlineStatus}}</text>
+						<image src="../static/moreStatus.png" mode="" class="moreStatus"></image>
+					</view>
+				</view>
+				<image src="../static/goDetails.png" mode="" class="headRight" @click="goSetFriend"></image>
+			</view>
+			<view class="promptInfo" v-if="statusChangeShow">
+				<view class="onlineCircle" v-if="onlineStatus== 'Mobile Online'||onlineStatus== 'Computer online' ">
+
+				</view>
+				<view class="invisibleCircle" v-if="onlineStatus== 'invisible'">
+
+				</view>
+				<view class="offlineCircle" v-if="onlineStatus== 'off-line'">
+
+				</view>
+				<text class="changeInfo">Your status has been switched to {{onlineStatus}}</text>
+			</view>
 		</view>
 
 		<view class="main" id="main">
 			<view v-for="item in list">
 				<view v-if="item.sendID == $store.state.userInfo.address && item.msgFrom==100
 				" class="right">
-					<!-- <image src="../static/withdraw.png" mode=""  class="StatusIcon"></image> -->
 					<image src="../static/sentFail.png" mode="" v-if="item.sentFail" class="StatusIcon"></image>
 					<view class="blank
 
@@ -21,8 +39,22 @@
 					<view class="contentArea">
 						<view class="operationBox" v-if="item.seq == chooseSeq">
 							<view class="operationBoxMain">
-								<image src="../static/delete.png" mode="" class="operationIcon"></image>
-								<text class="operationText">delete</text>
+								<view class="operationBoxMainItem">
+									<image src="../static/copy.png" mode="" class="operationIcon"></image>
+									<text class="operationText">copy</text>
+								</view>
+								<view class="operationBoxMainItem">
+									<image src="../static/delete.png" mode="" class="operationIcon"></image>
+									<text class="operationText">delete</text>
+								</view>
+								<view class="operationBoxMainItem">
+									<image src="../static/forward.png" mode="" class="operationIcon"></image>
+									<text class="operationText">forward</text>
+								</view>
+								<view class="operationBoxMainItem">
+									<image src="../static/withdraw.png" mode="" class="operationIcon"></image>
+									<text class="operationText">forward</text>
+								</view>
 							</view>
 							<view class="operationBoxtriangle">
 
@@ -32,7 +64,7 @@
 							@longtap.prevent="showOperation(item)">{{item.content}}</view>
 						<view class="maincontent" v-show="item.contentType == 102"
 							@longtap.prevent="showOperation(item)">
-							<image :src="item.content.thumbnail" mode=""></image>
+							<image :src="item.content.thumbnail || item.content" mode="aspectFit"></image>
 						</view>
 						<view class="triangle">
 						</view>
@@ -64,10 +96,10 @@
 									<image src="../static/forward.png" mode="" class="operationIcon"></image>
 									<text class="operationText">forward</text>
 								</view>
-						
+
 							</view>
 							<view class="operationBoxtriangle">
-						
+
 							</view>
 						</view>
 						<image
@@ -76,44 +108,83 @@
 						</image>
 						<view class="triangle">
 						</view>
-						<view class="maincontent" v-show="item.contentType == 101" @longtap.prevent="showOperation(item)">{{item.content}}</view>
-						<view class="maincontent" v-show="item.contentType == 102" @longtap.prevent="showOperation(item)">
+						<view class="maincontent" v-show="item.contentType == 101"
+							@longtap.prevent="showOperation(item)">{{item.content}}</view>
+						<view class="maincontent" v-show="item.contentType == 102"
+							@longtap.prevent="showOperation(item)">
 							<image :src="item.content.thumbnail" mode=""></image>
 						</view>
 
 					</view>
 
 				</view>
-				
+
 			</view>
+
 
 		</view>
 
+
+
+
 		<view class="bottomArea">
 			<view class="bottomAreaTop">
-				<image src="../static/voice.png" mode="" class="voice"></image>
+				<image src="../static/voice.png" mode="" class="voice" @click="voice"></image>
 				<input type="text" value="" v-model="inputValue" />
 				<image src="../static/moreOperation.png" mode="" class="moreOperation"
 					@click="isMoreOperation= !isMoreOperation"></image>
-				<button type="primary" class="sentButton" @click="sendInfo">发送</button>
+				<button type="primary" class="sentButton" @click="sendInfo">Send</button>
 			</view>
 
 			<view class="bottomAreaBottom" v-show="isMoreOperation">
 				<view class="bottomAreaBottomItem" @click="album">
 					<image src="../static/camera.png" mode="" class="itemIcon"></image>
-					<text class="itemText">拍摄</text>
+					<text class="itemText">shot</text>
 				</view>
 
 				<view class="bottomAreaBottomItem" @click="album">
 					<image src="../static/album.png" mode="" class="itemIcon"></image>
-					<text class="itemText">相册</text>
+					<text class="itemText">album</text>
 				</view>
 
 			</view>
 
-
+		<view class="setStatus" v-if="setStatusShow">
+		<!-- <view class="setStatus"> -->
+			<image src="../static/closeSetStastus.png" mode="" class="closeSetStastus" @click="setStatusShow = false">
+			</image>
+			<text class="setStatusTitle">Set my current status</text>
+			<view class="statusArea">
+				<view class="statusItem" @click="mobileOnline">
+					<view class="onlineCircle">
+		
+					</view>
+					<text>Mobile Online</text>
+				</view>
+				<view class="statusItem" @click="computerOnline">
+					<view class="onlineCircle">
+		
+					</view>
+					<text>Computer online</text>
+				</view>
+				<view class="statusItem" @click="invisible">
+					<view class="invisibleCircle">
+		
+					</view>
+					<text>invisible</text>
+				</view>
+				<view class="statusItem" @click="offline">
+					<view class="offlineCircle">
+		
+					</view>
+					<text>off-line</text>
+				</view>
+		
+			</view>
+		</view>
 
 		</view>
+		
 		<uni-popup ref="popup">
 			<view class="popupMain">
 				<text>修改备注</text>
@@ -148,7 +219,10 @@
 				imgContent: {},
 				messages: [],
 				isMoreOperation: false,
-				chooseSeq: 0
+				chooseSeq: 0,
+				setStatusShow: false,
+				statusChangeShow: false,
+				onlineStatus: "Mobile Online"
 			}
 		},
 		onLoad: function(option) {
@@ -289,8 +363,9 @@
 
 
 			},
-			album() {
+			async album() {
 				let that = this
+				let latest = {}
 				// 选择文件
 				uni.chooseImage({
 					count: 1, //默认9
@@ -298,10 +373,28 @@
 					sourceType: ['album'], //从相册选择
 					success: async function(res) {
 						const tempFilePaths = res.tempFilePaths;
+						/* latest.sendID = that.userInfo.address
+						latest.recvID = that.recipientID
+						latest.sendTime = Date.now()
+						latest.contentType = 102
+						latest.msgFrom = 100
+						latest.content = tempFilePaths[0]
+						console.log(latest.content, "latest.content");
+						that.list.push(latest)
+						console.log(that.list, "本地消息列表")
+
+						const query = uni.createSelectorQuery().in(that);
+						query.select('#main').boundingClientRect(data => {
+							uni.pageScrollTo({
+								scrollTop: data.height,
+								duration: 100
+							});
+						}).exec(); */
+
+
 						let suffix = res.tempFiles[0].name.substring(res.tempFiles[0].name.length - 4)
 						await uploadFile(tempFilePaths[0], suffix)
-						console.log(res, "5555645656")
-						uni.getImageInfo({
+						/* uni.getImageInfo({
 							src: res.tempFilePaths[0],
 							success: async function(image) {
 								console.log(image.width);
@@ -309,13 +402,14 @@
 								console.log(image.height);
 								var imageHeight = image.height
 								let parameter = {}
-								let latest = {}
+
 								latest.sentFail = false
 								parameter.reqIdentifier = 1003
 								parameter.platformID = 5
 								parameter.token = uni.getStorageSync('token')
 								parameter.sendID = that.userInfo.address
-								parameter.operationID = that.userInfo.address + Date.now()
+								parameter.operationID = that.userInfo.address + await Date
+									.now()
 									.toString();
 								parameter.msgIncr = that.$store.state.MsgIncr + 1;
 								parameter.data = {}
@@ -325,11 +419,16 @@
 								parameter.data.recvID = that.recipientID
 								parameter.data.content = {}
 								parameter.data.content.url = that.$store.state.upLoadImgUrl
-								parameter.data.content.thumbnail = that.$store.state.upLoadImgUrl +
+								parameter.data.content.thumbnail = that.$store.state
+									.upLoadImgUrl +
 									"?imageView2/2/w/300/h/300"
 								parameter.data.content.width = imgWidth
 								parameter.data.content.height = imageHeight
+								console.log(parameter.data.content, "parameter.data.content");
+
 								this.imgContent = parameter.data.content
+								console.log(this.imgContent, "this.imgContent");
+
 								parameter.data.content = parameter.data.content.toString()
 								parameter.data.clientMsgID = "222"
 								parameter.data.offlineInfo = {}
@@ -355,9 +454,9 @@
 								latest.contentType = 102
 								latest.msgFrom = 100
 								latest.content = this.imgContent
+								console.log(latest.content,"latest.content");
 								that.list.push(latest)
 								console.log(that.list, "本地消息列表")
-								await that.$store.commit('getUpLoadImgUrl', "")
 
 								const query = uni.createSelectorQuery().in(that);
 								query.select('#main').boundingClientRect(data => {
@@ -369,12 +468,17 @@
 
 							}
 
-						});
+						}); */
 
 					}
 				});
 
 
+			},
+			voice(){
+				uni.navigateTo({
+					url: './luyinceshi'
+				});
 			},
 			goBack() {
 				uni.switchTab({
@@ -407,6 +511,28 @@
 			showOperation(e) {
 				console.log(e)
 				this.chooseSeq = e.seq
+			},
+			closeTimeOut() {
+				this.statusChangeShow = true
+				setTimeout(() => {
+					this.statusChangeShow = false
+				}, 3000)
+			},
+			mobileOnline() {
+				this.onlineStatus = "Mobile Online"
+				this.closeTimeOut()
+			},
+			computerOnline() {
+				this.onlineStatus = "Computer online"
+				this.closeTimeOut()
+			},
+			invisible() {
+				this.onlineStatus = "invisible"
+				this.closeTimeOut()
+			},
+			offline() {
+				this.onlineStatus = "off-line"
+				this.closeTimeOut()
 			}
 		},
 		watch: {
@@ -438,35 +564,99 @@
 
 <style lang="scss" scoped>
 	#dialogue {
+		.onlineCircle {
+			width: 20rpx;
+			height: 20rpx;
+			border-radius: 20rpx;
+			background: #10CC64;
+		}
 
-		.head {
-			width: 100%;
-			height: 90rpx;
-			box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.15);
-			background-color: #FFFFFF;
-			display: flex;
-			align-items: center;
-			justify-content: space-around;
+		.invisibleCircle {
+			width: 20rpx;
+			height: 20rpx;
+			border-radius: 20rpx;
+			background: #E8A414;
+		}
+
+		.offlineCircle {
+			width: 20rpx;
+			height: 20rpx;
+			border-radius: 20rpx;
+			background: #959595;
+
+		}
+
+		.headCon {
 			position: fixed;
 			top: 0;
 			z-index: 99;
+			width: 100%;
 
-			.headleft {
-				width: 24rpx;
-				height: 42rpx;
+			.head {
+				width: 100%;
+				height: 90rpx;
+				box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.15);
+				background-color: #FFFFFF;
+				display: flex;
+				align-items: center;
+				justify-content: space-around;
+
+
+				.headleft {
+					width: 24rpx;
+					height: 42rpx;
+				}
+
+				.headMiddle {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+
+					&Top {
+						font-size: 36rpx;
+						font-weight: 400;
+						color: #333333;
+					}
+
+					&Bottom {
+						font-size: 20rpx;
+						font-weight: 400;
+						color: #666666;
+						display: flex;
+						align-items: center;
+
+						.moreStatus {
+							width: 10rpx;
+							height: 18rpx;
+							margin-left: 8rpx;
+						}
+					}
+
+				}
+
+				.headRight {
+					width: 56rpx;
+					height: 12rpx;
+				}
 			}
 
-			.headMiddle {
-				font-size: 36rpx;
-				font-weight: 400;
-				color: #333333;
-			}
+			.promptInfo {
+				width: 100%;
+				height: 90rpx;
+				background: #EBEBEB;
+				display: flex;
+				align-items: center;
+				justify-content: center;
 
-			.headRight {
-				width: 56rpx;
-				height: 12rpx;
+				.changeInfo {
+					font-size: 24rpx;
+					font-weight: 400;
+					color: #333333;
+					margin-left: 16rpx;
+				}
 			}
 		}
+
 
 
 		.maincontent {
@@ -500,7 +690,6 @@
 		.main {
 			padding-bottom: 220rpx;
 			margin-top: 120rpx;
-
 			.left {
 				margin-left: 44rpx;
 				margin-top: 26rpx;
@@ -526,36 +715,6 @@
 						position: absolute;
 						left: 20%;
 						margin-top: -100rpx;
-
-						.operationBoxMain {
-							width: 264rpx;
-							height: 92rpx;
-							background-color: #666;
-							border-radius: 8rpx;
-							display: flex;
-							align-items: center;
-							justify-content: space-evenly;
-
-							.operationBoxMainItem {
-								display: flex;
-								flex-direction: column;
-								align-items: center;
-								justify-content: center;
-
-								.operationIcon {
-									width: 28rpx;
-									height: 28rpx;
-								}
-
-								.operationText {
-									font-size: 20rpx;
-									font-weight: 400;
-									color: #FFFFFF;
-									margin-top: 6rpx;
-								}
-							}
-
-						}
 
 						.operationBoxtriangle {
 
@@ -615,31 +774,9 @@
 
 					.operationBox {
 						position: absolute;
-						right: 16%;
+						right: -5%;
 						margin-top: -100rpx;
 
-						.operationBoxMain {
-							width: 110rpx;
-							height: 92rpx;
-							background-color: #666;
-							border-radius: 8rpx;
-							display: flex;
-							flex-direction: column;
-							align-items: center;
-							justify-content: center;
-
-							.operationIcon {
-								width: 28rpx;
-								height: 28rpx;
-							}
-
-							.operationText {
-								font-size: 20rpx;
-								font-weight: 400;
-								color: #FFFFFF;
-								margin-top: 6rpx;
-							}
-						}
 
 						.operationBoxtriangle {
 
@@ -793,5 +930,99 @@
 				}
 			}
 		}
+
+		.operationBoxMain {
+			width: 372rpx;
+			height: 92rpx;
+			background-color: #666;
+			border-radius: 8rpx;
+			display: flex;
+			align-items: center;
+			justify-content: space-evenly;
+
+			.operationBoxMainItem {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+
+				.operationIcon {
+					width: 28rpx;
+					height: 28rpx;
+				}
+
+				.operationText {
+					font-size: 20rpx;
+					font-weight: 400;
+					color: #FFFFFF;
+					margin-top: 6rpx;
+				}
+			}
+		}
+
+		.setStatus {
+			width: 750rpx;
+			height: 530rpx;
+			background-color: #ECF5FF;
+			position: absolute;
+			bottom: 0;
+			z-index: 999;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+
+			.closeSetStastus {
+				width: 52rpx;
+				height: 32rpx;
+				margin-top: 60rpx;
+			}
+
+			.setStatusTitle {
+				font-size: 36rpx;
+				font-weight: 400;
+				color: #333333;
+				margin-top: 50rpx;
+			}
+
+			.statusArea {
+				width: 564rpx;
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: space-between;
+				margin-top: 24rpx;
+
+				.statusItem {
+					font-size: 24rpx;
+					font-weight: 400;
+					color: #333333;
+					height: 62rpx;
+					background: #D1E7FF;
+					border-radius: 8rpx;
+					display: flex;
+					align-items: center;
+					padding-left: 24rpx;
+					margin-top: 36rpx;
+
+
+					text {
+						margin-left: 12rpx;
+					}
+				}
+
+				.statusItem:active {
+					opacity: 0.5;
+				}
+
+				.statusItem:nth-of-type(even) {
+					width: 236rpx;
+				}
+
+				.statusItem:nth-of-type(odd) {
+					width: 216rpx;
+				}
+			}
+
+		}
+
 	}
 </style>

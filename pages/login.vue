@@ -1,18 +1,22 @@
 <template>
 	<view id="login">
 		<image src="../static/logo.png" mode="" class="logo"></image>
-		<text class="title" @click="ddd">数字货币地址聊天 EEchat</text>
+		<text class="title" @click="ddd">EEchat</text>
+		<text class="childTitle">Digital currency address chat</text>
 		<view class="tipsArea">
-			<view class="blackDot"></view>
-			<text>助记词登录，身份匿名</text>
+			<view class="tipsAreaItem">
+				<view class="blackDot"></view>
+				<text>Mnemonic login, anonymous identity</text>
+			</view>
+			<view class="tipsAreaItem">
+				<view class="blackDot"></view>
+				<text>End to end encryption, message security</text>
+			</view>
 		</view>
-		<view class="tipsArea">
-			<view class="blackDot"></view>
-			<text>端到端加密，消息安全</text>
-		</view>
+		
 		<input type="text" value="" class="inputArea" placeholder="输入您的助记词，并使用空格分隔" v-model="account" />
-		<button type="primary" class="loginButton" @click="login">登录</button>
-		<text class="register" @click="goRegiester">注册新账号</text>
+		<button type="primary" class="loginButton" @click="login">Sign in</button>
+		<text class="register" @click="goRegiester">Sign up for a new account</text>
 	</view>
 
 </template>
@@ -111,30 +115,40 @@
 		}
 
 		.title {
-			font-size: 44rpx;
+			font-size: 52rpx;
 			font-weight: 600;
 			color: #333333;
-			margin-top: 30rpx;
-			margin-bottom: 44rpx;
+			margin-top: 10rpx;
 		}
-
-		.tipsArea {
-			display: flex;
-			align-items: center;
-			margin-bottom: 16rpx;
-			font-size: 32rpx;
+		.childTitle{
+			font-size: 38rpx;
 			font-weight: 500;
-			color: #333330;
-
-			.blackDot {
-				width: 16rpx;
-				height: 16rpx;
-				border-radius: 16rpx;
-				background-color: #000;
-				margin-right: 24rpx;
-			}
-
+			color: #333333;
+			margin-top: 18rpx;
 		}
+		.tipsArea{
+			display: flex;
+			flex-direction: column;
+			margin-top: 20rpx;
+			margin-left: 30rpx;
+			.tipsAreaItem {
+				display: flex;
+				align-items: center;
+				margin-bottom: 10rpx;
+				font-size: 28rpx;
+				font-weight: 400;
+				color: #333330;
+				.blackDot {
+					width: 10rpx;
+					height: 10rpx;
+					border-radius: 10rpx;
+					background-color: #666;
+					margin-right: 24rpx;
+				}
+			
+			}
+		}
+		
 
 		.inputArea {
 			width: 500rpx;

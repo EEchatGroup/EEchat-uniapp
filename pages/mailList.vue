@@ -1,18 +1,18 @@
 <template>
 	<view id="mailList">
 		<view class="head">
-			<text class="title">通讯录</text>
+			<text class="title">mail list</text>
 			<view class="headRight">
 				<image src="../static/search.png" mode="" class="headIcon" @click="goSearch"></image>
 				<image src="../static/more-operations.png" mode="" class="headIcon" @click="controlDisplay"></image>
 				<view class="menuCon" v-show="showOperationsMenu">
-					<view class="triangle" >
-						
+					<view class="triangle">
+
 					</view>
 					<view class="operationsMenu">
 						<view class="operationsMenu-item" @click="goAddFriend">
 							<image src="../static/addFriend.png" mode="" class="itemImg"></image>
-							<text>添加朋友</text>
+							<text>Add friends</text>
 						</view>
 						<!-- <view class="operationsMenu-item" @click="goAddFriend">
 							<image src="../static/groupChat.png" mode="" class="itemImg"></image>
@@ -23,12 +23,12 @@
 							<text>帮助与反馈</text>
 						</view> -->
 					</view>
-					
-					
-					
+
+
+
 				</view>
-				
-				
+
+
 
 
 
@@ -36,10 +36,10 @@
 		</view>
 		<view class="newFriend" @click="goNewFriends">
 			<image src="../static/newFriend.png" mode="" class="newFriendIcon"></image>
-			<text class="newFriendText">新的朋友</text>
+			<text class="newFriendText">Add friends</text>
 		</view>
 		<view class="">
-			<uni-indexed-list :options="list" :showSelect="false" @click="bindClick"></uni-indexed-list>
+			<uni-indexed-list :options="friendList" :showSelect="false" @click="bindClick"></uni-indexed-list>
 		</view>
 	</view>
 </template>
@@ -51,28 +51,52 @@
 	export default {
 		data() {
 			return {
+				Initials: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+					'T',
+					'U', 'V', 'W', 'X', 'Y', 'Z'
+				],
+				friendList: [],
 				showOperationsMenu: false,
 				list: [{
-					"letter": "A",
-					"data": []
-				}, {
-					"letter": "B",
-					"data": []
-				}]
+						"letter": "A",
+						"data": []
+					}, {
+						"letter": "B",
+						"data": [{
+							img: "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png",
+							name: "BBB",
+							uid: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+						}]
+					},
+				]
 			}
 		},
 		onShow: async function() {
+			if (this.friendList.length == 0) {
+				for (let x = 0; x < this.Initials.length; x++) {
+					let item = {}
+					item.letter = this.Initials[x]
+					item.data = []
+					this.friendList.push(item)
+				}
+				console.log(this.friendList, "xxx");
+			}
+
+
 			let parameter = {}
 			parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
 			get_friend_list(parameter).then(res => {
 				console.log(res.data, "好友列表")
-				this.list[0].data = []
 				for (let i = 0; i < res.data.data.length; i++) {
 					res.data.data[i].img =
 						"https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
-					this.list[0].data.push(res.data.data[i])
+						for(let y=0;y<this.Initials.length; y++){
+							this.friendList[y].data=[]
+							this.friendList[y].data.push(res.data.data[i])
+						}
+					
 				}
-
+				console.log(this.friendList,"544566");
 			})
 		},
 		methods: {
@@ -86,7 +110,7 @@
 			controlDisplay() {
 				this.showOperationsMenu = !this.showOperationsMenu
 			},
-			goSearch(){
+			goSearch() {
 				uni.navigateTo({
 					url: './searchFriend'
 				});
@@ -108,14 +132,15 @@
 
 <style lang="scss" scoped>
 	#mailList {
-		
+
 		.head {
 			height: 90rpx;
 			background-color: #fff;
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			box-shadow: 0 0 4px 0 rgba(0,0,0,0.15);
+			box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.15);
+
 			.title {
 				font-size: 44rpx;
 				font-weight: 500;
@@ -130,34 +155,35 @@
 					margin-right: 40rpx;
 
 				}
-				.menuCon{
+
+				.menuCon {
 					z-index: 99;
 					position: absolute;
 					top: 5%;
 					right: 1.5%;
 					display: flex;
 					flex-direction: column;
-					
-					.triangle{
+
+					.triangle {
 						width: 0px;
 						height: 0px;
 						border-top: 18rpx solid transparent;
 						border-bottom: 18rpx solid #1B72EC;
 						border-left: 18rpx solid transparent;
 						border-right: 18rpx solid transparent;
-						
-						margin-left: 78%;
+
+						margin-left: 80%;
 					}
-					
+
 					.operationsMenu {
-						width: 222rpx;
+						width: 250rpx;
 						height: 100rpx;
 						background-color: #1B72EC;
 						box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.5);
 						border-radius: 18rpx;
-						
+
 						padding: 0 46rpx;
-					
+
 						.operationsMenu-item {
 							display: flex;
 							align-items: center;
@@ -165,7 +191,7 @@
 							font-weight: 600;
 							color: #FFFFFF;
 							margin-top: 26rpx;
-					
+
 							.itemImg {
 								width: 44rpx;
 								height: 44rpx;
@@ -174,8 +200,8 @@
 						}
 					}
 				}
-					
-				
+
+
 			}
 		}
 

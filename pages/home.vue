@@ -11,7 +11,7 @@
 					<view class="operationsMenu">
 						<view class="operationsMenu-item" @click="goAddFriend">
 							<image src="../static/addFriend.png" mode="" class="itemImg"></image>
-							<text>添加朋友</text>
+							<text>Add friends</text>
 						</view>
 					</view>
 
@@ -426,11 +426,11 @@
 						border-left: 18rpx solid transparent;
 						border-right: 18rpx solid transparent;
 
-						margin-left: 78%;
+						margin-left: 80%;
 					}
 
 					.operationsMenu {
-						width: 222rpx;
+						width: 250rpx;
 						height: 100rpx;
 						background-color: #1B72EC;
 						box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.5);

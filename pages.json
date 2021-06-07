@@ -62,7 +62,11 @@
 		{
             "path" : "pages/searchFriend"
             
-        }
+        },
+		{
+		    "path" : "pages/luyinceshi"
+		    
+		}
     ],
     "globalStyle": {
         "app-plus": {
@@ -79,13 +83,13 @@
                 "selectedIconPath": "static/tab-home-selected.png"
             },
 			{
-			    "text": "通讯录",
+			    "text": "mail list",
 			    "pagePath": "pages/mailList",
 			    "iconPath": "static/tab-mailList.png",
 			    "selectedIconPath": "static/tab-mailList-selected.png"
 			},
             {
-                "text": "我的",
+                "text": "my",
                 "pagePath": "pages/my",
                 "iconPath": "static/tab-my.png",
                 "selectedIconPath": "static/tab-my-selected.png"

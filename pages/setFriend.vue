@@ -1,6 +1,6 @@
 <template>
 	<view id="setFriend">
-		<uni-nav-bar left-icon="back" title="好友设置" @clickLeft="goBack"></uni-nav-bar>
+		<uni-nav-bar left-icon="back" title="Friends settings" @clickLeft="goBack"></uni-nav-bar>
 		<view class="main">
 			<view class="mainHead">
 				<view class="imageCon">
@@ -13,19 +13,19 @@
 			</view>
 			<view class="operationSet">
 				<view class="operationSetItem">
-					<text>设置备注</text>
+					<text>Friends settings</text>
 					<image src="../static/arrow.png" mode="" class="arrow"></image>
 				</view>
 				<view class="operationSetItem">
-					<text>置顶联系人</text>
+					<text>Top contact</text>
 					<switch @change="topContact" />
 				</view>
 				<view class="operationSetItem">
-					<text>加入黑名单</text>
+					<text>Join the blacklist</text>
 					<switch @change="addBlockList" />
 				</view>
 				<view class="operationSetItem" @click="deleteRecord">
-					<text>清空聊天记录</text>
+					<text>Join the blacklist</text>
 					<image src="../static/arrow.png" mode="" class="arrow"></image>
 				</view>
 
@@ -39,33 +39,41 @@
 
 
 		<view class="deleteBtn" @click="deleteFriend">
-			删除好友
+			Delete friend
 		</view>
 
 		<uni-popup ref="deleteConfirm">
 			<view class="confirm">
-				<text class="titleInfo">确定删除"{{this.friendData.name}}"吗?</text>
+				<view class="titleArea">
+					<text class="titleInfo">Are you sure to delete"{{this.friendData.name}}"?</text>
+				</view>
 				<view class="footerArea">
-					<view type="primary" @click="confirmCancel" class="confirmCancel">取消</view>
-					<view type="primary" @click="deleteConfirm" class="deleteConfirm">删除</view>
+					<view type="primary" @click="confirmCancel" class="confirmCancel">cancel</view>
+					<view type="primary" @click="deleteConfirm" class="deleteConfirm">delete</view>
 				</view>
 			</view>
 		</uni-popup>
 		<uni-popup ref="blockConfirm">
 			<view class="confirm">
-				<text class="titleInfo">确定把"{{this.friendData.name}}"加入黑名单吗?</text>
+				<view class="titleArea">
+					<text class="titleInfo">Are you sure to blacklist"{{this.friendData.name}}"?</text>
+				</view>
 				<view class="footerArea">
-					<view type="primary" @click="confirmCancel2" class="confirmCancel">取消</view>
-					<view type="primary" @click="deleteConfirm" class="deleteConfirm">确定</view>
+					<view type="primary" @click="confirmCancel2" class="confirmCancel">cancel</view>
+					<view type="primary" @click="deleteConfirm" class="deleteConfirm">determine</view>
 				</view>
 			</view>
 		</uni-popup>
 		<uni-popup ref="deleteRecordConfirm">
 			<view class="confirm">
-				<text class="titleInfo">确定删除和"{{this.friendData.name}}"的聊天记录吗?</text>
+				<view class="titleArea">
+					<text class="titleInfo">Are you sure you want to delete the chat
+						with"{{this.friendData.name}}"?</text>
+				</view>
+
 				<view class="footerArea">
-					<view type="primary" @click="confirmCancel3" class="confirmCancel">取消</view>
-					<view type="primary" @click="deleteConfirm" class="deleteConfirm">清空</view>
+					<view type="primary" @click="confirmCancel3" class="confirmCancel">cancel</view>
+					<view type="primary" @click="deleteConfirm" class="deleteConfirm">empty</view>
 				</view>
 			</view>
 		</uni-popup>
@@ -88,23 +96,23 @@
 			console.log(this.friendData, "好友设置信息")
 		},
 		methods: {
-			topContact(e){
+			topContact(e) {
 				console.log(e);
-				if(e.target.value){
+				if (e.target.value) {
 					console.log("qqq")
 				}
 			},
-			addBlockList(e){
+			addBlockList(e) {
 				console.log(e.target.value);
-				if(e.target.value){
+				if (e.target.value) {
 					this.$refs.blockConfirm.open()
 				}
 			},
 			deleteFriend() {
 				this.$refs.deleteConfirm.open()
-			
+
 			},
-			deleteRecord(){
+			deleteRecord() {
 				this.$refs.deleteRecordConfirm.open()
 			},
 			confirmCancel() {
@@ -116,7 +124,7 @@
 			confirmCancel3() {
 				this.$refs.deleteRecordConfirm.close()
 			},
-			
+
 			async deleteConfirm() {
 				let parameter = {}
 				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
@@ -131,7 +139,7 @@
 			goBack() {
 				uni.navigateBack()
 			},
-			
+
 		}
 	}
 </script>
@@ -145,11 +153,15 @@
 			border-radius: 12rpx;
 			text-align: center;
 
-			.titleInfo {
-				height: 140rpx;
-				line-height: 140rpx;
+			.titleArea {
+				padding: 28rpx 50rpx;
+
+				.titleInfo {
+					height: 140rpx;
+				}
 
 			}
+
 
 			.footerArea {
 				height: 92rpx;
@@ -219,7 +231,8 @@
 					font-size: 32rpx;
 					font-weight: 400;
 					color: #333333;
-					.arrow{
+
+					.arrow {
 						width: 20rpx;
 						height: 34rpx;
 					}
@@ -232,10 +245,10 @@
 			margin-top: 310rpx;
 			font-size: 32rpx;
 			font-weight: 500;
-			color: #1B72EC;
+			color: #FFFFFF;
 			width: 100%;
 			height: 90rpx;
-			background: #E8F2FF;
+			background: #1B72EC;
 			text-align: center;
 			line-height: 90rpx;
 		}

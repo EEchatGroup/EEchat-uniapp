@@ -1,19 +1,19 @@
 <template>
 	<view id="addFriendInput">
 		<view class="head">
-			<input type="text" value="" v-model="searchValue" class="searchInput" placeholder="请输入账号"
+			<input type="text" value="" v-model="searchValue" class="searchInput" placeholder="Please enter the account number"
 				@input="noUser = false" />
 			<image src="../static/eliminate.png" mode="" class="eliminate" v-show="searchValue.length>0" @click="eliminateValue"></image>
-			<text class="cancel" @click="goBack">取消</text>
+			<text class="cancel" @click="goBack">cancel</text>
 		</view>
 
 		<view class="searchResult" @click="searchFriend" v-show="searchValue.length>0 && noUser == false">
 			<image src="../static/searchFriend.png" mode="" class="searchFriend"></image>
-			<text class="searchFriendTitle">搜索:</text>
+			<text class="searchFriendTitle">search：</text>
 			<text class="searchFriendValue">{{searchValue}}</text>
 		</view>
 		<view class="searchResult2" v-show="noUser">
-			<text class="noUserTitle">该用户不存在</text>
+			<text class="noUserTitle">The user does not exist</text>
 		</view>
 	</view>
 </template>

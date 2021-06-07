@@ -1,11 +1,11 @@
 <template>
 	<view id="edit-nickname">
-		<uni-nav-bar left-icon="back" title="修改昵称" @clickLeft="goBack"></uni-nav-bar>
+		<uni-nav-bar left-icon="back" title="Change nickname" @clickLeft="goBack"></uni-nav-bar>
 		<view class="main">
 			<input type="text" v-model="nickname" class="input" />
 			<button :type=" nickname.length==0? 'defailt':'primary' "
 				:style="nickname.length==0? 'color=#333333':'color=#000000'" class="saveButton"
-				@click="submit">保存</button>
+				@click="submit">preservation</button>
 		</view>
 
 	</view>
@@ -68,8 +68,8 @@
 
 			.saveButton {
 				padding: 0;
-				width: 92rpx;
-				height: 52rpx;
+				width: 200rpx;
+				height: 56rpx;
 				line-height: 52rpx;
 				font-size: 28rpx;
 				font-weight: 500;

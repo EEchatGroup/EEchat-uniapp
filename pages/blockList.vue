@@ -1,6 +1,6 @@
 <template>
 	<view id="blockList">
-		<uni-nav-bar left-icon="back" title="屏蔽名单" @clickLeft="goBack"></uni-nav-bar>
+		<uni-nav-bar left-icon="back" title="Address book blacklist" @clickLeft="goBack"></uni-nav-bar>
 
 		<view class="list">
 			<view class="list-item" v-for="item in list">
@@ -8,7 +8,7 @@
 					mode="" class="portrait"></image>
 				<view class="listItemMain">
 					<text class="name">{{item.uid.length>10?item.uid.slice(0,10):item.uid}}</text>
-					<button type="primary" class="remove" @click="remove(item)">移除</button>
+					<button type="primary" class="remove" @click="remove(item)">remove</button>
 				</view>
 			</view>
 			
@@ -103,7 +103,7 @@
 				.remove {
 					padding: 0;
 					margin: 0;
-					width: 92rpx;
+					width: 122rpx;
 					height: 52rpx;
 					font-size: 28rpx;
 					font-weight: 500;

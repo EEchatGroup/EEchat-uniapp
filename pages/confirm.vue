@@ -2,9 +2,9 @@
 	<view id="confirm">
 		<view class="returnArea" @click="goRegiester">
 			<image src="../static/return.png" mode="" class="returnIcon"></image><text
-				class="returnText">请确认您的助记词</text>
+				class="returnText">Confirmation mnemonics</text>
 		</view>
-		<text class="tipsInfo">请选择相应助记词，确保顺序正确</text>
+		<text class="tipsInfo">Please choose the appropriate mnemonic words to ensure the correct order</text>
 		<view class="writeArea">
 			<view class="writeArea-item" v-for=" item in writeArr">
 				<text>{{item.id}}.</text>
@@ -21,8 +21,8 @@
 			</view>
 		</view>
 		<view class="footerArea">
-			<button type="primary" @click="login" class="login">登录</button>
-			<text class="promptInfo" v-show="inputCheck">助记词顺序错误，请重新输入</text>
+			<button type="primary" @click="login" class="login">Sign in</button>
+			<text class="promptInfo" v-show="inputCheck">The order of mnemonic words is wrong, please re-enter</text>
 		</view>
 
 	</view>
@@ -231,13 +231,13 @@
 			margin-top: 56rpx;
 
 			.returnIcon {
-				width: 36rpx;
-				height: 66rpx;
+				width: 28rpx;
+				height: 50rpx;
 
 			}
 
 			.returnText {
-				font-size: 56rpx;
+				font-size: 48rpx;
 				font-weight: 600;
 				color: #1D6BED;
 				margin-left: 20rpx;

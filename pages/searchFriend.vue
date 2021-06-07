@@ -1,6 +1,6 @@
 <template>
 	<view id="searchFriend">
-		<uni-nav-bar left-icon="back" title="搜索联系人" @clickLeft="goBack"></uni-nav-bar>
+		<uni-nav-bar left-icon="back" title="Search contacts" @clickLeft="goBack"></uni-nav-bar>
 		<view class="inputCon">
 			<input type="text" value="" class="searchInput" />
 		</view>

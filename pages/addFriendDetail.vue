@@ -6,22 +6,22 @@
 				<image src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
 					mode="" class="headIcon"></image>
 				<text class="name">{{searchFriendData.name}}</text>
-				<view class="uidCon">账号:<text class="uid">{{searchFriendData.uid}}</text>
+				<view class="uidCon">account number:<text class="uid">{{searchFriendData.uid}}</text>
 				</view>
 				
 				<button type="primary" class="button" @click="addFriend">
-					<image src="../static/addFriend.png" mode="" class="buttonIcon"></image>添加好友
+					<image src="../static/addFriend.png" mode="" class="buttonIcon"></image>Add friend
 				</button>
 				
 				<!-- <button type="primary" class="button" @click="addFriend" v-show="!alreadyAdd">
-					<image src="../static/addFriend.png" mode="" class="buttonIcon"></image>添加好友
+					<image src="../static/addFriend.png" mode="" class="buttonIcon"></image>Add friend
 				</button>
 				<button type="primary" class="button" @click="sendMessage" v-show="alreadyAdd">
-					<image src="../static/groupChat.png" mode="" class="buttonIcon"></image>发消息
+					<image src="../static/groupChat.png" mode="" class="buttonIcon"></image>Send Message
 				</button> -->
 
 			</view>
-			<text class="infoText" v-show="isSend">已发送好友申请</text>
+			<text class="infoText" v-show="isSend">Friend request sent</text>
 		</view>
 	</view>
 </template>

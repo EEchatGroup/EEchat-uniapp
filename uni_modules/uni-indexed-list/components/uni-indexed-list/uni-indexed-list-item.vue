@@ -126,6 +126,7 @@
 	.uni-indexed-list__item-content {
 		flex: 1;
 		font-size: 14px;
+		margin-left: 14rpx;
 	}
 
 	.uni-indexed-list {
@@ -139,13 +140,18 @@
 		/* #ifndef APP-NVUE */
 		display: flex;
 		width: 100%;
+		height: 46rpx;
+		align-items: center;
 		/* #endif */
-		background-color: #f7f7f7;
+		background-color: rgba(27, 114, 236, 0.12);
 	}
 
 	.uni-indexed-list__title {
 		padding: 6px 12px;
 		line-height: 24px;
+		margin-left: 26rpx;
+		font-weight: 600;
+		color: #1B72EC;
 		font-size: $uni-font-size-sm;
 	}
 </style>

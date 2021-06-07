@@ -6,22 +6,22 @@
 			</view>
 			<view class="headInfo">
 				<text>{{userInfo.nickName}}</text>
-				<text>公钥地址:</text>
+				<text>My Account:</text>
 				<text>{{userInfo.publicKey}}</text>
 			</view>
 		</view>
 		<view class="funtionArea">
 			<uni-list>
-				<uni-list-item thumb="../static/changeAvatar.png" title="修改头像" clickable @click="goEditNickname"></uni-list-item>
-				<uni-list-item thumb="../static/edit.png" title="修改昵称" clickable @click="goEditNickname"></uni-list-item>
-				<uni-list-item thumb="../static/blockList.png" title="通讯录黑名单" clickable @click="goBlockList"></uni-list-item>
+				<uni-list-item thumb="../static/changeAvatar.png" title="Change your Avatar" clickable @click="goEditNickname"></uni-list-item>
+				<uni-list-item thumb="../static/edit.png" title="Change nickname" clickable @click="goEditNickname"></uni-list-item>
+				<uni-list-item thumb="../static/blockList.png" title="Address book blacklist" clickable @click="goBlockList"></uni-list-item>
 				<!-- <uni-list-item thumb="../static/link.png" title="生成会话链接" clickable @click="showLinkPopup"></uni-list-item>
 				<uni-list-item thumb="../static/exit.png" title="退出登录" clickable @click="logoutConfirm"></uni-list-item> -->
 			</uni-list>
 			
 			<view class="logOutArea" @click="logoutConfirm">
 				<image src="../static/logOut.png" mode="" class="logOutIcon"></image>
-				<text class="logOutText">退出登录</text>
+				<text class="logOutText">Log out</text>
 			</view>
 		</view>
 		<!-- <uni-popup ref="popup">

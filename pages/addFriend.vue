@@ -1,9 +1,9 @@
 <template>
 	<view id="addFriend">
-		<uni-nav-bar left-icon="back" title="添加朋友" @clickLeft="goBack"></uni-nav-bar>
+		<uni-nav-bar left-icon="back" title="Add friends" @clickLeft="goBack"></uni-nav-bar>
 		<view class="main">
-			<input type="text" value="" class="searchInput" placeholder="请输入账号" @focus="goInput" />
-			<view class="myUid"> <text>我的账号: </text> <text
+			<input type="text" value="" class="searchInput" placeholder="Please enter the account number" @focus="goInput" />
+			<view class="myUid"> <text>My Account: </text> <text
 					class="uidValue">{{ this.$store.state.userInfo.address}}</text> </view>
 
 		</view>

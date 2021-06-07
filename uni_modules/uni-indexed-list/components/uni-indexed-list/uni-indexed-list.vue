@@ -297,7 +297,10 @@
 
 	.uni-indexed-list__menu {
 		width: 24px;
-		background-color: lightgrey;
+		// background-color: lightgrey;
+		position: absolute;
+		right: 0;
+		height: 100%;
 		/* #ifndef APP-NVUE */
 		display: flex;
 		/* #endif */
@@ -320,12 +323,12 @@
 		line-height: 20px;
 		font-size: 12px;
 		text-align: center;
-		color: #aaa;
+		color: #1B72EC;
 	}
 
-	.uni-indexed-list__menu--active {
-		background-color: rgb(200, 200, 200);
-	}
+	/* .uni-indexed-list__menu--active {
+		background-color: rgba(27, 114, 236, 0.12);
+	} */
 
 	.uni-indexed-list__menu-text--active {
 		color: #007aff;
