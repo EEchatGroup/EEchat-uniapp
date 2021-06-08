@@ -299,7 +299,7 @@
 		width: 24px;
 		// background-color: lightgrey;
 		position: absolute;
-		right: 0;
+		right: 2%;
 		height: 100%;
 		/* #ifndef APP-NVUE */
 		display: flex;

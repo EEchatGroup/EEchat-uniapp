@@ -35,8 +35,13 @@
 			</view>
 		</view>
 		<view class="newFriend" @click="goNewFriends">
-			<image src="../static/newFriend.png" mode="" class="newFriendIcon"></image>
-			<text class="newFriendText">Add friends</text>
+			<view class="newFriendMain">
+				<image src="../static/newFriend.png" mode="" class="newFriendIcon"></image>
+				<text class="newFriendText">New friends</text>
+			</view>
+			<view class="newFriendNumber">
+				2
+			</view>
 		</view>
 		<view class="">
 			<uni-indexed-list :options="friendList" :showSelect="false" @click="bindClick"></uni-indexed-list>
@@ -58,17 +63,16 @@
 				friendList: [],
 				showOperationsMenu: false,
 				list: [{
-						"letter": "A",
-						"data": []
-					}, {
-						"letter": "B",
-						"data": [{
-							img: "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png",
-							name: "BBB",
-							uid: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
-						}]
-					},
-				]
+					"letter": "A",
+					"data": []
+				}, {
+					"letter": "B",
+					"data": [{
+						img: "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png",
+						name: "BBB",
+						uid: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+					}]
+				}, ]
 			}
 		},
 		onShow: async function() {
@@ -90,13 +94,13 @@
 				for (let i = 0; i < res.data.data.length; i++) {
 					res.data.data[i].img =
 						"https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
-						for(let y=0;y<this.Initials.length; y++){
-							this.friendList[y].data=[]
-							this.friendList[y].data.push(res.data.data[i])
-						}
-					
+					for (let y = 0; y < this.Initials.length; y++) {
+						this.friendList[y].data = []
+						this.friendList[y].data.push(res.data.data[i])
+					}
+
 				}
-				console.log(this.friendList,"544566");
+				console.log(this.friendList, "544566");
 			})
 		},
 		methods: {
@@ -211,18 +215,37 @@
 			margin-top: 6rpx;
 			display: flex;
 			align-items: center;
+			justify-content: space-between;
 
-			.newFriendIcon {
-				width: 88rpx;
-				height: 88rpx;
-				margin-left: 44rpx;
+			.newFriendMain {
+				display: flex;
+				align-items: center;
+
+				.newFriendIcon {
+					width: 88rpx;
+					height: 88rpx;
+					margin-left: 44rpx;
+				}
+
+				.newFriendText {
+					font-size: 36rpx;
+					font-weight: 500;
+					color: #333333;
+					margin-left: 32rpx;
+				}
 			}
 
-			.newFriendText {
-				font-size: 36rpx;
-				font-weight: 500;
-				color: #333333;
-				margin-left: 32rpx;
+			.newFriendNumber {
+				width: 32rpx;
+				height: 32rpx;
+				border-radius: 32rpx;
+				background-color: #F44038;
+				text-align: center;
+				line-height: 32rpx;
+				font-size: 24rpx;
+				font-weight: 600;
+				color: #FFFFFF;
+				margin-right: 24rpx;
 			}
 		}
 	}

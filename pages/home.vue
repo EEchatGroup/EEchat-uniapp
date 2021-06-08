@@ -46,17 +46,37 @@
 							<text class="nickName">{{item.id.length>20?item.id.slice(0,20)+"...":item.id}}</text>
 							<text class="latestTime">{{item.time}}</text>
 						</view>
-						<text class="latestContent">{{item.content}}</text>
+						<view class="mainBottom">
+							<text class="latestContent">{{item.content}}</text>
+							<view class="msgNumber">
+								1
+							</view>
+						</view>
+						
 					</view>
-					<view class="operationBox" :ref="item.id" v-show="item.isShow">
+					<!-- <view class="operationBox" :ref="item.id" v-show="item.isShow">
 						<view class="transparent" @click.stop="item.isShow = false">
 
 						</view>
 						<view class="operationBox-left" @click.stop="shield(item)">
-							<text>屏蔽该人</text>
+							<text>Top</text>
 						</view>
 						<view class="operationBox-right">
-							<text>删除</text>
+							<text>delete</text>
+						</view>
+					</view> -->
+					<view class="operationBox" :ref="item.id" v-show="item.isShow">
+						<view class="transparent" @click.stop="item.isShow = false">
+					
+						</view>
+						<view class="operationBox-left" @click.stop="shield(item)">
+							<text>Top</text>
+						</view>
+						<view class="operationBox-right">
+							<text>delete</text>
+						</view>
+						<view class="operationBox-add">
+							<text>Mark as read</text>
 						</view>
 					</view>
 				</view>
@@ -97,7 +117,18 @@
 			this.getInfoList()
 			console.log(uni.getStorageSync(this.userInfo.address + 'localMessage'), "ddddddd")
 			console.log(uni.getStorageSync(this.userInfo.address + 'latestSeq'), "ffffffffff")
-
+			uni.setTabBarBadge({
+			  index: 0,
+			  text: '1'
+			})
+			uni.setTabBarBadge({
+			  index: 1,
+			  text: '2'
+			})
+			uni.setTabBarBadge({
+			  index: 0,
+			  text: '1'
+			})
 		},
 		methods: {
 			controlDisplay() {
@@ -114,13 +145,7 @@
 			},
 			async shield(e) {
 				e.isShow = false
-				let parameter = {}
-				parameter.uid = e.id
-				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
-
-				add_blacklist(parameter).then(res => {
-					console.log(res)
-				})
+				
 			},
 			//depep clone
 			deepClone(obj) {
@@ -507,13 +532,29 @@
 								color: #999999;
 							}
 						}
-
-						.latestContent {
-							font-size: 24rpx;
-							font-weight: 500;
-							color: #666666;
-							margin-top: 10rpx;
+						.mainBottom{
+							display: flex;
+							justify-content: space-between;
+							align-items: center;
+							.latestContent {
+								font-size: 24rpx;
+								font-weight: 500;
+								color: #666666;
+								margin-top: 10rpx;
+							}
+							.msgNumber{
+								width: 32rpx;
+								height: 32rpx;
+								border-radius: 32rpx;
+								background-color: #F44038;
+								text-align: center;	
+								line-height: 32rpx;
+								font-size: 24rpx;
+								font-weight: 600;
+								color: #FFFFFF;
+							}
 						}
+						
 					}
 
 					.operationBox {
@@ -539,7 +580,7 @@
 							width: 160rpx;
 							height: 100%;
 							background-image: linear-gradient(to right bottom, #7CBAFF, #1B72EC);
-							box-shadow: 0px 2px 4px 0px;
+							box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.5);
 
 						}
 
@@ -548,7 +589,17 @@
 							width: 160rpx;
 							height: 100%;
 							background-image: linear-gradient(to right bottom, #FFD576, #FFAB41);
-							box-shadow: 0px 2px 4px 0px;
+							box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.5);
+						}
+						&-add{
+							display: flex;
+							align-items: center;
+							flex-shrink: 0;
+							width: 160rpx;
+							height: 100%;
+							background-image: linear-gradient(to right bottom, #C9C9C9, #7A7A7A);
+							box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.5);
+							line-height: 20px;
 						}
 					}
 
