@@ -7,10 +7,12 @@
 			<button @tap="playVoice">播放录音</button>
 		</view>
 
+		<view class="" style="width: 100px;height: 100px;background-color: #3F536E;" @mouseenter="cc">
 
+		</view>
 		<button @tap="test">click me</button>
 		<video :src="src"></video>
-		
+
 		<button type="default" @click="kk"> kk</button>
 	</view>
 </template>
@@ -45,11 +47,17 @@
 			
 		}, */
 		methods: {
-			kk(){
-				let jj = function (e){
-					console.log(e,"4444444")
+			kk() {
+				let jj = function(e) {
+					console.log(e, "4444444")
 				}
 				jj(2)
+
+
+
+			},
+			cc() {
+				console.log("dddddd");
 			},
 			test: function() {
 				var self = this;
