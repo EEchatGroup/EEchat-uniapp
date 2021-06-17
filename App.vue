@@ -1,6 +1,7 @@
 <script>
 	const openSdk = uni.requireNativePlugin('OpenSDK');
 	const globalEvent = uni.requireNativePlugin('globalEvent');
+	import postLog from '@/utils/requestLog';
 
 	import store from 'store/index.js'
 	// import ws from './websockets/index.js'
@@ -44,6 +45,36 @@
 					dbDir
 				};
 				this.data = openSdk.initSdk(JSON.stringify(obj))
+			},
+			
+			initFriendListener(){
+				openSdk.setFriendListener()
+			},
+			setFriendListener(){
+				globalEvent.addEventListener('onBlackListAdd',(params)=>{
+					postLog(params)
+				})
+				globalEvent.addEventListener('onBlackListDeleted',(params)=>{
+					postLog(params)
+				})
+				globalEvent.addEventListener('onFriendApplicationListAccept',(params)=>{
+					postLog(params)
+				})
+				globalEvent.addEventListener('onFriendApplicationListAdded',(params)=>{
+					postLog(params)
+				})
+				globalEvent.addEventListener('onFriendApplicationListDeleted',(params)=>{
+					postLog(params)
+				})
+				globalEvent.addEventListener('onFriendApplicationListReject',(params)=>{
+					postLog(params)
+				})
+				globalEvent.addEventListener('onFriendListAdded',(params)=>{
+					postLog(params)
+				})
+				globalEvent.addEventListener('onFriendListDeleted',(params)=>{
+					postLog(params)
+				})
 			},
 
 			//深拷贝
@@ -115,6 +146,8 @@
 		},
 		onLaunch: function() {
 			this.fileInfo()
+			this.initFriendListener()
+			this.setFriendListener()
 			let _this = this
 			globalEvent.addEventListener('onLoginSuccess', function(e) {
 				let transfer = JSON.stringify(e)

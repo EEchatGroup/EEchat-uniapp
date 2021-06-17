@@ -9,7 +9,7 @@
 
 		<view class="searchResult" @click="searchFriend" v-show="searchValue.length>0 && noUser == false">
 			<image src="../static/searchFriend.png" mode="" class="searchFriend"></image>
-			<text class="searchFriendTitle">search：</text>
+			<text class="searchFriendTitle">search:</text>
 			<text class="searchFriendValue">{{searchValue}}</text>
 		</view>
 		<view class="searchResult2" v-show="noUser">
@@ -22,11 +22,14 @@
 	import {
 		search_friend
 	} from "../api"
+	import postLog from '@/utils/requestLog';
+	const openSdk = uni.requireNativePlugin('OpenSDK');
+	let _this=null
 	export default {
 		data() {
 			return {
-				searchValue: "1e483ee4ca0a6503608b355125dfa4e2d22820c0",
-				noUser: false
+				searchValue: "ac6b0878cba4000a798f99eb7f5c12f0",
+				noUser: false,
 			}
 		},
 		methods: {
@@ -36,22 +39,41 @@
 			eliminateValue(){
 				this.searchValue=""
 			},
-			async searchFriend() {
-				let parameter = {}
-				parameter.uid = this.searchValue
-				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
-				search_friend(parameter).then(async res => {
-					console.log(res)
-					if (res.data.errCode == 0) {
-						await this.$store.commit("getSearchFriendData", res.data.data)
-						uni.navigateTo({
-							url: './addFriendDetail'
-						});
-					} else {
-						this.noUser = true
-					}
-				})
-			}
+			searchFriend() {
+				const reqData = {
+					uidList:[this.searchValue]
+				}
+				postLog(reqData)
+				openSdk.getUsersInfo(JSON.stringify(reqData))
+				
+				// let parameter = {}
+				// parameter.uid = this.searchValue
+				// parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
+				// search_friend(parameter).then(async res => {
+				// 	console.log(res)
+				// 	if (res.data.errCode == 0) {
+				// 		await this.$store.commit("getSearchFriendData", res.data.data)
+				// 		uni.navigateTo({
+				// 			url: './addFriendDetail'
+				// 		});
+				// 	} else {
+				// 		this.noUser = true
+				// 	}
+				// })
+			},
+		},
+		onLoad() {
+			_this = this
+			globalEvent.addEventListener('getUsersInfoFailed',(params)=>{
+				postLog(params)
+			})
+			globalEvent.addEventListener('getUsersInfoSuccess',(params)=>{
+				// _this.userInfo = params
+				postLog(params)
+			})
+		},
+		onUnload() {
+			
 		}
 
 	}
