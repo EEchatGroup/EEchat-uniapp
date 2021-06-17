@@ -8,7 +8,7 @@
 						src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
 						mode="" class="headIcon"></image>
 				</view>
-				<text>{{this.friendData.uid}}</text>
+				<text>{{friendData.uid}}</text>
 
 			</view>
 			<view class="operationSet">
@@ -22,10 +22,11 @@
 				</view>
 				<view class="operationSetItem">
 					<text>Join the blacklist</text>
-					<switch @change="addBlockList" />
+					<u-switch @change="changeBlockStatus" v-model="friendData.blackStatus" :active-value="1" :inactive-value="0"></u-switch>
+					<!-- <switch :checked="friendData.isInBlackList===1" @change="changeBlockStatus" /> -->
 				</view>
 				<view class="operationSetItem" @click="deleteRecord">
-					<text>Join the blacklist</text>
+					<text>Empty chat record</text>
 					<image src="../static/arrow.png" mode="" class="arrow"></image>
 				</view>
 
@@ -45,7 +46,7 @@
 		<uni-popup ref="deleteConfirm">
 			<view class="confirm">
 				<view class="titleArea">
-					<text class="titleInfo">Are you sure to delete"{{this.friendData.name}}"?</text>
+					<text class="titleInfo">Are you sure to delete"{{friendData.name}}"?</text>
 				</view>
 				<view class="footerArea">
 					<view type="primary" @click="confirmCancel" class="confirmCancel">cancel</view>
@@ -56,11 +57,11 @@
 		<uni-popup ref="blockConfirm">
 			<view class="confirm">
 				<view class="titleArea">
-					<text class="titleInfo">Are you sure to blacklist"{{this.friendData.name}}"?</text>
+					<text class="titleInfo">Are you sure to blacklist"{{friendData.name}}"?</text>
 				</view>
 				<view class="footerArea">
-					<view type="primary" @click="confirmCancel2" class="confirmCancel">cancel</view>
-					<view type="primary" @click="deleteConfirm" class="deleteConfirm">determine</view>
+					<view type="primary" @click="blockCancel" class="confirmCancel">cancel</view>
+					<view type="primary" @click="addBlockConfirm" class="deleteConfirm">determine</view>
 				</view>
 			</view>
 		</uni-popup>
@@ -68,7 +69,7 @@
 			<view class="confirm">
 				<view class="titleArea">
 					<text class="titleInfo">Are you sure you want to delete the chat
-						with"{{this.friendData.name}}"?</text>
+						with"{{friendData.name}}"?</text>
 				</view>
 
 				<view class="footerArea">
@@ -88,13 +89,19 @@
 	export default {
 		data() {
 			return {
-				friendData: null
+				friendData:this.$store.state.setFriendData,
+				listers:{}
 			}
 		},
-		onShow: function() {
-			this.friendData = this.$store.state.setFriendData
-			console.log(this.friendData, "好友设置信息")
-		},
+		// computed:{
+		// 	blackStatus(){
+		// 		return this.$store.state.setFriendData.isInBlackList===0?false:true
+		// 	}
+		// },
+		// onShow: function() {
+		// 	this.friendData = this.$store.state.setFriendData
+		// 	console.log(this.friendData)
+		// },
 		methods: {
 			topContact(e) {
 				console.log(e);
@@ -102,15 +109,62 @@
 					console.log("qqq")
 				}
 			},
-			addBlockList(e) {
-				console.log(e.target.value);
-				if (e.target.value) {
+			changeBlockStatus(val) {
+				// console.log(e.target.value);
+				console.log(val);
+				if(val===1){
 					this.$refs.blockConfirm.open()
+				}else{
+					const reqData = {
+						uid:this.friendData.uid
+					}
+					this.$openSdk.deleteFromBlackList(JSON.stringify(reqData))
 				}
+				// console.log(this.friendData.isInBlackList);
+				// if (e.target.value) {
+					
+				// }
 			},
 			deleteFriend() {
 				this.$refs.deleteConfirm.open()
 
+			},
+			addBlockConfirm(){
+				const reqData = {
+					uid:this.friendData.uid
+				}
+				this.$openSdk.addToBlackList(JSON.stringify(reqData))
+			},
+			addBlockListener(){
+				const _this = this
+				this.$globalEvent.addEventListener('addToBlackListSuccess',params=>{
+					console.log(params);
+					_this.$u.toast("拉入黑名单成功！")
+					_this.$refs.blockConfirm.close()
+				})
+				this.$globalEvent.addEventListener('addToBlackListFailed',params=>{
+					console.log(params);
+				})
+			},
+			removeBlackListener(){
+				this.$globalEvent.addEventListener('deleteFromBlackListSuccess',params=>{
+					console.log(params);
+				})
+				this.$globalEvent.addEventListener('deleteFromBlackListFailed',params=>{
+					console.log(params);
+				})
+			},
+			deleteListener(){
+				this.$globalEvent.addEventListener('deleteFromFriendListSuccess',params=>{
+					console.log(params);
+					const _this = this
+					_this.$u.toast("删除成功！")
+					_this.$refs.deleteConfirm.close()
+					
+				})
+				this.$globalEvent.addEventListener('deleteFromFriendListFailed',params=>{
+					console.log(params);
+				})
 			},
 			deleteRecord() {
 				this.$refs.deleteRecordConfirm.open()
@@ -118,28 +172,42 @@
 			confirmCancel() {
 				this.$refs.deleteConfirm.close()
 			},
-			confirmCancel2() {
+			blockCancel() {
+				this.friendData.blackStatus=false
 				this.$refs.blockConfirm.close()
 			},
 			confirmCancel3() {
 				this.$refs.deleteRecordConfirm.close()
 			},
 
-			async deleteConfirm() {
-				let parameter = {}
-				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
-				parameter.uid = this.friendData.uid
-				delete_friend(parameter).then(res => {
-					console.log(res, "删除返回值")
-					if (res.data.errCode == 0) {
-						uni.navigateBack()
-					}
-				})
+			deleteConfirm() {
+				const reqData = {
+					uid:this.friendData.uid
+				}
+				this.$openSdk.deleteFromFriendList(JSON.stringify(reqData))
+				// let parameter = {}
+				// parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
+				// parameter.uid = this.friendData.uid
+				// delete_friend(parameter).then(res => {
+				// 	console.log(res, "删除返回值")
+				// 	if (res.data.errCode == 0) {
+				// 		uni.navigateBack()
+				// 	}
+				// })
 			},
 			goBack() {
 				uni.navigateBack()
 			},
 
+		},
+		mounted() {
+			this.addBlockListener()
+			this.removeBlackListener()
+			this.deleteListener()
+		},
+		onUnload() {
+			this.$globalEvent.removeEventListener("deleteFromBlackListSuccess")
+			this.$globalEvent.removeEventListener("deleteFromBlackListFailed")
 		}
 	}
 </script>

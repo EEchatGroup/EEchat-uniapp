@@ -4,7 +4,7 @@
 			<text class="title">EEchat</text>
 			<view class="headRight">
 				<image src="../static/more-operations.png" mode="" class="headIcon" @click="controlDisplay"></image>
-				<view class="menuCon" v-show="showOperationsMenu">
+				<view class="my-menuCon" v-show="showOperationsMenu">
 					<view class="triangle">
 
 					</view>
@@ -92,9 +92,6 @@
 </template>
 
 <script>
-	const openSdk = uni.requireNativePlugin("OpenSDK");
-	const globalEvent = uni.requireNativePlugin('globalEvent');
-	const getAllConversationList = uni.requireNativePlugin("getAllConversationList");
 	
 	import {
 		newest_seq,
@@ -120,9 +117,9 @@
 
 		onShow: function() {
 			
-			openSdk.getAllConversationList()
+			this.$openSdk.getAllConversationList()
 			let _this = this
-			globalEvent.addEventListener('getAllConversationSuccess', function(e) {
+			this.$globalEvent.addEventListener('getAllConversationSuccess', function(e) {
 				let transfer = JSON.stringify(e)
 				_this.listener = JSON.parse(transfer)
 				uni.showToast({
@@ -132,7 +129,7 @@
 				});
 				
 			});
-			globalEvent.addEventListener('getAllConversationFailed', function(e) {
+			this.$globalEvent.addEventListener('getAllConversationFailed', function(e) {
 				let transfer = JSON.stringify(e)
 				_this.listener = JSON.parse(transfer)
 				uni.showToast({
@@ -462,7 +459,7 @@
 
 				}
 
-				.menuCon {
+				.my-menuCon {
 					z-index: 99;
 					position: absolute;
 					top: 5%;

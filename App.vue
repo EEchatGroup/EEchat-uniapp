@@ -1,7 +1,4 @@
 <script>
-	const openSdk = uni.requireNativePlugin('OpenSDK');
-	const globalEvent = uni.requireNativePlugin('globalEvent');
-	import postLog from '@/utils/requestLog';
 
 	import store from 'store/index.js'
 	// import ws from './websockets/index.js'
@@ -9,7 +6,7 @@
 		data() {
 			return {
 				title: 'Hello',
-				data: {},
+				flag:false,
 				syncReturn: "",
 				listener: "",
 				dbDir: "",
@@ -44,36 +41,37 @@
 					ipWs: '47.112.160.66:17778',
 					dbDir
 				};
-				this.data = openSdk.initSdk(JSON.stringify(obj))
+				this.flag = this.$openSdk.initSdk(JSON.stringify(obj))
+				console.log(this.flag);
 			},
 			
 			initFriendListener(){
-				openSdk.setFriendListener()
+				this.$openSdk.setFriendListener()
 			},
 			setFriendListener(){
-				globalEvent.addEventListener('onBlackListAdd',(params)=>{
-					postLog(params)
+				this.$globalEvent.addEventListener('onBlackListAdd',(params)=>{
+					console.log(params)
 				})
-				globalEvent.addEventListener('onBlackListDeleted',(params)=>{
-					postLog(params)
+				this.$globalEvent.addEventListener('onBlackListDeleted',(params)=>{
+					console.log(params)
 				})
-				globalEvent.addEventListener('onFriendApplicationListAccept',(params)=>{
-					postLog(params)
+				this.$globalEvent.addEventListener('onFriendApplicationListAccept',(params)=>{
+					console.log(params)
 				})
-				globalEvent.addEventListener('onFriendApplicationListAdded',(params)=>{
-					postLog(params)
+				this.$globalEvent.addEventListener('onFriendApplicationListAdded',(params)=>{
+					console.log(params)
 				})
-				globalEvent.addEventListener('onFriendApplicationListDeleted',(params)=>{
-					postLog(params)
+				this.$globalEvent.addEventListener('onFriendApplicationListDeleted',(params)=>{
+					console.log(params)
 				})
-				globalEvent.addEventListener('onFriendApplicationListReject',(params)=>{
-					postLog(params)
+				this.$globalEvent.addEventListener('onFriendApplicationListReject',(params)=>{
+					console.log(params)
 				})
-				globalEvent.addEventListener('onFriendListAdded',(params)=>{
-					postLog(params)
+				this.$globalEvent.addEventListener('onFriendListAdded',(params)=>{
+					console.log(params)
 				})
-				globalEvent.addEventListener('onFriendListDeleted',(params)=>{
-					postLog(params)
+				this.$globalEvent.addEventListener('onFriendListDeleted',(params)=>{
+					console.log(params)
 				})
 			},
 
@@ -149,7 +147,7 @@
 			this.initFriendListener()
 			this.setFriendListener()
 			let _this = this
-			globalEvent.addEventListener('onLoginSuccess', function(e) {
+			this.$globalEvent.addEventListener('onLoginSuccess', function(e) {
 				let transfer = JSON.stringify(e)
 				_this.listener = JSON.parse(transfer)
 				if (_this.listener.msg == "ok") {
@@ -175,7 +173,9 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
+	@import "uview-ui/index.scss";
+	
 	page {
 		height: 100% !important;
 	}

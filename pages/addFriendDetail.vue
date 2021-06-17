@@ -36,31 +36,55 @@
 				searchFriendData: {},
 				alreadyAdd: false,
 				isSend: false
+				
 			}
 		},
-		onShow: function() {
-			console.log(this.$store.state.searchFriendData, "好友详细")
-			this.searchFriendData = this.$store.state.searchFriendData
-		},
+		// onShow: function() {
+		// 	console.log(this.$store.state.searchFriendData, "好友详细")
+		// 	this.searchFriendData = this.$store.state.searchFriendData
+		// },
 		methods: {
 			goBack() {
 				uni.navigateBack()
 			},
-			async addFriend() {
-				let parameter = {}
-				parameter.uid = this.searchFriendData.uid
-				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString()
-				add_friend(parameter).then(res => {
-					console.log(res, "jiahaoyou返回")
-					if (res.data.errCode == 0) {
-						this.alreadyAdd = true
-						this.isSend = true
-						setTimeout(() => {
-							this.isSend = false
-						}, 3000)
+			addFriend() {
+				const reqData = {
+					uid:this.searchFriendData.uid,
+					reqMessage:"hello"
+				}
+				this.$openSdk.addFriend(JSON.stringify(reqData))
+				// let parameter = {}
+				// parameter.uid = this.searchFriendData.uid
+				// parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString()
+				// add_friend(parameter).then(res => {
+				// 	console.log(res, "jiahaoyou返回")
+				// 	if (res.data.errCode == 0) {
+				// 		this.alreadyAdd = true
+				// 		this.isSend = true
+				// 		setTimeout(() => {
+				// 			this.isSend = false
+				// 		}, 3000)
+				// 	}
+				// })
+			},
+		},
+		onLoad:function(options){
+			this.$globalEvent.addEventListener('addFriendFailed',(params)=>{
+				console.log(params);
+			})
+			this.$globalEvent.addEventListener('addFriendSuccess',(params)=>{
+				console.log(params);
+				const _this = this
+				uni.showToast({
+					title:"发送成功",
+					icon:"success",
+					success() {
+						_this.isSend = true
 					}
 				})
-			}
+			})
+			const tmpArr = JSON.parse(options.userInfo)
+			this.searchFriendData = tmpArr[0]
 		}
 	}
 </script>

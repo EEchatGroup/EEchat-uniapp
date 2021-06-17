@@ -24,6 +24,8 @@
 		get_friend_apply_list,
 		add_friend_response
 	} from "../api"
+	
+	let _this = null
 	export default {
 		data() {
 			return {
@@ -31,32 +33,90 @@
 			}
 		},
 		onShow: function() {
-			this.getList()
+			// this.getList()
 		},
 		methods: {
 			goBack() {
 				uni.navigateBack()
 			},
-			async getList() {
-				let parameter = {}
-				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
-				get_friend_apply_list(parameter).then(res => {
-					console.log(res.data, "好友请求列表")
-					this.requestList = res.data.data
+			getList() {
+				console.log(111);
+				this.$openSdk.getFriendApplicationList()
+				// let parameter = {}
+				// parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
+				// get_friend_apply_list(parameter).then(res => {
+				// 	console.log(res.data, "好友请求列表")
+				// 	this.requestList = res.data.data
+				// })
+			},
+			getListListener(){
+				this.$globalEvent.addEventListener('getFriendApplicationListSuccess',(params)=>{
+					console.log(params);
+					this.requestList = JSON.parse(params.msg)
+				})
+				this.$globalEvent.addEventListener('getFriendApplicationListFailed',(params)=>{
+					console.log(params);
 				})
 			},
-			async addConfirm(e) {
-				let parameter = {}
-				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
-				parameter.uid = e
-				parameter.flag = 1
-				add_friend_response(parameter).then(res => {
-					console.log(res)
-					if (res.data.errCode == 0) {
-						this.getList()
-					}
+			addConfirm(uid) {
+				const reqData = {
+					uid
+				}
+				this.$openSdk.acceptFriendApplication(JSON.stringify(reqData))
+				// let parameter = {}
+				// parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
+				// parameter.uid = e
+				// parameter.flag = 1
+				// add_friend_response(parameter).then(res => {
+				// 	console.log(res)
+				// 	if (res.data.errCode == 0) {
+				// 		this.getList()
+				// 	}
+				// })
+			},
+			refuseAdd(uid){
+				const reqData = {
+					uid
+				}
+				this.$openSdk.refuseFriendApplication(JSON.stringify(reqData))
+			},
+			acceptFriendApplicationListener(){
+				this.$globalEvent.addEventListener('acceptFriendApplicationSuccess',(params)=>{
+					uni.showToast({
+						title:"添加成功！",
+						icon:"success",
+						success: () => {
+							_this.getList()
+						}
+					})
+				})
+				this.$globalEvent.addEventListener('acceptFriendApplicationFailed',(params)=>{
+					// postLog({msg:"acceptFriendApplicationFailed",params})
+					console.log(params);
+				})
+			},
+			refuseFriendApplicationListener(){
+				this.$globalEvent.addEventListener('refuseFriendApplicationSuccess',(params)=>{
+					uni.showToast({
+						title:"已拒绝请求！",
+						icon:"none",
+						success: () => {
+							_this.getList()
+						}
+					})
+				})
+				this.$globalEvent.addEventListener('refuseFriendApplicationFailed',(params)=>{
+					console.log(params);
 				})
 			}
+		},
+		beforeMount() {
+			this.getListListener()
+			this.acceptFriendApplicationListener()
+		},
+		mounted() {
+			_this = this
+			this.getList()
 		}
 	}
 </script>

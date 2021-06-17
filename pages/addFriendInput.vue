@@ -22,14 +22,13 @@
 	import {
 		search_friend
 	} from "../api"
-	import postLog from '@/utils/requestLog';
-	const openSdk = uni.requireNativePlugin('OpenSDK');
 	let _this=null
 	export default {
 		data() {
 			return {
 				searchValue: "ac6b0878cba4000a798f99eb7f5c12f0",
 				noUser: false,
+				userInfo:""
 			}
 		},
 		methods: {
@@ -43,8 +42,7 @@
 				const reqData = {
 					uidList:[this.searchValue]
 				}
-				postLog(reqData)
-				openSdk.getUsersInfo(JSON.stringify(reqData))
+				this.$openSdk.getUsersInfo(JSON.stringify(reqData))
 				
 				// let parameter = {}
 				// parameter.uid = this.searchValue
@@ -61,16 +59,25 @@
 				// 	}
 				// })
 			},
+			searchListener(){
+				this.$globalEvent.addEventListener('getUsersInfoFailed',(params)=>{
+					console.log(params);
+				})
+				this.$globalEvent.addEventListener('getUsersInfoSuccess',(params)=>{
+					if(params.msg==='[]'){
+						_this.noUser = true
+					}else{
+						uni.navigateTo({
+									url: './addFriendDetail?userInfo='+params.msg
+								});
+					}
+				})
+			}
 		},
 		onLoad() {
 			_this = this
-			globalEvent.addEventListener('getUsersInfoFailed',(params)=>{
-				postLog(params)
-			})
-			globalEvent.addEventListener('getUsersInfoSuccess',(params)=>{
-				// _this.userInfo = params
-				postLog(params)
-			})
+			this.searchListener()
+			
 		},
 		onUnload() {
 			

@@ -2,7 +2,8 @@
 	<view id="addFriend">
 		<uni-nav-bar left-icon="back" title="Add friends" @clickLeft="goBack"></uni-nav-bar>
 		<view class="main">
-			<input type="text" value="" class="searchInput" placeholder="Please enter the account number" @focus="goInput" />
+			<!-- <input type="text" value="" class="searchInput" placeholder="Please enter the account number" @focus="goInput" /> -->
+			<u-search class="my-search" disabled shape="square" @click="goInput"></u-search>
 			<view class="myUid"> <text>My Account: </text> <text
 					class="uidValue">{{ this.$store.state.userInfo.address}}</text> </view>
 
@@ -74,6 +75,9 @@
 				background-position: 20rpx 50%;
 				padding-left: 76rpx;
 				padding-right: 20rpx;
+			}
+			.my-search{
+				padding:50rpx 20rpx 0 76rpx
 			}
 
 			.myUid {
