@@ -92,6 +92,10 @@
 </template>
 
 <script>
+	const openSdk = uni.requireNativePlugin("OpenSDK");
+	const globalEvent = uni.requireNativePlugin('globalEvent');
+	const getAllConversationList = uni.requireNativePlugin("getAllConversationList");
+	
 	import {
 		newest_seq,
 		pull_msg,
@@ -106,6 +110,7 @@
 				isLatestSeq: true,
 				addNewMessage: false,
 				showOperationsMenu: false,
+				listener:null
 			}
 		},
 		onLoad() {
@@ -114,21 +119,43 @@
 		},
 
 		onShow: function() {
-			this.getInfoList()
-			console.log(uni.getStorageSync(this.userInfo.address + 'localMessage'), "ddddddd")
-			console.log(uni.getStorageSync(this.userInfo.address + 'latestSeq'), "ffffffffff")
-			uni.setTabBarBadge({
-			  index: 0,
-			  text: '1'
-			})
-			uni.setTabBarBadge({
-			  index: 1,
-			  text: '2'
-			})
-			uni.setTabBarBadge({
-			  index: 0,
-			  text: '1'
-			})
+			
+			openSdk.getAllConversationList()
+			let _this = this
+			globalEvent.addEventListener('getAllConversationSuccess', function(e) {
+				let transfer = JSON.stringify(e)
+				_this.listener = JSON.parse(transfer)
+				uni.showToast({
+				  title: _this.listener,
+				  duration: 6000,
+				  icon: "none",
+				});
+				
+			});
+			globalEvent.addEventListener('getAllConversationFailed', function(e) {
+				let transfer = JSON.stringify(e)
+				_this.listener = JSON.parse(transfer)
+				uni.showToast({
+				  title: _this.listener,
+				  duration: 6000,
+				  icon: "none",
+				});
+				
+			});
+			
+			// this.getInfoList()
+			// uni.setTabBarBadge({
+			//   index: 0,
+			//   text: '1'
+			// })
+			// uni.setTabBarBadge({
+			//   index: 1,
+			//   text: '2'
+			// })
+			// uni.setTabBarBadge({
+			//   index: 0,
+			//   text: '1'
+			// })
 		},
 		methods: {
 			controlDisplay() {

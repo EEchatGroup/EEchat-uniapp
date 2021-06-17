@@ -37,10 +37,13 @@
 		</uni-popup> -->
 		<uni-popup ref="logoutPopup">
 			<view class="logout">
-				<text>确定退出登录吗</text>
+				<view class="title">
+					<text>Are you sure you want to log out?</text>
+				</view>
+				
 				<view class="buttonArea">
-					<button type="primary" @click="logoutCancel">取消</button>
-					<button type="primary" @click="logout">确定</button>
+					<button type="primary" @click="logoutCancel">Cancel</button>
+					<button type="primary" @click="logout">Confirm</button>
 				</view>
 			</view>
 		</uni-popup>
@@ -269,12 +272,13 @@
 			display: flex;
 			flex-direction: column;
 			align-items: center;
-
-			text {
+			.title {
 				font-size: 34rpx;
 				font-weight: 500;
 				color: #333333;
-				margin-top: 90rpx;
+				margin-top: 60rpx;
+				padding: 0 50rpx;
+				text-align: center;
 			}
 
 			.buttonArea {

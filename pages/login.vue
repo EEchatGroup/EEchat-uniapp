@@ -14,105 +14,95 @@
 			</view>
 		</view>
 
-		<input type="text" value="" class="inputArea" placeholder="输入您的助记词，并使用空格分隔" v-model="account" />
+		<input type="text" value="" class="inputArea" placeholder="Enter your mnemonics, separated by spaces"
+			v-model="account" />
 		<button type="primary" class="loginButton" @click="login">Sign in</button>
 		<text class="register" @click="goRegiester">Sign up for a new account</text>
 	</view>
-
 </template>
 
 <script>
-	const openSdk = uni.requireNativePlugin('OpenSDK');
-	const globalEvent = uni.requireNativePlugin('globalEvent');
+	const openSdk = uni.requireNativePlugin("OpenSDK");
+	const globalEvent = uni.requireNativePlugin("globalEvent");
 	const bip39 = require("bip39");
 	const {
 		hdkey
 	} = require("ethereumjs-wallet");
 	const util = require("ethereumjs-util");
-	import qs from 'qs'
+	import qs from "qs";
 	import {
 		loginApi,
 		user_token
-	} from "../api"
+	} from "../api";
 	export default {
 		data() {
 			return {
-				account: "sunsetintactgluerampperfectscaremeshwaspolivethrivebossupgrade",
+				account: "seminar fetch expand melody fog exist pill devote change swift idle eye",
 				loginInfo: {
 					mnemonic: "",
 					publicKey: "",
 					address: "",
 				},
-			}
+			};
 		},
 		methods: {
 			ddd() {
 				uni.clearStorage();
-				console.log("清除存储")
+				console.log("清除存储");
 			},
-			login() {
-				const token =
-					"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVSUQiOiJhYzZiMDg3OGNiYTQwMDBhNzk4Zjk5ZWI3ZjVjMTJmMCIsIlBsYXRmb3JtIjoiSU9TIiwiZXhwIjoxNjI0MDA1NzU1LCJpYXQiOjE2MjM0MDA5NTUsIm5iZiI6MTYyMzQwMDk1NX0.kFt7GqKtHhndrt-TkTbemol6sIeAulmn9e4_9JqS4_0"
-				const uid = "ac6b0878cba4000a798f99eb7f5c12f0"
-				openSdk.login(token, uid)
-				
-				if (openSdk.login(token, uid) == true) {
-					uni.showToast({
-								title: "成功成功",
-								duration: 6000,
-								icon: "none"
-							})
-				}
+
+			async login() {
+				this.loginInfo.mnemonic = this.account.replace(/\s*/g, "");
+				//将助记词转成seed
+				let seed = await bip39.mnemonicToSeed(this.account);
+				//3.通过hdkey将seed生成HD Wallet
+				let hdWallet = await hdkey.fromMasterSeed(seed);
+				//4.生成钱包中在m/44'/60'/0'/0/0路径的keypair
+				let key = await hdWallet.derivePath("m/44'/60'/0'/0/0");
+				//6.从keypair中获取公钥
+				this.loginInfo.publicKey = util.bufferToHex(key._hdkey._publicKey)
+				let address = await util.pubToAddress(key._hdkey._publicKey, true);
+				//编码地址
+				this.loginInfo.address = address.toString("hex")
+				console.log(this.loginInfo, "账户信息1")
+				this.$store.commit("UserInfoValue", this.loginInfo)
+				let accountInfo = {}
+				accountInfo.secret = "tuoyun"
+				accountInfo.uid = this.loginInfo.address
+				accountInfo.platform = 5
+				user_token(accountInfo).then(async res => {
+
+					const token = res.data.data.token;
+					openSdk.login(token, accountInfo.uid);
+
+					await sessionStorage.setItem('token', res.data.data.token)
+					await this.$store.commit('getToken', res.data.data.token)
+					await this.$store.commit('logOn')
+					await uni.setStorage({
+						key: 'token',
+						data: res.data.data.token,
+						success: function() {
+							console.log('setsuccess');
+
+						},
+						fail: function() {
+							console.log('setfail');
+
+						}
+					});
+					uni.switchTab({
+						url: './home'
+					})
+				})
+
 			},
-			// async login() {
-			// 	this.loginInfo.mnemonic = this.account.replace(/\s*/g, "");
-			// 	//将助记词转成seed
-			// 	let seed = await bip39.mnemonicToSeed(this.account);
-			// 	//3.通过hdkey将seed生成HD Wallet
-			// 	let hdWallet = await hdkey.fromMasterSeed(seed);
-			// 	//4.生成钱包中在m/44'/60'/0'/0/0路径的keypair
-			// 	let key = await hdWallet.derivePath("m/44'/60'/0'/0/0");
-			// 	//6.从keypair中获取公钥
-			// 	this.loginInfo.publicKey = util.bufferToHex(key._hdkey._publicKey)
-			// 	let address = await util.pubToAddress(key._hdkey._publicKey, true);
-			// 	//编码地址
-			// 	this.loginInfo.address = address.toString("hex")
-			// 	console.log(this.loginInfo, "账户信息1")
-			// 	this.$store.commit("UserInfoValue", this.loginInfo)
-			// 	let accountInfo = {}
-			// 	accountInfo.secret = "tuoyun"
-			// 	accountInfo.uid = this.loginInfo.address
-			// 	accountInfo.platform = 5
-			// 	user_token(accountInfo).then(async res => {
-
-			// 		await sessionStorage.setItem('token', res.data.data.token)
-			// 		await this.$store.commit('getToken', res.data.data.token)
-			// 		await this.$store.commit('logOn')
-			// 		await uni.setStorage({
-			// 			key: 'token',
-			// 			data: res.data.data.token,
-			// 			success: function() {
-			// 				console.log('setsuccess');
-
-			// 			},
-			// 			fail: function() {
-			// 				console.log('setfail');
-
-			// 			}
-			// 		});
-			// 		uni.switchTab({
-			// 			url: './home'
-			// 		})
-			// 	})
-
-			// },
 			goRegiester() {
 				uni.navigateTo({
-					url: './register'
+					url: "./register",
 				});
-			}
-		}
-	}
+			},
+		},
+	};
 </script>
 
 <style lang="scss" scoped>
@@ -165,10 +155,8 @@
 					background-color: #666;
 					margin-right: 24rpx;
 				}
-
 			}
 		}
-
 
 		.inputArea {
 			width: 500rpx;
@@ -184,7 +172,7 @@
 			height: 66rpx;
 			font-size: 32rpx;
 			font-weight: 600;
-			color: #FFFFFF;
+			color: #ffffff;
 			line-height: 66rpx;
 			box-shadow: 0 8rpx 26rpx rgba(0, 76, 203, 0.7);
 			margin-top: 120rpx;
@@ -193,7 +181,7 @@
 		.register {
 			font-size: 28rpx;
 			font-weight: 600;
-			color: #1D6BED;
+			color: #1d6bed;
 			margin-top: 32rpx;
 		}
 	}
