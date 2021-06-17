@@ -29,11 +29,8 @@
 		hdkey
 	} = require("ethereumjs-wallet");
 	const util = require("ethereumjs-util");
-	import qs from "qs";
-	import {
-		loginApi,
-		user_token
-	} from "../api";
+
+
 	export default {
 		data() {
 			return {
@@ -70,30 +67,60 @@
 				accountInfo.secret = "tuoyun"
 				accountInfo.uid = this.loginInfo.address
 				accountInfo.platform = 5
-				user_token(accountInfo).then(async res => {
 
-					const token = res.data.data.token;
-					openSdk.login(token, accountInfo.uid);
 
-					await sessionStorage.setItem('token', res.data.data.token)
-					await this.$store.commit('getToken', res.data.data.token)
-					await this.$store.commit('logOn')
-					await uni.setStorage({
-						key: 'token',
-						data: res.data.data.token,
-						success: function() {
-							console.log('setsuccess');
+				uni.request({
+					url: "http://47.112.160.66:10000/auth/user_token",
+					method: 'POST',
+					data: accountInfo,
+					success(res) {
+						console.log(res, "465456")
+						uni.setStorage({
+							key: 'token',
+							data: res.data.data.token,
+							success: function() {
+								console.log('setsuccess');
 
-						},
-						fail: function() {
-							console.log('setfail');
+							},
+							fail: function() {
+								console.log('setfail');
 
-						}
-					});
-					uni.switchTab({
-						url: './home'
-					})
+							}
+						});
+						// openSdk.login(res.data.data.token, res.data.data.uid);
+						const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVSUQiOiJjOTNiYzhiMTcxY2NlN2I5ZDFiZWZiMzg5YWJmZTUyZiIsIlBsYXRmb3JtIjoiSU9TIiwiZXhwIjoxNjI0NDIwMTAxLCJpYXQiOjE2MjM4MTUzMDEsIm5iZiI6MTYyMzgxNTMwMX0.sk1U5kCITPkFR-EAlRL38yY1nz653ZIvwycG2A3XU_s"
+						const uid = "c93bc8b171cce7b9d1befb389abfe52f"
+						openSdk.login(uid, token)
+					},
+					fail() {
+
+					}
 				})
+
+
+
+				// user_token(accountInfo).then(async res => {
+				// 	console.log(res,"454564");
+				// 	const token = res.data.data.token;
+				// 	openSdk.login(token, res.data.data.uid);
+
+				// 	await sessionStorage.setItem('token', res.data.data.token)
+				// 	await this.$store.commit('getToken', res.data.data.token)
+				// 	await this.$store.commit('logOn')
+				// 	await uni.setStorage({
+				// 		key: 'token',
+				// 		data: res.data.data.token,
+				// 		success: function() {
+				// 			console.log('setsuccess');
+
+				// 		},
+				// 		fail: function() {
+				// 			console.log('setfail');
+
+				// 		}
+				// 	});
+
+				// })
 
 			},
 			goRegiester() {

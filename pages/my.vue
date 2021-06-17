@@ -51,6 +51,7 @@
 </template>
 
 <script>
+	const openSdk = uni.requireNativePlugin("OpenSDK");
 	export default {
 		data() {
 			return {
@@ -104,16 +105,15 @@
 				this.$refs.logoutPopup.close()
 			},
 			logout() {
+				openSdk.logout()
 				this.$refs.logoutPopup.close()
-				sessionStorage.removeItem('token')
-				try {
-				    uni.removeStorageSync('token');
-				} catch (e) {
-				    // error
-				}
-				uni.navigateTo({
-					url: './login'
-				})
+				// sessionStorage.removeItem('token')
+				// try {
+				//     uni.removeStorageSync('token');
+				// } catch (e) {
+				//     // error
+				// }
+				
 			}
 
 		},

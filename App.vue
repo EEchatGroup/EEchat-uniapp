@@ -46,7 +46,43 @@
 				};
 				this.data = openSdk.initSdk(JSON.stringify(obj))
 			},
-			
+			loginListener(){
+				let _this = this
+				globalEvent.addEventListener('onLoginSuccess', function(e) {
+					let transfer = JSON.stringify(e)
+					_this.listener = JSON.parse(transfer)
+					if (_this.listener.msg == "ok") {
+						uni.switchTab({
+							url: './home'
+						})
+					}
+					
+				});
+				
+			},
+			logoutListener(){
+				let _this = this
+				globalEvent.addEventListener('onLogoutSuccess',(params)=>{
+					let transfer = JSON.stringify(params)
+					_this.listener = JSON.parse(transfer)
+					if (_this.listener.msg == "ok") {
+						uni.navigateTo({
+							url: './login'
+						})
+					}
+					
+				})
+				globalEvent.addEventListener('onLogoutFailed',(params)=>{
+					postLog(params)
+					
+				})
+			},
+			addMsgListener(){
+				openSdk.addMsgListener()
+				globalEvent.addEventListener('onRecvNewMessage',(params)=>{
+					console.log(params,"新消息新消息新消息");
+				})
+			},
 			initFriendListener(){
 				openSdk.setFriendListener()
 			},
@@ -148,17 +184,8 @@
 			this.fileInfo()
 			this.initFriendListener()
 			this.setFriendListener()
-			let _this = this
-			globalEvent.addEventListener('onLoginSuccess', function(e) {
-				let transfer = JSON.stringify(e)
-				_this.listener = JSON.parse(transfer)
-				if (_this.listener.msg == "ok") {
-					uni.switchTab({
-						url: './home'
-					})
-				}
-				
-			});
+			this.loginListener()
+			this.logoutListener()
 		},
 		onShow: function() {},
 		onHide: function() {},

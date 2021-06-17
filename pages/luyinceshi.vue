@@ -14,10 +14,12 @@
 		<video :src="src"></video>
 
 		<button type="default" @click="kk"> kk</button>
+
 	</view>
 </template>
 
 <script>
+	const openSdk = uni.requireNativePlugin("OpenSDK");
 	const recorderManager = uni.getRecorderManager();
 	const innerAudioContext = uni.createInnerAudioContext();
 
@@ -53,6 +55,8 @@
 				}
 				jj(2)
 
+				openSdk.createTextMessage(this.inputValue)
+				console.log(openSdk.createTextMessage(this.inputValue), "78899")
 
 
 			},

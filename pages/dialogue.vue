@@ -1,41 +1,37 @@
 <template>
 	<view id="dialogue">
-
 		<view class="headCon">
 			<view class="head">
 				<image src="../static/goBack.png" mode="" class="headleft" @click="goBack"></image>
 				<view class="headMiddle">
-					<text class="headMiddleTop">{{nickname.length>20?nickname.slice(0,20)+"...":nickname}}</text>
-					<view class="headMiddleBottom" @click=" setStatusShow = true "><text>{{onlineStatus}}</text>
+					<text class="headMiddleTop">{{
+            nickname.length > 20 ? nickname.slice(0, 20) + "..." : nickname
+          }}</text>
+					<view class="headMiddleBottom" @click="setStatusShow = true"><text>{{ onlineStatus }}</text>
 						<image src="../static/moreStatus.png" mode="" class="moreStatus"></image>
 					</view>
 				</view>
 				<image src="../static/goDetails.png" mode="" class="headRight" @click="goSetFriend"></image>
 			</view>
 			<view class="promptInfo" v-if="statusChangeShow">
-				<view class="onlineCircle" v-if="onlineStatus== 'Mobile Online'||onlineStatus== 'Computer online' ">
-
+				<view class="onlineCircle" v-if="
+            onlineStatus == 'Mobile Online' || onlineStatus == 'Computer online'
+          ">
 				</view>
-				<view class="invisibleCircle" v-if="onlineStatus== 'invisible'">
-
+				<view class="invisibleCircle" v-if="onlineStatus == 'invisible'">
 				</view>
-				<view class="offlineCircle" v-if="onlineStatus== 'off-line'">
-
-				</view>
-				<text class="changeInfo">Your status has been switched to {{onlineStatus}}</text>
+				<view class="offlineCircle" v-if="onlineStatus == 'off-line'"> </view>
+				<text class="changeInfo">Your status has been switched to {{ onlineStatus }}</text>
 			</view>
 		</view>
 
 		<view class="main" id="main">
-			<view v-for="item in list">
-				<view v-if="item.sendID == $store.state.userInfo.address && item.msgFrom==100
-				" class="right">
+			<view v-for="item in list" :key="item.sendID">
+				<view v-if="
+            item.sendID == $store.state.userInfo.address && item.msgFrom == 100
+          " class="right">
 					<image src="../static/sentFail.png" mode="" v-if="item.sentFail" class="StatusIcon"></image>
-					<view class="blank
-
-" @click="chooseSeq = 0">
-
-					</view>
+					<view class="blank" @click="chooseSeq = 0"> </view>
 					<view class="contentArea">
 						<view class="operationBox" v-if="item.seq == chooseSeq">
 							<view class="operationBoxMain">
@@ -56,31 +52,25 @@
 									<text class="operationText">forward</text>
 								</view>
 							</view>
-							<view class="operationBoxtriangle">
-
-							</view>
+							<view class="operationBoxtriangle"> </view>
 						</view>
 						<view class="maincontent" v-show="item.contentType == 101"
-							@longtap.prevent="showOperation(item)">{{item.content}}</view>
+							@longtap.prevent="showOperation(item)">{{ item.content }}</view>
 						<view class="maincontent" v-show="item.contentType == 102"
 							@longtap.prevent="showOperation(item)">
 							<image :src="item.content.thumbnail || item.content" mode="aspectFit"></image>
 						</view>
-						<view class="triangle">
-						</view>
+						<view class="triangle"> </view>
 						<image
 							src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
 							mode="" class="headIcon">
 						</image>
 					</view>
-
 				</view>
-				<view v-if="item.sendID!= $store.state.userInfo.address && item.msgFrom==100" class="left">
-					<view class="blank
-					
-					" @click="chooseSeq = 0">
-
-					</view>
+				<view v-if="
+            item.sendID != $store.state.userInfo.address && item.msgFrom == 100
+          " class="left">
+					<view class="blank" @click="chooseSeq = 0"> </view>
 					<view class="contentArea">
 						<view class="operationBox" v-if="item.seq == chooseSeq">
 							<view class="operationBoxMain">
@@ -96,44 +86,34 @@
 									<image src="../static/forward.png" mode="" class="operationIcon"></image>
 									<text class="operationText">forward</text>
 								</view>
-
 							</view>
-							<view class="operationBoxtriangle">
-
-							</view>
+							<view class="operationBoxtriangle"> </view>
 						</view>
 						<image
 							src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
 							mode="" class="headIcon">
 						</image>
-						<view class="triangle">
-						</view>
+						<view class="triangle"> </view>
 						<view class="maincontent" v-show="item.contentType == 101"
-							@longtap.prevent="showOperation(item)">{{item.content}}</view>
+							@longtap.prevent="showOperation(item)">{{ item.content }}</view>
 						<view class="maincontent" v-show="item.contentType == 102"
 							@longtap.prevent="showOperation(item)">
 							<image :src="item.content.thumbnail" mode=""></image>
 						</view>
-
 					</view>
-
 				</view>
-
 			</view>
-
-
 		</view>
-
-
-
 
 		<view class="bottomArea">
 			<view class="bottomAreaTop">
 				<image src="../static/voice.png" mode="" class="voice" @click="voice"></image>
 				<input type="text" value="" v-model="inputValue" />
 				<image src="../static/moreOperation.png" mode="" class="moreOperation"
-					@click="isMoreOperation= !isMoreOperation"></image>
-				<button type="primary" class="sentButton" @click="sendInfo">Send</button>
+					@click="isMoreOperation = !isMoreOperation"></image>
+				<button type="primary" class="sentButton" @click="sendInfo">
+					Send
+				</button>
 			</view>
 
 			<view class="bottomAreaBottom" v-show="isMoreOperation">
@@ -146,64 +126,46 @@
 					<image src="../static/album.png" mode="" class="itemIcon"></image>
 					<text class="itemText">album</text>
 				</view>
-
 			</view>
 
-		<view class="setStatus" v-if="setStatusShow">
-		<!-- <view class="setStatus"> -->
-			<image src="../static/closeSetStastus.png" mode="" class="closeSetStastus" @click="setStatusShow = false">
-			</image>
-			<text class="setStatusTitle">Set my current status</text>
-			<view class="statusArea">
-				<view class="statusItem" @click="mobileOnline">
-					<view class="onlineCircle">
-		
+			<view class="setStatus" v-if="setStatusShow">
+				<!-- <view class="setStatus"> -->
+				<image src="../static/closeSetStastus.png" mode="" class="closeSetStastus"
+					@click="setStatusShow = false">
+				</image>
+				<text class="setStatusTitle">Set my current status</text>
+				<view class="statusArea">
+					<view class="statusItem" @click="mobileOnline">
+						<view class="onlineCircle"> </view>
+						<text>Mobile Online</text>
 					</view>
-					<text>Mobile Online</text>
-				</view>
-				<view class="statusItem" @click="computerOnline">
-					<view class="onlineCircle">
-		
+					<view class="statusItem" @click="computerOnline">
+						<view class="onlineCircle"> </view>
+						<text>Computer online</text>
 					</view>
-					<text>Computer online</text>
-				</view>
-				<view class="statusItem" @click="invisible">
-					<view class="invisibleCircle">
-		
+					<view class="statusItem" @click="invisible">
+						<view class="invisibleCircle"> </view>
+						<text>invisible</text>
 					</view>
-					<text>invisible</text>
-				</view>
-				<view class="statusItem" @click="offline">
-					<view class="offlineCircle">
-		
+					<view class="statusItem" @click="offline">
+						<view class="offlineCircle"> </view>
+						<text>off-line</text>
 					</view>
-					<text>off-line</text>
 				</view>
-		
 			</view>
 		</view>
 
-		</view>
-		
-		<uni-popup ref="popup">
-			<view class="popupMain">
-				<text>修改备注</text>
-				<input type="text" value="" v-model="remarks" placeholder="请输入昵称" />
-				<view class="buttonArea">
-					<button type="primary" @click="cancel">取消</button>
-					<button type="primary" @click="confirm">确定</button>
-				</view>
-			</view>
-		</uni-popup>
 	</view>
 </template>
 
 <script>
+	const openSdk = uni.requireNativePlugin("OpenSDK");
+	const globalEvent = uni.requireNativePlugin('globalEvent');
 	import {
 		changeAlias,
 		send_msg
-	} from '../api'
-	import uploadFile from '../uploadFile/index.js'
+	} from "../api";
+	import uploadFile from "../uploadFile/index.js";
 	export default {
 		data() {
 			return {
@@ -222,93 +184,106 @@
 				chooseSeq: 0,
 				setStatusShow: false,
 				statusChangeShow: false,
-				onlineStatus: "Mobile Online"
-			}
+				onlineStatus: "Mobile Online",
+				listener: null
+			};
 		},
 		onLoad: function(option) {
-			console.log(option, "wsxwswxwsx")
-			this.nickname = option.id
-			this.recipientID = option.id
+			this.sendMessageListener()
+			// console.log(option, "wsxwswxwsx");
+			// this.nickname = option.id;
+			// this.recipientID = option.id;
 
-			try {
-				this.messages = uni.getStorageSync(this.$store.state.userInfo.address +
-					'localMessage');
-				for (let i = 0; i < this.messages.length; i++) {
-					if (this.messages[i].id == option.id) {
-						/* for(let y = 0; y < messages[i].list.length; y++){
-							if(messages[i].list[y].contentType== 102) {
-							messages[i].list[y].content = JSON.parse(messages[i].list[y].content)
-							}
-						} */
+			// try {
+			//   this.messages = uni.getStorageSync(
+			//     this.$store.state.userInfo.address + "localMessage"
+			//   );
+			//   for (let i = 0; i < this.messages.length; i++) {
+			//     if (this.messages[i].id == option.id) {
+			//       /* for(let y = 0; y < messages[i].list.length; y++){
+			// 			if(messages[i].list[y].contentType== 102) {
+			// 			messages[i].list[y].content = JSON.parse(messages[i].list[y].content)
+			// 			}
+			// 		} */
 
-						this.list = this.messages[i].list
-						console.log(this.list, "duihua")
-						break
-					}
-
-				}
-
-			} catch (e) {
-				// error
-			}
-
-
-
-
+			//       this.list = this.messages[i].list;
+			//       console.log(this.list, "duihua");
+			//       break;
+			//     }
+			//   }
+			// } catch (e) {
+			//   // error
+			// }
 		},
 		methods: {
-			async sendInfo() {
+			sendMessageListener() {
+				let _this = this
+				globalEvent.addEventListener('sendMessageSuccess', (params) => {
+					let transfer = JSON.stringify(params)
+					_this.listener = JSON.parse(transfer)
 
-				let parameter = {}
-				let latest = {}
-				latest.sentFail = false
-				parameter.reqIdentifier = 1003
-				parameter.platformID = 5
-				parameter.token = uni.getStorageSync('token')
-				parameter.sendID = this.userInfo.address
-				parameter.operationID = this.userInfo.address + await Date.now().toString();
+					console.log(_this.listener, "chenggong");
+
+				})
+				globalEvent.addEventListener('sendMessageFailed', (params) => {
+					let transfer = JSON.stringify(params)
+					_this.listener = JSON.parse(transfer)
+
+					console.log(_this.listener, "shibai");
+
+				})
+			},
+			async sendInfo() {
+				let parameter = {};
+				let latest = {};
+				latest.sentFail = false;
+				parameter.reqIdentifier = 1003;
+				parameter.platformID = 5;
+				parameter.token = uni.getStorageSync("token");
+				parameter.sendID = this.userInfo.address;
+				parameter.operationID =
+					this.userInfo.address + (await Date.now().toString());
 				parameter.msgIncr = this.$store.state.MsgIncr + 1;
-				parameter.data = {}
-				parameter.data.sessionType = 1
-				parameter.data.msgFrom = 100
-				parameter.data.contentType = 101
-				parameter.data.recvID = this.recipientID
-				parameter.data.content = this.inputValue
-				parameter.data.clientMsgID = "222"
-				parameter.data.offlineInfo = {}
-				parameter.data.forceList = []
-				parameter.data.options = {}
-				parameter.data.ext = {}
+				parameter.data = {};
+				parameter.data.sessionType = 1;
+				parameter.data.msgFrom = 100;
+				parameter.data.contentType = 101;
+				parameter.data.recvID = this.recipientID;
+				parameter.data.content = this.inputValue;
+				parameter.data.clientMsgID = "222";
+				parameter.data.offlineInfo = {};
+				parameter.data.forceList = [];
+				parameter.data.options = {};
+				parameter.data.ext = {};
 
 				if (parameter.data.content.length > 0) {
-					this.$store.commit("MsgIncrAdd")
-					console.log(parameter, "消息发送参数")
-					send_msg(parameter).then(res => {
-							console.log(res, "44444")
-							latest.sentFail = false
-
+					this.$store.commit("MsgIncrAdd");
+					console.log(parameter, "消息发送参数");
+					send_msg(parameter)
+						.then((res) => {
+							console.log(res, "44444");
+							latest.sentFail = false;
 						})
 						.catch(function(error) {
-							latest.sentFail = true
-							console.log("7777")
+							latest.sentFail = true;
 						});
-
 				} else {
 					uni.showToast({
-						title: '消息为空',
+						title: "消息为空",
 						icon: "none",
-						duration: 1500
+						duration: 1500,
 					});
 				}
 
-				latest.sendID = this.userInfo.address
-				latest.recvID = this.recipientID
-				latest.sendTime = Date.now()
-				latest.contentType = 101
-				latest.msgFrom = 100
-				latest.content = this.inputValue
-				latest.seq = uni.getStorageSync(this.userInfo.address + 'latestSeq') + 1
-				latest.serverMsgID = "2021-06-01 09:37:46-4b134ea6ec423a385f96629ea4b6718304e3bd23-913761085841340441"
+				latest.sendID = this.userInfo.address;
+				latest.recvID = this.recipientID;
+				latest.sendTime = Date.now();
+				latest.contentType = 101;
+				latest.msgFrom = 100;
+				latest.content = this.inputValue;
+				latest.seq = uni.getStorageSync(this.userInfo.address + "latestSeq") + 1;
+				latest.serverMsgID =
+					"2021-06-01 09:37:46-4b134ea6ec423a385f96629ea4b6718304e3bd23-913761085841340441";
 				/* if (sendStatus == true) {
 				 latest.sentFail = false
 				} else {
@@ -316,61 +291,58 @@
 				} */
 
 				if (parameter.data.content.length > 0) {
-					this.list.push(latest)
-					console.log(this.list, "本地消息列表")
-					this.inputValue = ""
-
+					this.list.push(latest);
+					console.log(this.list, "本地消息列表");
+					this.inputValue = "";
 
 					for (let i = 0; i < this.messages.length; i++) {
 						if (this.messages[i].id == this.recipientID) {
-							this.messages[i].list = this.list
-							console.log(this.messages, "duihua")
-							break
+							this.messages[i].list = this.list;
+							console.log(this.messages, "duihua");
+							break;
 						}
-
 					}
 					try {
-						uni.setStorageSync(this.userInfo.address +
-							'localMessage', this.messages);
-						console.log(uni.getStorageSync(this.userInfo.address +
-							'localMessage'), "456123")
+						uni.setStorageSync(
+							this.userInfo.address + "localMessage",
+							this.messages
+						);
+						console.log(
+							uni.getStorageSync(this.userInfo.address + "localMessage"),
+							"456123"
+						);
 					} catch (e) {
 						// error
 					}
 
 					if (latest.sentFail == false) {
 						try {
-							uni.setStorageSync(this.userInfo.address +
-								'latestSeq', latest.seq);
+							uni.setStorageSync(this.userInfo.address + "latestSeq", latest.seq);
 						} catch (e) {
 							// error
 						}
 					}
 
-
-
-
 					const query = uni.createSelectorQuery().in(this);
-					query.select('#main').boundingClientRect(data => {
-						uni.pageScrollTo({
-							scrollTop: data.height,
-							duration: 100
-						});
-					}).exec();
-
-
+					query
+						.select("#main")
+						.boundingClientRect((data) => {
+							uni.pageScrollTo({
+								scrollTop: data.height,
+								duration: 100,
+							});
+						})
+						.exec();
 				}
-
-
 			},
 			async album() {
-				let that = this
-				let latest = {}
+				let that = this;
+				let latest = {};
 				// 选择文件
 				uni.chooseImage({
 					count: 1, //默认9
-					sizeType: ['original', 'compressed'],
-					sourceType: ['album'], //从相册选择
+					sizeType: ["original", "compressed"],
+					sourceType: ["album"], //从相册选择
 					success: async function(res) {
 						const tempFilePaths = res.tempFilePaths;
 						/* latest.sendID = that.userInfo.address
@@ -391,9 +363,10 @@
 							});
 						}).exec(); */
 
-
-						let suffix = res.tempFiles[0].name.substring(res.tempFiles[0].name.length - 4)
-						await uploadFile(tempFilePaths[0], suffix)
+						let suffix = res.tempFiles[0].name.substring(
+							res.tempFiles[0].name.length - 4
+						);
+						await uploadFile(tempFilePaths[0], suffix);
 						/* uni.getImageInfo({
 							src: res.tempFilePaths[0],
 							success: async function(image) {
@@ -469,97 +442,96 @@
 							}
 
 						}); */
-
-					}
+					},
 				});
-
-
 			},
-			voice(){
-				uni.navigateTo({
-					url: './luyinceshi'
-				});
+			async voice() {
+				let newTextMessage = await openSdk.createTextMessage(this.inputValue)
+				let dd = openSdk.sendMessage(newTextMessage, "ac6b0878cba4000a798f99eb7f5c12f0", "", false)
+				console.log(dd);
+
+				// uni.navigateTo({
+				//   url: "./luyinceshi",
+				// });
 			},
 			goBack() {
 				uni.switchTab({
-					url: "./home"
-				})
-
+					url: "./home",
+				});
 			},
 			goSetFriend() {
 				uni.navigateTo({
-					url: './setFriend'
+					url: "./setFriend",
 				});
 			},
 			modifyRemarks() {
-				this.$refs.popup.open()
+				this.$refs.popup.open();
 			},
 			cancel() {
-				this.$refs.popup.close()
+				this.$refs.popup.close();
 			},
 			confirm() {
-				let parameter = {}
-				parameter.optionID = ""
-				parameter.accountAddr = ""
-				parameter.nickName = this.remarks
-				changeAlias(parameter).then(res => {
-					console.log("res")
-					this.$refs.popup.close()
-				})
-
+				let parameter = {};
+				parameter.optionID = "";
+				parameter.accountAddr = "";
+				parameter.nickName = this.remarks;
+				changeAlias(parameter).then((res) => {
+					console.log("res");
+					this.$refs.popup.close();
+				});
 			},
 			showOperation(e) {
-				console.log(e)
-				this.chooseSeq = e.seq
+				console.log(e);
+				this.chooseSeq = e.seq;
 			},
 			closeTimeOut() {
-				this.statusChangeShow = true
+				this.statusChangeShow = true;
 				setTimeout(() => {
-					this.statusChangeShow = false
-				}, 3000)
+					this.statusChangeShow = false;
+				}, 3000);
 			},
 			mobileOnline() {
-				this.onlineStatus = "Mobile Online"
-				this.closeTimeOut()
+				this.onlineStatus = "Mobile Online";
+				this.closeTimeOut();
 			},
 			computerOnline() {
-				this.onlineStatus = "Computer online"
-				this.closeTimeOut()
+				this.onlineStatus = "Computer online";
+				this.closeTimeOut();
 			},
 			invisible() {
-				this.onlineStatus = "invisible"
-				this.closeTimeOut()
+				this.onlineStatus = "invisible";
+				this.closeTimeOut();
 			},
 			offline() {
-				this.onlineStatus = "off-line"
-				this.closeTimeOut()
-			}
+				this.onlineStatus = "off-line";
+				this.closeTimeOut();
+			},
 		},
 		watch: {
 			"$store.state.newInfoJudgeValue": {
 				deep: true,
 				handler: function(newVal, oldVal) {
 					if (this.$store.state.latestNews.sendID == this.recipientID) {
-
-						this.list.push(this.$store.state.latestNews)
-						console.log(this.list, "消息列表")
+						this.list.push(this.$store.state.latestNews);
+						console.log(this.list, "消息列表");
 					}
-
-				}
-			}
+				},
+			},
 		},
 		mounted() {
-			this.userInfo = this.$store.state.userInfo
-			const query = uni.createSelectorQuery().in(this);
-			query.select('#main').boundingClientRect(data => {
-				uni.pageScrollTo({
-					scrollTop: data.height,
-					duration: 1
-				});
-			}).exec();
-		}
-
-	}
+			// this.userInfo = this.$store.state.userInfo;
+			// const query = uni.createSelectorQuery().in(this);
+			// query
+			//   .select("#main")
+			//   .boundingClientRect((data) => {
+			//     uni.pageScrollTo({
+			//       scrollTop: data.height,
+			//       duration: 1,
+			//     });
+			//   })
+			//   .exec();
+		},
+	};
 </script>
 
 <style lang="scss" scoped>
@@ -568,14 +540,14 @@
 			width: 20rpx;
 			height: 20rpx;
 			border-radius: 20rpx;
-			background: #10CC64;
+			background: #10cc64;
 		}
 
 		.invisibleCircle {
 			width: 20rpx;
 			height: 20rpx;
 			border-radius: 20rpx;
-			background: #E8A414;
+			background: #e8a414;
 		}
 
 		.offlineCircle {
@@ -583,7 +555,6 @@
 			height: 20rpx;
 			border-radius: 20rpx;
 			background: #959595;
-
 		}
 
 		.headCon {
@@ -593,15 +564,13 @@
 			width: 100%;
 
 			.head {
-				width: 100%;
 				height: 90rpx;
 				box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.15);
-				background-color: #FFFFFF;
+				background-color: #ffffff;
 				display: flex;
 				align-items: center;
-				justify-content: space-around;
-
-
+				justify-content: space-between;
+				padding:  0 44rpx;
 				.headleft {
 					width: 24rpx;
 					height: 42rpx;
@@ -631,7 +600,6 @@
 							margin-left: 8rpx;
 						}
 					}
-
 				}
 
 				.headRight {
@@ -643,7 +611,7 @@
 			.promptInfo {
 				width: 100%;
 				height: 90rpx;
-				background: #EBEBEB;
+				background: #ebebeb;
 				display: flex;
 				align-items: center;
 				justify-content: center;
@@ -657,14 +625,12 @@
 			}
 		}
 
-
-
 		.maincontent {
 			max-width: 384rpx;
 			font-size: 28rpx;
 			font-weight: 400;
 			color: #333333;
-			background-color: #F0F0F0;
+			background-color: #f0f0f0;
 			border-radius: 4px;
 			padding: 14rpx 18rpx;
 			margin-top: 8rpx;
@@ -684,12 +650,10 @@
 			flex-shrink: 0;
 		}
 
-
-
-
 		.main {
 			padding-bottom: 220rpx;
 			margin-top: 120rpx;
+
 			.left {
 				margin-left: 44rpx;
 				margin-top: 26rpx;
@@ -717,7 +681,6 @@
 						margin-top: -100rpx;
 
 						.operationBoxtriangle {
-
 							width: 0px;
 							height: 0px;
 							border-top: 16rpx solid #666;
@@ -725,10 +688,8 @@
 							border-left: 16rpx solid transparent;
 							border-right: 16rpx solid transparent;
 							margin-left: 37%;
-
 						}
 					}
-
 
 					.triangle {
 						width: 0px;
@@ -736,14 +697,10 @@
 						border-top: 14rpx solid transparent;
 						border-bottom: 14rpx solid transparent;
 						border-left: 18rpx solid transparent;
-						border-right: 24rpx solid #F0F0F0;
+						border-right: 24rpx solid #f0f0f0;
 						margin-top: 26rpx;
-
 					}
-
-
 				}
-
 			}
 
 			.right {
@@ -777,9 +734,7 @@
 						right: -5%;
 						margin-top: -100rpx;
 
-
 						.operationBoxtriangle {
-
 							width: 0px;
 							height: 0px;
 							border-top: 16rpx solid #666;
@@ -787,7 +742,6 @@
 							border-left: 16rpx solid transparent;
 							border-right: 16rpx solid transparent;
 							margin-left: 37%;
-
 						}
 					}
 
@@ -797,14 +751,10 @@
 						border-top: 14rpx solid transparent;
 						border-bottom: 14rpx solid transparent;
 						border-right: 18rpx solid transparent;
-						border-left: 24rpx solid #F0F0F0;
+						border-left: 24rpx solid #f0f0f0;
 						margin-top: 26rpx;
-
 					}
-
-
 				}
-
 			}
 		}
 
@@ -816,7 +766,7 @@
 
 			.bottomAreaTop {
 				height: 100rpx;
-				background-color: #E8F2FF;
+				background-color: #e8f2ff;
 				display: flex;
 				align-items: center;
 
@@ -847,10 +797,9 @@
 					line-height: 56rpx;
 					font-size: 28rpx;
 					font-weight: 600;
-					color: #FFFFFF;
+					color: #ffffff;
 					margin-left: 20rpx;
 				}
-
 			}
 
 			.bottomAreaBottom {
@@ -873,14 +822,12 @@
 					.itemText {
 						font-size: 28rpx;
 						font-weight: 500;
-						color: #1B72EC;
+						color: #1b72ec;
 						margin-top: 12rpx;
 					}
-
 				}
 			}
 		}
-
 
 		.popupMain {
 			width: 464rpx;
@@ -894,7 +841,7 @@
 			text {
 				font-size: 32rpx;
 				font-weight: 500;
-				color: #1B72EC;
+				color: #1b72ec;
 				margin-top: 36rpx;
 			}
 
@@ -954,7 +901,7 @@
 				.operationText {
 					font-size: 20rpx;
 					font-weight: 400;
-					color: #FFFFFF;
+					color: #ffffff;
 					margin-top: 6rpx;
 				}
 			}
@@ -963,7 +910,7 @@
 		.setStatus {
 			width: 750rpx;
 			height: 530rpx;
-			background-color: #ECF5FF;
+			background-color: #ecf5ff;
 			position: absolute;
 			bottom: 0;
 			z-index: 999;
@@ -996,13 +943,12 @@
 					font-weight: 400;
 					color: #333333;
 					height: 62rpx;
-					background: #D1E7FF;
+					background: #d1e7ff;
 					border-radius: 8rpx;
 					display: flex;
 					align-items: center;
 					padding-left: 24rpx;
 					margin-top: 36rpx;
-
 
 					text {
 						margin-left: 12rpx;
@@ -1021,8 +967,6 @@
 					width: 216rpx;
 				}
 			}
-
 		}
-
 	}
 </style>

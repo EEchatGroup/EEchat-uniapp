@@ -12,7 +12,7 @@ export function user_register(data) {
 //登录
 export function user_token(data) {
 	return request({
-		url: 'auth/user_token',
+		url: '/auth/user_token',
 		method: 'post',
 		data: data
 	})
@@ -20,7 +20,7 @@ export function user_token(data) {
 //获取最新seq
 export function newest_seq(data) {
 	return request({
-		url: 'chat/newest_seq',
+		url: '/chat/newest_seq',
 		method: 'post',
 		data: data
 	})
@@ -28,7 +28,7 @@ export function newest_seq(data) {
 //拉取消息
 export function pull_msg(data) {
 	return request({
-		url: 'chat/pull_msg',
+		url: '/chat/pull_msg',
 		method: 'post',
 		data: data
 	})

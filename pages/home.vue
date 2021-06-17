@@ -1,7 +1,7 @@
 <template>
 	<view id="home">
 		<view class="head">
-			<text class="title">EEchat</text>
+			<text class="title" @click="dd">EEchat</text>
 			<view class="headRight">
 				<image src="../static/more-operations.png" mode="" class="headIcon" @click="controlDisplay"></image>
 				<view class="menuCon" v-show="showOperationsMenu">
@@ -52,7 +52,7 @@
 								1
 							</view>
 						</view>
-						
+
 					</view>
 					<!-- <view class="operationBox" :ref="item.id" v-show="item.isShow">
 						<view class="transparent" @click.stop="item.isShow = false">
@@ -67,12 +67,12 @@
 					</view> -->
 					<view class="operationBox" :ref="item.id" v-show="item.isShow">
 						<view class="transparent" @click.stop="item.isShow = false">
-					
+
 						</view>
 						<view class="operationBox-left" @click.stop="shield(item)">
 							<text>Top</text>
 						</view>
-						<view class="operationBox-right">
+						<view class="operationBox-right" @click="deleteConversation(item.id)">
 							<text>delete</text>
 						</view>
 						<view class="operationBox-add">
@@ -81,9 +81,9 @@
 					</view>
 				</view>
 			</view>
-			
-			
-			
+
+
+
 
 		</view>
 
@@ -94,8 +94,7 @@
 <script>
 	const openSdk = uni.requireNativePlugin("OpenSDK");
 	const globalEvent = uni.requireNativePlugin('globalEvent');
-	const getAllConversationList = uni.requireNativePlugin("getAllConversationList");
-	
+
 	import {
 		newest_seq,
 		pull_msg,
@@ -110,39 +109,21 @@
 				isLatestSeq: true,
 				addNewMessage: false,
 				showOperationsMenu: false,
-				listener:null
+				listener: null
 			}
 		},
-		onLoad() {
-
-
+		onInit() {
+			this.getAllConversationListener()
+			this.deleteConversationListener()
+			this.getTotalUnreadMsgCountListener()
 		},
+		onShow() {
 
-		onShow: function() {
-			
-			openSdk.getAllConversationList()
-			let _this = this
-			globalEvent.addEventListener('getAllConversationSuccess', function(e) {
-				let transfer = JSON.stringify(e)
-				_this.listener = JSON.parse(transfer)
-				uni.showToast({
-				  title: _this.listener,
-				  duration: 6000,
-				  icon: "none",
-				});
-				
-			});
-			globalEvent.addEventListener('getAllConversationFailed', function(e) {
-				let transfer = JSON.stringify(e)
-				_this.listener = JSON.parse(transfer)
-				uni.showToast({
-				  title: _this.listener,
-				  duration: 6000,
-				  icon: "none",
-				});
-				
-			});
-			
+			// openSdk.getAllConversationList()
+			console.log(openSdk.getAllConversationList());
+
+
+
 			// this.getInfoList()
 			// uni.setTabBarBadge({
 			//   index: 0,
@@ -158,6 +139,59 @@
 			// })
 		},
 		methods: {
+			getAllConversationListener() {
+				let _this = this
+				globalEvent.addEventListener('getAllConversationSuccess', function(e) {
+					let transfer = JSON.stringify(e)
+					_this.listener = JSON.parse(transfer)
+					console.log(_this.listener);
+
+				});
+				globalEvent.addEventListener('getAllConversationFailed', function(e) {
+					let transfer = JSON.stringify(e)
+					_this.listener = JSON.parse(transfer)
+					console.log(_this.listener);
+
+				});
+			},
+			deleteConversationListener() {
+				let _this = this
+				globalEvent.addEventListener('deleteConversationSuccess', function(e) {
+					let transfer = JSON.stringify(e)
+					_this.listener = JSON.parse(transfer)
+					console.log(_this.listener);
+			
+				});
+				globalEvent.addEventListener('deleteConversationFailed', function(e) {
+					let transfer = JSON.stringify(e)
+					_this.listener = JSON.parse(transfer)
+					console.log(_this.listener);
+			
+				});
+			},
+			getTotalUnreadMsgCountListener() {
+				let _this = this
+				globalEvent.addEventListener('getTotalUnreadMsgCountSuccess', function(e) {
+					let transfer = JSON.stringify(e)
+					_this.listener = JSON.parse(transfer)
+					console.log(_this.listener);
+			
+				});
+				globalEvent.addEventListener('getTotalUnreadMsgCountFailed', function(e) {
+					let transfer = JSON.stringify(e)
+					_this.listener = JSON.parse(transfer)
+					console.log(_this.listener);
+			
+				});
+			},
+			getTotalUnreadMsgCount(){
+				openSdk.getTotalUnreadMsgCount()
+			},
+			dd() {
+				uni.navigateTo({
+					url: './dialogue'
+				});
+			},
 			controlDisplay() {
 				this.showOperationsMenu = !this.showOperationsMenu
 			},
@@ -172,7 +206,7 @@
 			},
 			async shield(e) {
 				e.isShow = false
-				
+
 			},
 			//depep clone
 			deepClone(obj) {
@@ -418,7 +452,9 @@
 
 
 			},
-
+			deleteConversation(e) {
+				openSdk.deleteConversation(e)
+			}
 
 		},
 		watch: {
@@ -431,6 +467,9 @@
 		},
 		mounted() {
 			console.log(this.userInfo, "userinfo")
+
+		},
+		beforeMount() {
 
 		}
 	}
@@ -559,29 +598,32 @@
 								color: #999999;
 							}
 						}
-						.mainBottom{
+
+						.mainBottom {
 							display: flex;
 							justify-content: space-between;
 							align-items: center;
+
 							.latestContent {
 								font-size: 24rpx;
 								font-weight: 500;
 								color: #666666;
 								margin-top: 10rpx;
 							}
-							.msgNumber{
+
+							.msgNumber {
 								width: 32rpx;
 								height: 32rpx;
 								border-radius: 32rpx;
 								background-color: #F44038;
-								text-align: center;	
+								text-align: center;
 								line-height: 32rpx;
 								font-size: 24rpx;
 								font-weight: 600;
 								color: #FFFFFF;
 							}
 						}
-						
+
 					}
 
 					.operationBox {
@@ -618,7 +660,8 @@
 							background-image: linear-gradient(to right bottom, #FFD576, #FFAB41);
 							box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.5);
 						}
-						&-add{
+
+						&-add {
 							display: flex;
 							align-items: center;
 							flex-shrink: 0;
