@@ -1,4 +1,5 @@
-uni_modules
-node_modules
-unpackage
-
+/.hbuilderx/
+/nativeplugins/
+/node_modules/
+/uni_modules/
+/unpackage/

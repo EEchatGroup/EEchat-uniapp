@@ -8,7 +8,7 @@
 					mode="" class="portrait"></image>
 				<view class="listItemMain">
 					<text class="name">{{item.uid.length>10?item.uid.slice(0,10):item.uid}}</text>
-					<button type="primary" class="remove" @click="remove(item)">remove</button>
+					<button type="primary" class="remove" @click="remove(item.uid)">remove</button>
 				</view>
 			</view>
 			
@@ -45,26 +45,49 @@
 					url: './my'
 				});
 			},
-			async getList() {
-				let parameter = {}
-				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
-				get_blacklist(parameter).then(res => {
-					console.log(res)
-					this.list = res.data.data
+			getList() {
+				this.$openSdk.getBlackList()
+			},
+			getBlackListListener(){
+				this.$globalEvent.addEventListener('getBlackListSuccess',(params)=>{
+					console.log(params);
+					this.list = JSON.parse(params.msg)
+				})
+				this.$globalEvent.addEventListener('getBlackListFailed',(params)=>{
+					console.log(params);
 				})
 			},
-			async remove(e) {
-				let parameter = {}
-				parameter.uid = e.uid
-				parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
+			remove(uid) {
+				const reqData = {
+					uid
+				}
+				this.$openSdk.deleteFromBlackList(JSON.stringify(reqData))
+				// let parameter = {}
+				// parameter.uid = e.uid
+				// parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
 
-				remove_blacklist(parameter).then(res => {
-					console.log(res)
-					this.getList()
+				// remove_blacklist(parameter).then(res => {
+				// 	console.log(res)
+				// 	this.getList()
+				// })
+			},
+			removeBlackListener(){
+				const _this = this
+				this.$globalEvent.addEventListener('deleteFromBlackListSuccess',params=>{
+					console.log(params);
+					_this.$u.toast("移除成功！")
+					_this.getList()
 				})
-			}
+				this.$globalEvent.addEventListener('deleteFromBlackListFailed',params=>{
+					console.log(params);
+				})
+			},
 		},
-		onShow() {
+		beforeMount() {
+			this.getBlackListListener()
+			this.removeBlackListener()
+		},
+		mounted() {
 			this.getList()
 		}
 	}

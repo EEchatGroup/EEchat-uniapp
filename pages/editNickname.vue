@@ -1,6 +1,6 @@
 <template>
 	<view id="edit-nickname">
-		<uni-nav-bar left-icon="back" title="Change nickname" @clickLeft="goBack"></uni-nav-bar>
+		<uni-nav-bar left-icon="back" :title="title" @clickLeft="goBack"></uni-nav-bar>
 		<view class="main">
 			<input type="text" v-model="nickname" class="input" />
 			<button :type=" nickname.length==0? 'defailt':'primary' "
@@ -18,7 +18,9 @@
 	export default {
 		data() {
 			return {
-				nickname: "xxx"
+				nickname: "xxx",
+				title:"修改昵称",
+				fromMy:true,
 			}
 		},
 		onShow() {
@@ -44,7 +46,13 @@
 					url: './my'
 				});
 			}
-		 */}
+		 */},
+		 // onLoad:function(options){
+		 // 	console.log(options);
+			// if(options.path!=="my"){
+				
+			// }
+		 // }
 	}
 </script>
 

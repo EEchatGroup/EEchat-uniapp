@@ -76,37 +76,64 @@
 			}
 		},
 		onShow: async function() {
-			if (this.friendList.length == 0) {
-				for (let x = 0; x < this.Initials.length; x++) {
-					let item = {}
-					item.letter = this.Initials[x]
-					item.data = []
-					this.friendList.push(item)
-				}
-				console.log(this.friendList, "xxx");
-			}
+			// if (this.friendList.length == 0) {
+			// 	for (let x = 0; x < this.Initials.length; x++) {
+			// 		let item = {}
+			// 		item.letter = this.Initials[x]
+			// 		item.data = []
+			// 		this.friendList.push(item)
+			// 	}
+			// 	console.log(this.friendList, "xxx");
+			// }
 
 
-			let parameter = {}
-			parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
-			get_friend_list(parameter).then(res => {
-				console.log(res.data, "好友列表")
-				for (let i = 0; i < res.data.data.length; i++) {
-					res.data.data[i].img =
-						"https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
-					for (let y = 0; y < this.Initials.length; y++) {
-						this.friendList[y].data = []
-						this.friendList[y].data.push(res.data.data[i])
-					}
+			// let parameter = {}
+			// parameter.operationID = this.$store.state.userInfo.address + await Date.now().toString();
+			// get_friend_list(parameter).then(res => {
+			// 	console.log(res.data, "好友列表")
+			// 	for (let i = 0; i < res.data.data.length; i++) {
+			// 		res.data.data[i].img =
+			// 			"https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
+			// 		for (let y = 0; y < this.Initials.length; y++) {
+			// 			this.friendList[y].data = []
+			// 			this.friendList[y].data.push(res.data.data[i])
+			// 		}
 
-				}
-				console.log(this.friendList, "544566");
-			})
+			// 	}
+			// 	console.log(this.friendList, "544566");
+			// })
 		},
 		methods: {
+			getMailList(){
+				this.$openSdk.getFriendList()
+			},
+			getMailListListener(){
+				this.$globalEvent.addEventListener('getFriendListSuccess',(params)=>{
+					const tmpList = JSON.parse(params.msg)
+					tmpList.map(i=>{
+						i.img= "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
+					})
+					this.friendList = [
+						{
+							letter: "A",
+							data: tmpList
+						}
+					]
+					console.log(this.friendList)
+				})
+				this.$globalEvent.addEventListener('getFriendListFailed',(params)=>{
+					console.log(params);
+				})
+			},
 			async bindClick(e) {
-				console.log(e.item.name, "7777777777")
-				await this.$store.commit('getSetFriendData', e.item.name)
+				let item = Object.assign({},e.item.name)
+				console.log(item, "7777777777")
+				if(item.isInBlackList===1){
+					item.blackStatus=true
+				}else{
+					item.blackStatus=false
+				}
+				await this.$store.commit('getSetFriendData', item)
 				uni.navigateTo({
 					url: './setFriend'
 				});
@@ -130,6 +157,15 @@
 					url: './newFriends'
 				});
 			}
+		},
+		beforeMount() {
+			this.getMailListListener()
+		},
+		mounted() {
+			this.getMailList()
+			},
+		onShow(){
+			this.getMailList()
 		}
 	}
 </script>
