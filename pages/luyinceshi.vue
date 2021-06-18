@@ -50,15 +50,9 @@
 		}, */
 		methods: {
 			kk() {
-				let jj = function(e) {
-					console.log(e, "4444444")
-				}
-				jj(2)
-
-				openSdk.createTextMessage(this.inputValue)
-				console.log(openSdk.createTextMessage(this.inputValue), "78899")
-
-
+				
+				let jj = "single_ac6b0878cba4000a798f99eb7f5c12f0"
+				console.log(jj.split("_"));
 			},
 			cc() {
 				console.log("dddddd");

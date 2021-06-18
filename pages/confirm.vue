@@ -127,7 +127,7 @@
 					accountInfo.uid = this.$store.state.registerInfo.address;
 					accountInfo.name = "newUser";
 					accountInfo.platform = 5;
-
+					let _this = this
 					return uni.request({
 						url: "http://47.112.160.66:10000/auth/user_register",
 						method: 'POST',
@@ -155,7 +155,7 @@
 
 											}
 										});
-										openSdk.login(res.data.data.uid, res.data.data.token)
+										_this.$openSdk.login(res.data.data.uid, res.data.data.token)
 									},
 									fail() {
 

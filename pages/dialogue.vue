@@ -26,14 +26,14 @@
 		</view>
 
 		<view class="main" id="main">
-			<view v-for="item in list" :key="item.sendID">
+			<view v-for="item in list" :key="item.serverMsgID">
 				<view v-if="
             item.sendID == $store.state.userInfo.address && item.msgFrom == 100
           " class="right">
 					<image src="../static/sentFail.png" mode="" v-if="item.sentFail" class="StatusIcon"></image>
-					<view class="blank" @click="chooseSeq = 0"> </view>
+					<view class="blank" @click="chooseServerMsgID = 0"> </view>
 					<view class="contentArea">
-						<view class="operationBox" v-if="item.seq == chooseSeq">
+						<view class="operationBox" v-if="item.serverMsgID == chooseServerMsgID">
 							<view class="operationBoxMain">
 								<view class="operationBoxMainItem">
 									<image src="../static/copy.png" mode="" class="operationIcon"></image>
@@ -70,9 +70,9 @@
 				<view v-if="
             item.sendID != $store.state.userInfo.address && item.msgFrom == 100
           " class="left">
-					<view class="blank" @click="chooseSeq = 0"> </view>
+					<view class="blank" @click="chooseServerMsgID = 0"> </view>
 					<view class="contentArea">
-						<view class="operationBox" v-if="item.seq == chooseSeq">
+						<view class="operationBox" v-if="item.serverMsgID == chooseServerMsgID">
 							<view class="operationBoxMain">
 								<view class="operationBoxMainItem">
 									<image src="../static/copy.png" mode="" class="operationIcon"></image>
@@ -159,8 +159,6 @@
 </template>
 
 <script>
-	const openSdk = uni.requireNativePlugin("OpenSDK");
-	const globalEvent = uni.requireNativePlugin('globalEvent');
 	import {
 		changeAlias,
 		send_msg
@@ -181,7 +179,7 @@
 				imgContent: {},
 				messages: [],
 				isMoreOperation: false,
-				chooseSeq: 0,
+				chooseServerMsgID: 0,
 				setStatusShow: false,
 				statusChangeShow: false,
 				onlineStatus: "Mobile Online",
@@ -189,48 +187,55 @@
 			};
 		},
 		onLoad: function(option) {
+			this.getHistoryMessageListListener()
 			this.sendMessageListener()
-			// console.log(option, "wsxwswxwsx");
-			// this.nickname = option.id;
-			// this.recipientID = option.id;
+			if(option.userID){
+				this.nickname = option.userID;
+			}else{
+				this.nickname = "7777"
+			}
+			console.log(this.$store.state,"78979979987979");
+			let params = {}
+			params.userID= option.userID,
+			params.groupID="",
+			params.startMsg=null,
+			params.count=50
+			this.$openSdk.getHistoryMessageList(JSON.stringify(params))
 
-			// try {
-			//   this.messages = uni.getStorageSync(
-			//     this.$store.state.userInfo.address + "localMessage"
-			//   );
-			//   for (let i = 0; i < this.messages.length; i++) {
-			//     if (this.messages[i].id == option.id) {
-			//       /* for(let y = 0; y < messages[i].list.length; y++){
-			// 			if(messages[i].list[y].contentType== 102) {
-			// 			messages[i].list[y].content = JSON.parse(messages[i].list[y].content)
-			// 			}
-			// 		} */
-
-			//       this.list = this.messages[i].list;
-			//       console.log(this.list, "duihua");
-			//       break;
-			//     }
-			//   }
-			// } catch (e) {
-			//   // error
-			// }
 		},
 		methods: {
 			sendMessageListener() {
 				let _this = this
-				globalEvent.addEventListener('sendMessageSuccess', (params) => {
+				_this.$globalEvent.addEventListener('sendMessageSuccess', (params) => {
 					let transfer = JSON.stringify(params)
 					_this.listener = JSON.parse(transfer)
 
 					console.log(_this.listener, "chenggong");
 
 				})
-				globalEvent.addEventListener('sendMessageFailed', (params) => {
+				_this.$globalEvent.addEventListener('sendMessageFailed', (params) => {
 					let transfer = JSON.stringify(params)
 					_this.listener = JSON.parse(transfer)
 
 					console.log(_this.listener, "shibai");
 
+				})
+			},
+			getHistoryMessageListListener() {
+				let _this = this
+				_this.$globalEvent.addEventListener('getHisMsgSuccess', (params) => {
+					let transfer = JSON.stringify(params);
+					_this.list = JSON.parse(JSON.parse(transfer).msg);
+			
+					console.log(_this.list, "拉消息");
+			
+				})
+				_this.$globalEvent.addEventListener('getHisMsgFailed', (params) => {
+					let transfer = JSON.stringify(params)
+					_this.listener = JSON.parse(transfer)
+			
+					console.log(_this.listener, "shibai");
+			
 				})
 			},
 			async sendInfo() {
@@ -446,8 +451,8 @@
 				});
 			},
 			async voice() {
-				let newTextMessage = await openSdk.createTextMessage(this.inputValue)
-				let dd = openSdk.sendMessage(newTextMessage, "ac6b0878cba4000a798f99eb7f5c12f0", "", false)
+				let newTextMessage = await this.$openSdk.createTextMessage(this.inputValue)
+				let dd = this.$openSdk.sendMessage(newTextMessage, "ac6b0878cba4000a798f99eb7f5c12f0", "", false)
 				console.log(dd);
 
 				// uni.navigateTo({
@@ -482,7 +487,7 @@
 			},
 			showOperation(e) {
 				console.log(e);
-				this.chooseSeq = e.seq;
+				this.chooseServerMsgID = e.serverMsgID;
 			},
 			closeTimeOut() {
 				this.statusChangeShow = true;
@@ -519,7 +524,8 @@
 			},
 		},
 		mounted() {
-			// this.userInfo = this.$store.state.userInfo;
+			// this.userInfo = this.$store.state.conversationParameter;
+			// console.log(this.userInfo,"1111111");
 			// const query = uni.createSelectorQuery().in(this);
 			// query
 			//   .select("#main")
@@ -663,7 +669,6 @@
 				position: relative;
 
 				.blank {
-					background-color: blue;
 					position: absolute;
 					width: 100%;
 					height: 100%;
@@ -677,7 +682,7 @@
 
 					.operationBox {
 						position: absolute;
-						left: 20%;
+						left: 2%;
 						margin-top: -100rpx;
 
 						.operationBoxtriangle {

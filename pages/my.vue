@@ -12,13 +12,16 @@
 		</view>
 		<view class="funtionArea">
 			<uni-list>
-				<uni-list-item thumb="../static/changeAvatar.png" title="Change your Avatar" clickable @click="goEditNickname"></uni-list-item>
-				<uni-list-item thumb="../static/edit.png" title="Change nickname" clickable @click="goEditNickname"></uni-list-item>
-				<uni-list-item thumb="../static/blockList.png" title="Address book blacklist" clickable @click="goBlockList"></uni-list-item>
+				<uni-list-item thumb="../static/changeAvatar.png" title="Change your Avatar" clickable
+					@click="goEditNickname"></uni-list-item>
+				<uni-list-item thumb="../static/edit.png" title="Change nickname" clickable @click="goEditNickname">
+				</uni-list-item>
+				<uni-list-item thumb="../static/blockList.png" title="Address book blacklist" clickable
+					@click="goBlockList"></uni-list-item>
 				<!-- <uni-list-item thumb="../static/link.png" title="生成会话链接" clickable @click="showLinkPopup"></uni-list-item>
 				<uni-list-item thumb="../static/exit.png" title="退出登录" clickable @click="logoutConfirm"></uni-list-item> -->
 			</uni-list>
-			
+
 			<view class="logOutArea" @click="logoutConfirm">
 				<image src="../static/logOut.png" mode="" class="logOutIcon"></image>
 				<text class="logOutText">Log out</text>
@@ -40,7 +43,7 @@
 				<view class="title">
 					<text>Are you sure you want to log out?</text>
 				</view>
-				
+
 				<view class="buttonArea">
 					<button type="primary" @click="logoutCancel">Cancel</button>
 					<button type="primary" @click="logout">Confirm</button>
@@ -51,7 +54,6 @@
 </template>
 
 <script>
-	const openSdk = uni.requireNativePlugin("OpenSDK");
 	export default {
 		data() {
 			return {
@@ -113,12 +115,39 @@
 				// } catch (e) {
 				//     // error
 				// }
-				
-			}
 
+			},
+			setConversationListener() {
+				let _this = this
+				_this.$globalEvent.addEventListener("onNewConversation", function(e) {
+					let transfer = JSON.stringify(e);
+					_this.listener = JSON.parse(transfer);
+					console.log(_this.listener, "新会话");
+				});
+				_this.$globalEvent.addEventListener("onConversationChanged", function(e) {
+					let transfer = JSON.stringify(e);
+					_this.listener = JSON.parse(transfer);
+					console.log(_this.listener.length, "ccccasdasdasdasdasadsc");
+					console.log(_this.listener, "会话列表改变");
+				});
+				_this.$globalEvent.addEventListener("onTotalUnreadMessageCountChanged", function(e) {
+					let transfer = JSON.stringify(e);
+					_this.listener = JSON.parse(transfer);
+					console.log(_this.listener, "总未读数改变");
+				});
+				_this.$globalEvent.addEventListener("onSyncServerStart", function(e) {
+					let transfer = JSON.stringify(e);
+					_this.listener = JSON.parse(transfer);
+					console.log(_this.listener, "监听启动");
+				});
+
+
+			},
 		},
-		created() {
+		mounted() {
 			this.userInfo = this.$store.state.userInfo
+			// this.setConversationListener()
+			// this.$openSdk.setConversationListener()
 		}
 	}
 </script>
@@ -184,18 +213,21 @@
 
 		.funtionArea {
 			margin-top: 28rpx;
-			.logOutArea{
+
+			.logOutArea {
 				height: 112rpx;
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				background-color: #fff;
 				margin-top: 440rpx;
-				.logOutIcon{
+
+				.logOutIcon {
 					width: 40rpx;
 					height: 40rpx;
 				}
-				.logOutText{
+
+				.logOutText {
 					font-size: 36rpx;
 					font-weight: 500;
 					color: #1B72EC;
@@ -272,6 +304,7 @@
 			display: flex;
 			flex-direction: column;
 			align-items: center;
+
 			.title {
 				font-size: 34rpx;
 				font-weight: 500;
