@@ -32,7 +32,7 @@
           " class="right">
 					<image src="../static/sentFail.png" mode="" v-if="item.sentFail" class="StatusIcon"></image>
 					<view class="blank" @click="chooseCreateTime = 0"> </view>
-					<view class="contentArea">
+					<view class="contentArea" style="text-align: right;">
 						<view class="operationBox" v-if="item.createTime == chooseCreateTime">
 							<view class="operationBoxMain">
 								<view class="operationBoxMainItem">
@@ -54,11 +54,13 @@
 							</view>
 							<view class="operationBoxtriangle"> </view>
 						</view>
-						<view class="maincontent" v-show="item.contentType == 101"
+						<view class="maincontent" v-if="item.contentType == 101"
 							@longtap.prevent="showOperation(item)">{{ item.content }}</view>
-						<view class="maincontent" v-show="item.contentType == 102"
+						<view  v-if="item.contentType == 102"
+						@click="previewImg(item)"
 							@longtap.prevent="showOperation(item)">
-							<image :src="item.content.thumbnail || item.content" mode="aspectFit"></image>
+							<!-- <image :src="item.content.thumbnail" mode=""></image> -->
+							<image class="my-img" :src="JSON.parse(item.content).snapshotPicture.url" mode="heightFix"></image>
 						</view>
 						<view class="triangle"> </view>
 						<image
@@ -94,11 +96,13 @@
 							mode="" class="headIcon">
 						</image>
 						<view class="triangle"> </view>
-						<view class="maincontent" v-show="item.contentType == 101"
+						<view class="maincontent" v-if="item.contentType == 101"
 							@longtap.prevent="showOperation(item)">{{ item.content }}</view>
-						<view class="maincontent" v-show="item.contentType == 102"
+						<view v-if="item.contentType == 102"
+						@click="previewImg(item)"
 							@longtap.prevent="showOperation(item)">
-							<image :src="item.content.thumbnail" mode=""></image>
+							<!-- <image :src="item.content.thumbnail" mode=""></image> -->
+							<image class="my-img" :src="JSON.parse(item.content).snapshotPicture.url" mode="heightFix"></image>
 						</view>
 					</view>
 				</view>
@@ -122,7 +126,7 @@
 					<text class="itemText">shot</text>
 				</view>
 
-				<view class="bottomAreaBottomItem" @click="album">
+				<view class="bottomAreaBottomItem" @click="actionShow=true">
 					<image src="../static/album.png" mode="" class="itemIcon"></image>
 					<text class="itemText">album</text>
 				</view>
@@ -154,7 +158,7 @@
 				</view>
 			</view>
 		</view>
-
+<u-action-sheet @click="imageOrVideo" :list="actionList" v-model="actionShow"></u-action-sheet>
 	</view>
 </template>
 
@@ -173,7 +177,7 @@
 				isSendImg: false,
 				inputValue: "",
 				userInfo: {},
-				list: [],
+				list:[],
 				recipientID: "",
 				tupian: "",
 				imgContent: {},
@@ -184,16 +188,28 @@
 				statusChangeShow: false,
 				onlineStatus: "Mobile Online",
 				listener: null,
-				conversationID:""
+				conversationID:"",
+				recvID:"",
+				actionList:[
+					{
+						text: '图片',
+					},
+					{
+						text:'视频'
+					}
+				],
+				actionShow:false,
 			};
 		},
 		onLoad: function(option) {
+			console.log(option);
 			this.getHistoryMessageListListener()
 			this.sendMessageListener()
 			this.SetConversationDraftListener()
 			this.conversationID = option.conversationID
 			if (option.userID) {
 				this.nickname = option.userID;
+				this.recvID = option.userID
 			} else {
 				this.nickname = "7777"
 			}
@@ -248,6 +264,7 @@
 				let _this = this
 				_this.$globalEvent.addEventListener('getHisMsgSuccess', (params) => {
 					let transfer = JSON.stringify(params);
+					console.log(params.msg);
 					_this.list = JSON.parse(JSON.parse(transfer).msg);
 
 					console.log(_this.list, "拉消息");
@@ -266,7 +283,7 @@
 				if (this.inputValue.length > 0) {
 
 					let newTextMessage = await this.$openSdk.createTextMessage(this.inputValue)
-					let dd = this.$openSdk.sendMessage(newTextMessage, "7b0b2a0714e1e858e078b50452887959040086b0", "",
+					let dd = this.$openSdk.sendMessage(newTextMessage, this.recvID , "",
 						false)
 					console.log(dd, "发送消息");
 					this.inputValue = ""
@@ -328,6 +345,19 @@
 				// 	.exec();
 			},
 
+			imageOrVideo(index){
+				if(index===0){
+					this.album()
+				}else{
+					uni.chooseVideo({
+						sourceType:['album'],
+						success: (res) => {
+							console.log(res);
+						}
+					})
+				}
+			},
+
 			async album() {
 				let _this = this;
 				let latest = {};
@@ -339,10 +369,13 @@
 					success: async function(res) {
 						const tempFilePaths = res.tempFilePaths[0];
 						console.log(tempFilePaths, "图片路径");
-						let newImgMessage = _this.$openSdk.createImageMessage(tempFilePaths)
+						const tmpPath = tempFilePaths.slice(4)
+						const contactPath = ".."+tmpPath
+						console.log(contactPath);
+						let newImgMessage = _this.$openSdk.createImageMessage(contactPath)
 						console.log(newImgMessage, "图片创建返回");
 						let dd = _this.$openSdk.sendMessage(newImgMessage,
-							"e3631916a58e3e7998c8085c82a4ef462091a201", "", false)
+							_this.recvID, "", false)
 						console.log(dd, "发送消息");
 						_this.list.push(JSON.parse(newImgMessage))
 						/* latest.sendID = that.userInfo.address
@@ -446,14 +479,25 @@
 				});
 			},
 			shot() {
+				let _this = this;
 				uni.chooseImage({
 					count: 6, //默认9
 					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
-					sourceType: ['camera '], //从相册选择
+					sourceType: ['camera'], //从相册选择
 					success: function(res) {
 						const tempFilePaths = res.tempFilePaths[0];
 						console.log(tempFilePaths, "图片路径");
-					}
+						const tmpPath = tempFilePaths.slice(4)
+						const contactPath = ".."+tmpPath
+						console.log(contactPath);
+						let newImgMessage = _this.$openSdk.createImageMessage(contactPath)
+						console.log(newImgMessage, "图片创建返回");
+						let dd = _this.$openSdk.sendMessage(newImgMessage,
+							_this.recvID, "", false)
+						console.log(dd, "发送消息");
+						_this.list.push(JSON.parse(newImgMessage))
+					},
+					
 				});
 			},
 			async voice() {
@@ -512,7 +556,13 @@
 			offline() {
 				this.onlineStatus = "off-line";
 				this.closeTimeOut();
-			}
+			},
+			previewImg(item){
+				const url = JSON.parse(item.content).sourcePicture.url
+				uni.previewImage({
+					urls:[url]
+				})
+			},
 		},
 		watch: {
 			"$store.state.newInfoJudgeValue": {
@@ -649,10 +699,12 @@
 			white-space: normal;
 			word-break: break-all;
 			overflow: hidden;
-
-			.sendImg {
-				width: 100%;
-			}
+		}
+		
+		.my-img{
+			width: 150px;
+			    height: 200px;
+			    border-radius: 6px;
 		}
 
 		.headIcon {

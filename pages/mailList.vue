@@ -110,6 +110,7 @@
 			getMailListListener(){
 				this.$globalEvent.addEventListener('getFriendListSuccess',(params)=>{
 					const tmpList = JSON.parse(params.msg)
+					console.log(tmpList)
 					tmpList.map(i=>{
 						i.img= "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
 					})

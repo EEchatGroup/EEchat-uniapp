@@ -115,6 +115,7 @@
 					console.log(_this.sessionList, "新会话");
 				});
 				_this.$globalEvent.addEventListener("onConversationChanged", function(e) {
+					console.log(e);
 					let transfer = JSON.stringify(e);
 					_this.listener = JSON.parse(JSON.parse(transfer).msg);
 					console.log(_this.listener, "kong空");
