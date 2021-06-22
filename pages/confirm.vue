@@ -141,8 +141,8 @@
 									method: 'POST',
 									data: accountInfo,
 									success(res) {
-										let userInfo = this.$store.state.registerInfo;
-										this.$store.commit("UserInfoValue", userInfo);
+										let userInfo = _this.$store.state.registerInfo;
+										_this.$store.commit("UserInfoValue", userInfo);
 										uni.setStorage({
 											key: 'token',
 											data: res.data.data.token,
@@ -292,10 +292,11 @@
 		}
 
 		.writeArea {
-			width: 580rpx;
+			width: 590rpx;
 			height: 550rpx;
 			background-color: #fff;
 			box-shadow: 0 4rpx 26rpx 0 rgba(0, 84, 223, 0.3);
+			margin: 0 auto;
 			margin-top: 44rpx;
 			padding: 40rpx;
 			display: flex;

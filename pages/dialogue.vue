@@ -31,9 +31,9 @@
             item.sendID == $store.state.userInfo.address && item.msgFrom == 100
           " class="right">
 					<image src="../static/sentFail.png" mode="" v-if="item.sentFail" class="StatusIcon"></image>
-					<view class="blank" @click="chooseServerMsgID = 0"> </view>
+					<view class="blank" @click="chooseCreateTime = 0"> </view>
 					<view class="contentArea">
-						<view class="operationBox" v-if="item.serverMsgID == chooseServerMsgID">
+						<view class="operationBox" v-if="item.createTime == chooseCreateTime">
 							<view class="operationBoxMain">
 								<view class="operationBoxMainItem">
 									<image src="../static/copy.png" mode="" class="operationIcon"></image>
@@ -70,9 +70,9 @@
 				<view v-if="
             item.sendID != $store.state.userInfo.address && item.msgFrom == 100
           " class="left">
-					<view class="blank" @click="chooseServerMsgID = 0"> </view>
+					<view class="blank" @click="chooseCreateTime = 0"> </view>
 					<view class="contentArea">
-						<view class="operationBox" v-if="item.serverMsgID == chooseServerMsgID">
+						<view class="operationBox" v-if="item.createTime == chooseCreateTime">
 							<view class="operationBoxMain">
 								<view class="operationBoxMainItem">
 									<image src="../static/copy.png" mode="" class="operationIcon"></image>
@@ -117,7 +117,7 @@
 			</view>
 
 			<view class="bottomAreaBottom" v-show="isMoreOperation">
-				<view class="bottomAreaBottomItem" @click="album">
+				<view class="bottomAreaBottomItem" @click="shot">
 					<image src="../static/camera.png" mode="" class="itemIcon"></image>
 					<text class="itemText">shot</text>
 				</view>
@@ -179,45 +179,68 @@
 				imgContent: {},
 				messages: [],
 				isMoreOperation: false,
-				chooseServerMsgID: 0,
+				chooseCreateTime: 0,
 				setStatusShow: false,
 				statusChangeShow: false,
 				onlineStatus: "Mobile Online",
-				listener: null
+				listener: null,
+				conversationID:""
 			};
 		},
 		onLoad: function(option) {
 			this.getHistoryMessageListListener()
 			this.sendMessageListener()
-			if(option.userID){
+			this.SetConversationDraftListener()
+			this.conversationID = option.conversationID
+			if (option.userID) {
 				this.nickname = option.userID;
-			}else{
+			} else {
 				this.nickname = "7777"
 			}
-			console.log(this.$store.state,"78979979987979");
+			console.log(this.$store.state, "vuex");
 			let params = {}
-			params.userID= option.userID,
-			params.groupID="",
-			params.startMsg=null,
-			params.count=50
-			this.$openSdk.getHistoryMessageList(JSON.stringify(params))
-
+			params.userID = option.userID,
+				params.groupID = "",
+				params.startMsg = null,
+				params.count = 50
+			this.$openSdk.getHistoryMessageList(params)
+			this.$openSdk.findMessages
 		},
 		methods: {
+			SetConversationDraftListener() {
+				let _this = this
+				_this.$globalEvent.addEventListener('setConversationDraftSuccess', (params) => {
+					let transfer = JSON.stringify(params)
+					_this.listener = JSON.parse(transfer)
+					console.log(_this.listener, "草稿成功");
+			
+				})
+				_this.$globalEvent.addEventListener('setConversationDraftFailed', (params) => {
+					let transfer = JSON.stringify(params)
+					_this.listener = JSON.parse(transfer)
+					console.log(_this.listener, "草稿失败");
+			
+				})
+			},
 			sendMessageListener() {
 				let _this = this
 				_this.$globalEvent.addEventListener('sendMessageSuccess', (params) => {
 					let transfer = JSON.stringify(params)
 					_this.listener = JSON.parse(transfer)
-
-					console.log(_this.listener, "chenggong");
+					console.log(_this.listener, "发送成功");
 
 				})
 				_this.$globalEvent.addEventListener('sendMessageFailed', (params) => {
 					let transfer = JSON.stringify(params)
 					_this.listener = JSON.parse(transfer)
+					console.log(_this.listener, "发送失败");
 
-					console.log(_this.listener, "shibai");
+				})
+				_this.$globalEvent.addEventListener('sendMessageProgress', (params) => {
+					let transfer = JSON.stringify(params)
+					_this.listener = JSON.parse(transfer)
+
+					console.log(_this.listener, "发送进度");
 
 				})
 			},
@@ -226,52 +249,30 @@
 				_this.$globalEvent.addEventListener('getHisMsgSuccess', (params) => {
 					let transfer = JSON.stringify(params);
 					_this.list = JSON.parse(JSON.parse(transfer).msg);
-			
+
 					console.log(_this.list, "拉消息");
-			
+
 				})
 				_this.$globalEvent.addEventListener('getHisMsgFailed', (params) => {
 					let transfer = JSON.stringify(params)
 					_this.listener = JSON.parse(transfer)
-			
+
 					console.log(_this.listener, "shibai");
-			
+
 				})
 			},
 			async sendInfo() {
-				let parameter = {};
-				let latest = {};
-				latest.sentFail = false;
-				parameter.reqIdentifier = 1003;
-				parameter.platformID = 5;
-				parameter.token = uni.getStorageSync("token");
-				parameter.sendID = this.userInfo.address;
-				parameter.operationID =
-					this.userInfo.address + (await Date.now().toString());
-				parameter.msgIncr = this.$store.state.MsgIncr + 1;
-				parameter.data = {};
-				parameter.data.sessionType = 1;
-				parameter.data.msgFrom = 100;
-				parameter.data.contentType = 101;
-				parameter.data.recvID = this.recipientID;
-				parameter.data.content = this.inputValue;
-				parameter.data.clientMsgID = "222";
-				parameter.data.offlineInfo = {};
-				parameter.data.forceList = [];
-				parameter.data.options = {};
-				parameter.data.ext = {};
 
-				if (parameter.data.content.length > 0) {
-					this.$store.commit("MsgIncrAdd");
-					console.log(parameter, "消息发送参数");
-					send_msg(parameter)
-						.then((res) => {
-							console.log(res, "44444");
-							latest.sentFail = false;
-						})
-						.catch(function(error) {
-							latest.sentFail = true;
-						});
+				if (this.inputValue.length > 0) {
+
+					let newTextMessage = await this.$openSdk.createTextMessage(this.inputValue)
+					let dd = this.$openSdk.sendMessage(newTextMessage, "7b0b2a0714e1e858e078b50452887959040086b0", "",
+						false)
+					console.log(dd, "发送消息");
+					this.inputValue = ""
+					this.list.push(JSON.parse(newTextMessage))
+
+
 				} else {
 					uni.showToast({
 						title: "消息为空",
@@ -279,69 +280,56 @@
 						duration: 1500,
 					});
 				}
+				// let parameter = {};
+				// let latest = {};
+				// latest.sentFail = false;
+				// 	latest.sendID = this.userInfo.address;
+				// 	latest.recvID = this.recipientID;
+				// 	latest.sendTime = Date.now();
+				// 	latest.contentType = 101;
+				// 	latest.msgFrom = 100;
+				// 	latest.content = this.inputValue;
+				// 	latest.seq = uni.getStorageSync(this.userInfo.address + "latestSeq") + 1;
+				// 	latest.serverMsgID =
+				// 		"2021-06-01 09:37:46-4b134ea6ec423a385f96629ea4b6718304e3bd23-913761085841340441";
 
-				latest.sendID = this.userInfo.address;
-				latest.recvID = this.recipientID;
-				latest.sendTime = Date.now();
-				latest.contentType = 101;
-				latest.msgFrom = 100;
-				latest.content = this.inputValue;
-				latest.seq = uni.getStorageSync(this.userInfo.address + "latestSeq") + 1;
-				latest.serverMsgID =
-					"2021-06-01 09:37:46-4b134ea6ec423a385f96629ea4b6718304e3bd23-913761085841340441";
-				/* if (sendStatus == true) {
-				 latest.sentFail = false
-				} else {
-				 latest.sentFail = true
-				} */
 
-				if (parameter.data.content.length > 0) {
-					this.list.push(latest);
-					console.log(this.list, "本地消息列表");
-					this.inputValue = "";
+				// 	if (parameter.data.content.length > 0) {
+				// 		this.list.push(latest);
+				// 		console.log(this.list, "本地消息列表");
+				// 		this.inputValue = "";
 
-					for (let i = 0; i < this.messages.length; i++) {
-						if (this.messages[i].id == this.recipientID) {
-							this.messages[i].list = this.list;
-							console.log(this.messages, "duihua");
-							break;
-						}
-					}
-					try {
-						uni.setStorageSync(
-							this.userInfo.address + "localMessage",
-							this.messages
-						);
-						console.log(
-							uni.getStorageSync(this.userInfo.address + "localMessage"),
-							"456123"
-						);
-					} catch (e) {
-						// error
-					}
+				// 		for (let i = 0; i < this.messages.length; i++) {
+				// 			if (this.messages[i].id == this.recipientID) {
+				// 				this.messages[i].list = this.list;
+				// 				console.log(this.messages, "duihua");
+				// 				break;
+				// 			}
+				// 		}
 
-					if (latest.sentFail == false) {
-						try {
-							uni.setStorageSync(this.userInfo.address + "latestSeq", latest.seq);
-						} catch (e) {
-							// error
-						}
-					}
 
-					const query = uni.createSelectorQuery().in(this);
-					query
-						.select("#main")
-						.boundingClientRect((data) => {
-							uni.pageScrollTo({
-								scrollTop: data.height,
-								duration: 100,
-							});
-						})
-						.exec();
-				}
+				// 		if (latest.sentFail == false) {
+				// 			try {
+				// 				uni.setStorageSync(this.userInfo.address + "latestSeq", latest.seq);
+				// 			} catch (e) {
+				// 				// error
+				// 			}
+				// 		}
+
+				// const query = uni.createSelectorQuery().in(this);
+				// query
+				// 	.select("#main")
+				// 	.boundingClientRect((data) => {
+				// 		uni.pageScrollTo({
+				// 			scrollTop: data.height,
+				// 			duration: 100,
+				// 		});
+				// 	})
+				// 	.exec();
 			},
+
 			async album() {
-				let that = this;
+				let _this = this;
 				let latest = {};
 				// 选择文件
 				uni.chooseImage({
@@ -349,7 +337,14 @@
 					sizeType: ["original", "compressed"],
 					sourceType: ["album"], //从相册选择
 					success: async function(res) {
-						const tempFilePaths = res.tempFilePaths;
+						const tempFilePaths = res.tempFilePaths[0];
+						console.log(tempFilePaths, "图片路径");
+						let newImgMessage = _this.$openSdk.createImageMessage(tempFilePaths)
+						console.log(newImgMessage, "图片创建返回");
+						let dd = _this.$openSdk.sendMessage(newImgMessage,
+							"e3631916a58e3e7998c8085c82a4ef462091a201", "", false)
+						console.log(dd, "发送消息");
+						_this.list.push(JSON.parse(newImgMessage))
 						/* latest.sendID = that.userInfo.address
 						latest.recvID = that.recipientID
 						latest.sendTime = Date.now()
@@ -368,10 +363,10 @@
 							});
 						}).exec(); */
 
-						let suffix = res.tempFiles[0].name.substring(
+						/* let suffix = res.tempFiles[0].name.substring(
 							res.tempFiles[0].name.length - 4
 						);
-						await uploadFile(tempFilePaths[0], suffix);
+						await uploadFile(tempFilePaths[0], suffix); */
 						/* uni.getImageInfo({
 							src: res.tempFilePaths[0],
 							success: async function(image) {
@@ -450,14 +445,21 @@
 					},
 				});
 			},
+			shot() {
+				uni.chooseImage({
+					count: 6, //默认9
+					sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
+					sourceType: ['camera '], //从相册选择
+					success: function(res) {
+						const tempFilePaths = res.tempFilePaths[0];
+						console.log(tempFilePaths, "图片路径");
+					}
+				});
+			},
 			async voice() {
-				let newTextMessage = await this.$openSdk.createTextMessage(this.inputValue)
-				let dd = this.$openSdk.sendMessage(newTextMessage, "ac6b0878cba4000a798f99eb7f5c12f0", "", false)
-				console.log(dd);
-
-				// uni.navigateTo({
-				//   url: "./luyinceshi",
-				// });
+				uni.navigateTo({
+					url: "./luyinceshi",
+				});
 			},
 			goBack() {
 				uni.switchTab({
@@ -487,7 +489,7 @@
 			},
 			showOperation(e) {
 				console.log(e);
-				this.chooseServerMsgID = e.serverMsgID;
+				this.chooseCreateTime = e.createTime;
 			},
 			closeTimeOut() {
 				this.statusChangeShow = true;
@@ -510,7 +512,7 @@
 			offline() {
 				this.onlineStatus = "off-line";
 				this.closeTimeOut();
-			},
+			}
 		},
 		watch: {
 			"$store.state.newInfoJudgeValue": {
@@ -522,6 +524,9 @@
 					}
 				},
 			},
+		},
+		onHide(){
+			this.$openSdk.setConversationDraft(this.conversationID,this.inputValue)
 		},
 		mounted() {
 			// this.userInfo = this.$store.state.conversationParameter;
@@ -576,7 +581,8 @@
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
-				padding:  0 44rpx;
+				padding: 0 44rpx;
+
 				.headleft {
 					width: 24rpx;
 					height: 42rpx;

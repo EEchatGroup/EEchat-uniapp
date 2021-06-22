@@ -75,7 +75,7 @@
 				let address = await util.pubToAddress(key._hdkey._publicKey, true);
 				//编码地址
 				this.registerInfo.address = address.toString("hex")
-				console.log("账户地址", "0x" + address.toString("hex"));
+				console.log("账户地址",address.toString("hex"));
 			},
 			goLogin() {
 				uni.navigateTo({

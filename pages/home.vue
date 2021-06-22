@@ -18,8 +18,8 @@
 		<view class="main">
 
 			<view class="chatList">
-				<view class="chatItem" v-for="item in sessionList" :key="item.userID"
-					@longtap.prevent="showOperation(item)" @click="goDialogue(item)">
+				<view class="chatItem" v-for="item in sessionList" :key="item.conversationID"
+					@longtap.prevent="showOperation(item.conversationID)" @click="goDialogue(item)">
 					<image
 						src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
 						mode="" class="portrait"></image>
@@ -46,12 +46,12 @@
 							<text>delete</text>
 						</view>
 					</view> -->
-					<view class="operationBox" :ref="item.id" v-show="item.isShow">
+					<view class="operationBox" :ref="item.id" v-if="item.conversationID == chooseConversationID">
 						<view class="transparent" @click.stop="item.isShow = false"> </view>
 						<view class="operationBox-left" @click.stop="shield(item)">
 							<text>Top</text>
 						</view>
-						<view class="operationBox-right" @click="deleteConversation(item.id)">
+						<view class="operationBox-right" @click.stop="deleteConversation(item.conversationID)">
 							<text>delete</text>
 						</view>
 						<view class="operationBox-add">
@@ -65,11 +65,6 @@
 </template>
 
 <script>
-	import {
-		newest_seq,
-		pull_msg,
-		add_blacklist
-	} from "../api";
 	export default {
 		data() {
 			return {
@@ -80,20 +75,24 @@
 				addNewMessage: false,
 				showOperationsMenu: false,
 				listener: null,
+				chooseConversationID: 0
 			};
 		},
 		onInit() {
 
 		},
 		onLoad() {
-			this.getAllConversationListener();
+			this.getAllConversationListListener();
 			this.deleteConversationListener();
 			this.getTotalUnreadMsgCountListener();
 			this.setConversationListener()
 			this.getOneConversationListener()
+
 			this.$openSdk.setConversationListener()
-			this.$openSdk.getAllConversationList();
+			this.$openSdk.getAllConversationList()
 			this.$openSdk.getTotalUnreadMsgCount()
+
+
 		},
 		onShow() {
 
@@ -106,22 +105,33 @@
 				let _this = this
 				_this.$globalEvent.addEventListener("onNewConversation", function(e) {
 					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "新会话");
-				});
-				_this.$globalEvent.addEventListener("onConversationChanged", function(e) {
-					let transfer = JSON.stringify(e);
 					_this.listener = JSON.parse(JSON.parse(transfer).msg);
 					for (let i = 0; i < _this.listener.length; i++) {
 						_this.listener[i].latestMsg = JSON.parse(_this.listener[i].latestMsg)
 
 					}
-					_this.sessionList = _this.listener
+					_this.sessionList = _this.listener.concat(_this.sessionList)
+					console.log(_this.listener, "信心信息信息");
+					console.log(_this.sessionList, "新会话");
+				});
+				_this.$globalEvent.addEventListener("onConversationChanged", function(e) {
+					let transfer = JSON.stringify(e);
+					_this.listener = JSON.parse(JSON.parse(transfer).msg);
+					console.log(_this.listener, "kong空");
+					if (_this.listener != null) {
+						for (let i = 0; i < _this.listener.length; i++) {
+							_this.listener[i].latestMsg = JSON.parse(_this.listener[i].latestMsg)
+
+						}
+						_this.sessionList = _this.listener
+					}
+
 					console.log(_this.sessionList, "会话列表改变");
 				});
 				_this.$globalEvent.addEventListener("onTotalUnreadMessageCountChanged", function(e) {
 					let transfer = JSON.stringify(e);
 					_this.listener = JSON.parse(transfer);
+					_this.$openSdk.getTotalUnreadMsgCount()
 					console.log(_this.listener, "总未读数改变");
 				});
 				_this.$globalEvent.addEventListener("onSyncServerStart", function(e) {
@@ -129,20 +139,30 @@
 					_this.listener = JSON.parse(transfer);
 					console.log(_this.listener, "监听启动");
 				});
+				_this.$globalEvent.addEventListener("onSyncServerFailed", function(e) {
+					let transfer = JSON.stringify(e);
+					_this.listener = JSON.parse(transfer);
+					console.log(_this.listener, "监听失败");
+				});
+				_this.$globalEvent.addEventListener("onSyncServerFinish", function(e) {
+					let transfer = JSON.stringify(e);
+					_this.listener = JSON.parse(transfer);
+					console.log(_this.listener, "监听完成");
+				});
 
 
 			},
-			getAllConversationListener() {
+			getAllConversationListListener() {
 				let _this = this;
 				_this.$globalEvent.addEventListener("getAllConversationSuccess", function(e) {
 					let transfer = JSON.stringify(e);
 					_this.listener = JSON.parse(JSON.parse(transfer).msg);
 					for (let i = 0; i < _this.listener.length; i++) {
 						_this.listener[i].latestMsg = JSON.parse(_this.listener[i].latestMsg)
-
+						_this.listener[i].isShow = false
 					}
 					_this.sessionList = _this.listener
-					console.log(_this.listener, "获取所有会话");
+					console.log(_this.listener, "获取所有会话成功");
 				});
 				_this.$globalEvent.addEventListener("getAllConversationFailed", function(e) {
 					let transfer = JSON.stringify(e);
@@ -155,12 +175,12 @@
 				_this.$globalEvent.addEventListener("deleteConversationSuccess", function(e) {
 					let transfer = JSON.stringify(e);
 					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener);
+					console.log(_this.listener, "删除成功");
 				});
 				_this.$globalEvent.addEventListener("deleteConversationFailed", function(e) {
 					let transfer = JSON.stringify(e);
 					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener);
+					console.log(_this.listener, "删除失败");
 				});
 			},
 			getTotalUnreadMsgCountListener() {
@@ -170,7 +190,14 @@
 					function(e) {
 						let transfer = JSON.stringify(e);
 						_this.listener = JSON.parse(transfer);
-						console.log(_this.listener,"未读消息");
+						if (Number(_this.listener.msg) > 0) {
+							uni.setTabBarBadge({
+								index: 0,
+								text: _this.listener.msg
+							})
+						}
+
+						console.log(_this.listener.msg, "未读消息");
 					}
 				);
 				_this.$globalEvent.addEventListener(
@@ -218,11 +245,12 @@
 				});
 				this.showOperationsMenu = false;
 			},
-			showOperation(e) {
-				e.isShow = true;
+			showOperation(conversationID) {
+				this.chooseConversationID = conversationID
 			},
-			async shield(e) {
-				e.isShow = false;
+			shield(e) {
+				//功能还没做
+				this.chooseConversationID = 0
 			},
 			//depep clone
 			deepClone(obj) {
@@ -234,11 +262,11 @@
 					url: "./register",
 				});
 			},
-			async goDialogue(e) {
+			goDialogue(e) {
 				// await this.$store.commit("getConversationUserID",e.userID)
 
 				uni.navigateTo({
-					url: "./dialogue?userID="+ e.userID
+					url: "./dialogue?userID=" + e.userID + "&conversationID=" + e.conversationID
 				});
 			},
 			sortNumber(a, b) {
@@ -246,7 +274,8 @@
 			},
 
 			deleteConversation(e) {
-				openSdk.deleteConversation(e);
+				this.$openSdk.deleteConversation(e);
+				this.chooseConversationID = 0
 			},
 		},
 		watch: {

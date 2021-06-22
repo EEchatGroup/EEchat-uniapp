@@ -25,6 +25,7 @@
 						},
 						(entry) => {
 							_this.initAsync(entry.fullPath);
+							console.log(entry.fullPath,"路径");
 						},
 						(error) => {
 							console.log(error);
@@ -44,14 +45,18 @@
 			},
 			loginListener() {
 				let _this = this;
-				_this.$globalEvent.addEventListener("onLoginSuccess", function(e) {
-					let transfer = JSON.stringify(e);
+				_this.$globalEvent.addEventListener("onLoginSuccess", function(params) {
+					let transfer = JSON.stringify(params);
 					_this.listener = JSON.parse(transfer);
-					if (_this.listener.msg == "ok") {
-						uni.switchTab({
-							url: "./home",
-						});
-					}
+					console.log(_this.listener, "登录成功");
+					uni.switchTab({
+						url: "./home",
+					});
+				});
+				_this.$globalEvent.addEventListener("onLoginFailed", (params) => {
+					let transfer = JSON.stringify(params);
+					_this.listener = JSON.parse(transfer);
+					console.log(_this.listener, "登录失败");
 				});
 			},
 			logoutListener() {
@@ -59,14 +64,16 @@
 				_this.$globalEvent.addEventListener("onLogoutSuccess", (params) => {
 					let transfer = JSON.stringify(params);
 					_this.listener = JSON.parse(transfer);
-					if (_this.listener.msg == "ok") {
-						uni.navigateTo({
-							url: "./login",
-						});
-					}
+					console.log(_this.listener, "登出成功");
+					uni.navigateTo({
+						url: "./login",
+					});
+
 				});
 				_this.$globalEvent.addEventListener("onLogoutFailed", (params) => {
-					postLog(params);
+					let transfer = JSON.stringify(params);
+					_this.listener = JSON.parse(transfer);
+					console.log(_this.listener, "登出失败");
 				});
 			},
 			addMsgListener() {
@@ -116,47 +123,25 @@
 					console.log(params);
 				});
 			},
-			getAllConversationListener() {
-				let _this = this;
-				_this.$globalEvent.addEventListener("getAllConversationSuccess", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener);
-				});
-				_this.$globalEvent.addEventListener("getAllConversationFailed", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener);
-				});
-			},
-			
+
 			//深拷贝
 			deepClone(obj) {
 				let _obj = JSON.stringify(obj);
 				return JSON.parse(_obj);
 			}
 		},
-		mounted() {
-		},
+		mounted() {},
 		onLaunch: function() {
+			this.loginListener()
+			this.logoutListener()
 			this.fileInfo();
 			this.initFriendListener();
 			this.setFriendListener();
-			
-			let _this = this;
-			this.$globalEvent.addEventListener("onLoginSuccess", function(e) {
-				let transfer = JSON.stringify(e);
-				_this.listener = JSON.parse(transfer);
-				if (_this.listener.msg == "ok") {
-					uni.switchTab({
-						url: "./home",
-					});
-				}
-			});
+
 		},
 		onShow: function() {},
 		onHide: function() {},
-	
+
 	};
 </script>
 

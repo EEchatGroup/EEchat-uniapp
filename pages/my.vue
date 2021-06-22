@@ -2,10 +2,10 @@
 	<view id="my">
 		<view class="head">
 			<view class="headCircle">
-				<view class="lastname">{{userInfo.nickName}}</view>
+				<view class="lastname">XXX</view>
 			</view>
 			<view class="headInfo">
-				<text>{{userInfo.nickName}}</text>
+				<text>XXXXXXXXXXXXXXX</text>
 				<text>My Account:</text>
 				<text>{{userInfo.publicKey}}</text>
 			</view>
@@ -27,17 +27,7 @@
 				<text class="logOutText">Log out</text>
 			</view>
 		</view>
-		<!-- <uni-popup ref="popup">
-			<view class="linkPopup">
-				<text>生成链接</text>
-				<text>下一步将链接发送给小伙伴</text>
-				<input type="text" value="" v-model="linkValue" />
-				<view class="buttonArea">
-					<button type="primary" @click="cancel">取消</button>
-					<button type="primary" @click="copyLink">复制链接</button>
-				</view>
-			</view>
-		</uni-popup> -->
+		
 		<uni-popup ref="logoutPopup">
 			<view class="logout">
 				<view class="title">
@@ -58,7 +48,7 @@
 		data() {
 			return {
 				linkValue: "1111122222222211111",
-				userInfo: null,
+				userInfo: {},
 				tt: 0
 			}
 		},
@@ -107,7 +97,7 @@
 				this.$refs.logoutPopup.close()
 			},
 			logout() {
-				openSdk.logout()
+				this.$openSdk.logout()
 				this.$refs.logoutPopup.close()
 				// sessionStorage.removeItem('token')
 				// try {
@@ -116,33 +106,7 @@
 				//     // error
 				// }
 
-			},
-			setConversationListener() {
-				let _this = this
-				_this.$globalEvent.addEventListener("onNewConversation", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "新会话");
-				});
-				_this.$globalEvent.addEventListener("onConversationChanged", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener.length, "ccccasdasdasdasdasadsc");
-					console.log(_this.listener, "会话列表改变");
-				});
-				_this.$globalEvent.addEventListener("onTotalUnreadMessageCountChanged", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "总未读数改变");
-				});
-				_this.$globalEvent.addEventListener("onSyncServerStart", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "监听启动");
-				});
-
-
-			},
+			}
 		},
 		mounted() {
 			this.userInfo = this.$store.state.userInfo

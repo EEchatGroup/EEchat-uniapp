@@ -31,7 +31,7 @@
 	export default {
 		data() {
 			return {
-				account: "seminar fetch expand melody fog exist pill devote change swift idle eye",
+				account: "drastic border repeat evoke ahead capable cabin novel card dignity vote family",
 				loginInfo: {
 					mnemonic: "",
 					publicKey: "",
@@ -81,9 +81,8 @@
 								console.log("setfail");
 							},
 						});
-						// openSdk.login(res.data.data.token, res.data.data.uid);
-						const token =
-							"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVSUQiOiJjOTNiYzhiMTcxY2NlN2I5ZDFiZWZiMzg5YWJmZTUyZiIsIlBsYXRmb3JtIjoiSU9TIiwiZXhwIjoxNjI0NDIwMTAxLCJpYXQiOjE2MjM4MTUzMDEsIm5iZiI6MTYyMzgxNTMwMX0.sk1U5kCITPkFR-EAlRL38yY1nz653ZIvwycG2A3XU_s";
+						// _this.$openSdk.login(res.data.data.token, res.data.data.uid);
+						const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVSUQiOiJjOTNiYzhiMTcxY2NlN2I5ZDFiZWZiMzg5YWJmZTUyZiIsIlBsYXRmb3JtIjoiSU9TIiwiZXhwIjoxNjI0NDIwMTAxLCJpYXQiOjE2MjM4MTUzMDEsIm5iZiI6MTYyMzgxNTMwMX0.sk1U5kCITPkFR-EAlRL38yY1nz653ZIvwycG2A3XU_s"
 						const uid = "c93bc8b171cce7b9d1befb389abfe52f";
 						_this.loginInfo.address = uid
 						_this.$store.commit("UserInfoValue", _this.loginInfo);
