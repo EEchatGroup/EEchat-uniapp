@@ -77,7 +77,6 @@
 				});
 			},
 			addMsgListener() {
-				this.$openSdk.addMsgListener();
 				this.$globalEvent.addEventListener("onRecvNewMessage", (params) => {
 					console.log(params, "新消息新消息新消息");
 				});
@@ -132,6 +131,9 @@
 		},
 		mounted() {},
 		onLaunch: function() {
+			this.$openSdk.setConversationListener()
+			this.addMsgListener()
+			this.$openSdk.addMsgListener()
 			this.loginListener()
 			this.logoutListener()
 			this.fileInfo();

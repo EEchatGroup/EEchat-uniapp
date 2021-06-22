@@ -28,11 +28,11 @@
 							<text class="nickName">{{
                 item.userID.length > 20 ? item.userID.slice(0, 20) + "..." : item.userID
               }}</text>
-							<text class="latestTime">{{ item.latestMsg.clientMsgID.slice(11,16) }}</text>
+							<text class="latestTime">{{ item.latestMsg.serverMsgID.slice(11,16) }}</text>
 						</view>
 						<view class="mainBottom">
 							<text class="latestContent">{{ item.latestMsg.content }}</text>
-							<view class="msgNumber"> 1 </view>
+							<view class="msgNumber" v-show="item.unreadCount>0"> {{item.unreadCount}} </view>
 						</view>
 					</view>
 					<!-- <view class="operationBox" :ref="item.id" v-show="item.isShow">
@@ -85,20 +85,20 @@
 			this.getAllConversationListListener();
 			this.deleteConversationListener();
 			this.getTotalUnreadMsgCountListener();
-			this.setConversationListener()
+			
 			this.getOneConversationListener()
 
-			this.$openSdk.setConversationListener()
+			// this.$openSdk.setConversationListener()
 			this.$openSdk.getAllConversationList()
 			this.$openSdk.getTotalUnreadMsgCount()
-
+				
+		
 
 		},
 		onShow() {
-
 		},
-		mounted() {
-
+		beforeMount() {
+			this.setConversationListener()
 		},
 		methods: {
 			setConversationListener() {

@@ -468,7 +468,7 @@
 			},
 			goSetFriend() {
 				uni.navigateTo({
-					url: "./setFriend",
+					url: "./setFriend",										
 				});
 			},
 			modifyRemarks() {
@@ -721,7 +721,9 @@
 				align-items: center;
 				justify-content: flex-end;
 				position: relative;
-
+				.maincontent{
+					background-color: #DCEBFE;
+				}
 				.StatusIcon {
 					width: 30rpx;
 					height: 30rpx;
@@ -762,7 +764,7 @@
 						border-top: 14rpx solid transparent;
 						border-bottom: 14rpx solid transparent;
 						border-right: 18rpx solid transparent;
-						border-left: 24rpx solid #f0f0f0;
+						border-left: 24rpx solid #DCEBFE;
 						margin-top: 26rpx;
 					}
 				}
