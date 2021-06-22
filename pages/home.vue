@@ -31,24 +31,15 @@
 							<text class="latestTime">{{ item.latestMsg.serverMsgID.slice(11,16) }}</text>
 						</view>
 						<view class="mainBottom">
-							<text class="latestContent">{{ item.latestMsg.content }}</text>
+							<text class="latestContent">{{ item | showFilter }}</text>
+
 							<view class="msgNumber" v-show="item.unreadCount>0"> {{item.unreadCount}} </view>
 						</view>
 					</view>
-					<!-- <view class="operationBox" :ref="item.id" v-show="item.isShow">
-						<view class="transparent" @click.stop="item.isShow = false">
-
-						</view>
-						<view class="operationBox-left" @click.stop="shield(item)">
-							<text>Top</text>
-						</view>
-						<view class="operationBox-right">
-							<text>delete</text>
-						</view>
-					</view> -->
+					
 					<view class="operationBox" :ref="item.id" v-if="item.conversationID == chooseConversationID">
 						<view class="transparent" @click.stop="item.isShow = false"> </view>
-						<view class="operationBox-left" @click.stop="shield(item)">
+						<view class="operationBox-left" @click.stop="pinConversation(item)">
 							<text>Top</text>
 						</view>
 						<view class="operationBox-right" @click.stop="deleteConversation(item.conversationID)">
@@ -78,29 +69,78 @@
 				chooseConversationID: 0
 			};
 		},
-		onInit() {
+		filters: {
+			showFilter: function(value) {
+				switch (value.latestMsg.contentType) {
+					case 101:
+						return value.latestMsg.content
+						break;
+					case 102:
+						return "[图片]"
+						break;
+					case 103:
+						return "[音频]"
+						break;
+					case 104:
+						return "[视频]"
+						break;
+					case 201:
+						return JSON.parse(value.latestMsg.content).text
+						break;
+				}
 
+			}
 		},
 		onLoad() {
 			this.getAllConversationListListener();
 			this.deleteConversationListener();
 			this.getTotalUnreadMsgCountListener();
-			
 			this.getOneConversationListener()
-
+			this.SetConversationDraftListener()
+			this.markSingleMsgHasReadListener()
+			this.pinConversationListener()
 			// this.$openSdk.setConversationListener()
 			this.$openSdk.getAllConversationList()
 			this.$openSdk.getTotalUnreadMsgCount()
-				
-		
+
+
 
 		},
-		onShow() {
-		},
+		onShow() {},
 		beforeMount() {
 			this.setConversationListener()
 		},
 		methods: {
+			SetConversationDraftListener() {
+				let _this = this
+				_this.$globalEvent.addEventListener('setConversationDraftSuccess', (params) => {
+					let transfer = JSON.stringify(params)
+					_this.listener = JSON.parse(transfer)
+					console.log(_this.listener, "草稿成功");
+			
+				})
+				_this.$globalEvent.addEventListener('setConversationDraftFailed', (params) => {
+					let transfer = JSON.stringify(params)
+					_this.listener = JSON.parse(transfer)
+					console.log(_this.listener, "草稿失败");
+			
+				})
+			},
+			markSingleMsgHasReadListener() {
+				let _this = this
+				_this.$globalEvent.addEventListener('markSingleMsgSuccess', (params) => {
+					let transfer = JSON.stringify(params)
+					_this.listener = JSON.parse(transfer)
+					console.log(_this.listener, "设置已读成功");
+
+				})
+				_this.$globalEvent.addEventListener('markSingleMsgFailed', (params) => {
+					let transfer = JSON.stringify(params)
+					_this.listener = JSON.parse(transfer)
+					console.log(_this.listener, "设置已读失败");
+
+				})
+			},
 			setConversationListener() {
 				let _this = this
 				_this.$globalEvent.addEventListener("onNewConversation", function(e) {
@@ -195,6 +235,10 @@
 								index: 0,
 								text: _this.listener.msg
 							})
+						} else {
+							uni.removeTabBarBadge({
+								index: 0
+							})
 						}
 
 						console.log(_this.listener.msg, "未读消息");
@@ -228,6 +272,19 @@
 					}
 				);
 			},
+			pinConversationListener(){
+				let _this = this;
+				_this.$globalEvent.addEventListener("pinConversationSuccess", function(e) {
+					let transfer = JSON.stringify(e);
+					_this.listener = JSON.parse(transfer);
+					console.log(_this.listener, "置顶成功");
+				});
+				_this.$globalEvent.addEventListener("pinConversationFailed", function(e) {
+					let transfer = JSON.stringify(e);
+					_this.listener = JSON.parse(transfer);
+					console.log(_this.listener, "置顶失败");
+				});
+			},
 			getTotalUnreadMsgCount() {
 				this.$openSdk.getTotalUnreadMsgCount();
 			},
@@ -248,8 +305,8 @@
 			showOperation(conversationID) {
 				this.chooseConversationID = conversationID
 			},
-			shield(e) {
-				//功能还没做
+			pinConversation(e) {
+				this.$openSdk.pinConversation(e.conversationID,true)
 				this.chooseConversationID = 0
 			},
 			//depep clone
@@ -263,10 +320,9 @@
 				});
 			},
 			goDialogue(e) {
-				// await this.$store.commit("getConversationUserID",e.userID)
-
 				uni.navigateTo({
-					url: "./dialogue?userID=" + e.userID + "&conversationID=" + e.conversationID
+					url: "./dialogue?userID=" + e.userID + "&conversationID=" + e.conversationID +
+						"&unreadCount=" + e.unreadCount
 				});
 			},
 			sortNumber(a, b) {

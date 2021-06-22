@@ -76,11 +76,6 @@
 					console.log(_this.listener, "登出失败");
 				});
 			},
-			addMsgListener() {
-				this.$globalEvent.addEventListener("onRecvNewMessage", (params) => {
-					console.log(params, "新消息新消息新消息");
-				});
-			},
 			initFriendListener() {
 				this.$openSdk.setFriendListener();
 			},
@@ -132,7 +127,7 @@
 		mounted() {},
 		onLaunch: function() {
 			this.$openSdk.setConversationListener()
-			this.addMsgListener()
+			
 			this.$openSdk.addMsgListener()
 			this.loginListener()
 			this.logoutListener()

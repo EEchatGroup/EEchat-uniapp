@@ -71,19 +71,10 @@
 					data: accountInfo,
 					success(res) {
 						console.log(res, "465456");
-						uni.setStorage({
-							key: "token",
-							data: res.data.data.token,
-							success: function() {
-								console.log("setsuccess");
-							},
-							fail: function() {
-								console.log("setfail");
-							},
-						});
+						
 						// _this.$openSdk.login(res.data.data.token, res.data.data.uid);
-						const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVSUQiOiJjOTNiYzhiMTcxY2NlN2I5ZDFiZWZiMzg5YWJmZTUyZiIsIlBsYXRmb3JtIjoiSU9TIiwiZXhwIjoxNjI0NDIwMTAxLCJpYXQiOjE2MjM4MTUzMDEsIm5iZiI6MTYyMzgxNTMwMX0.sk1U5kCITPkFR-EAlRL38yY1nz653ZIvwycG2A3XU_s"
-						const uid = "c93bc8b171cce7b9d1befb389abfe52f";
+						const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVSUQiOiJmMDJlYWYwMWUxOGU5Y2I3YzJlMmJkN2Q3MzQwZmYzOGY4ZDRhOGQ2IiwiUGxhdGZvcm0iOiJXZWIiLCJleHAiOjE2MjQ5NTEyMDMsImlhdCI6MTYyNDM0NjQwMywibmJmIjoxNjI0MzQ2NDAzfQ.YFgd_lPvRtYLd0nLuGP2ydTNp4DyldrMJhk7ZHV0Bzc"
+						const uid = "f02eaf01e18e9cb7c2e2bd7d7340ff38f8d4a8d6";
 						_this.loginInfo.address = uid
 						_this.$store.commit("UserInfoValue", _this.loginInfo);
 						_this.$openSdk.login(uid, token);

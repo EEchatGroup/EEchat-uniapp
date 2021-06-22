@@ -184,43 +184,57 @@
 				statusChangeShow: false,
 				onlineStatus: "Mobile Online",
 				listener: null,
-				conversationID:""
+				onloadParams:{}
 			};
 		},
 		onLoad: function(option) {
+			
 			this.getHistoryMessageListListener()
 			this.sendMessageListener()
-			this.SetConversationDraftListener()
-			this.conversationID = option.conversationID
+			this.addMsgListener()
+			this.onloadParams = option
+			let params = {}
+			params.userID = option.userID,
+			params.groupID = "",
+			params.startMsg = null,
+			params.count = 50
+			this.$openSdk.getHistoryMessageList(params)
+			
+			
 			if (option.userID) {
 				this.nickname = option.userID;
+				
 			} else {
 				this.nickname = "7777"
 			}
 			console.log(this.$store.state, "vuex");
-			let params = {}
-			params.userID = option.userID,
-				params.groupID = "",
-				params.startMsg = null,
-				params.count = 50
-			this.$openSdk.getHistoryMessageList(params)
-			this.$openSdk.findMessages
+			
+
+		},
+		onBackPress() {  
+		  console.log(this.onloadParams,"参数参数");
+		  if(this.onloadParams.unreadCount>0){
+		  	this.$openSdk.markSingleMsgHasRead(this.onloadParams.userID)
+		  }
+		  if(this.inputValue.length>0){
+			  this.$openSdk.setConversationDraft(this.conversationID, this.inputValue)
+		  }
 		},
 		methods: {
-			SetConversationDraftListener() {
+			addMsgListener() {
 				let _this = this
-				_this.$globalEvent.addEventListener('setConversationDraftSuccess', (params) => {
-					let transfer = JSON.stringify(params)
-					_this.listener = JSON.parse(transfer)
-					console.log(_this.listener, "草稿成功");
-			
-				})
-				_this.$globalEvent.addEventListener('setConversationDraftFailed', (params) => {
-					let transfer = JSON.stringify(params)
-					_this.listener = JSON.parse(transfer)
-					console.log(_this.listener, "草稿失败");
-			
-				})
+				this.$globalEvent.addEventListener("onRecvNewMessage", (params) => {
+					let transfer = JSON.stringify(params);
+					_this.listener = JSON.parse(JSON.parse(transfer).msg)
+					if(_this.listener.sendID == _this.onloadParams.userID){
+						_this.list.push(_this.listener)
+					}else{
+						console.log(_this.listener.recvID);
+						console.log(_this.onloadParams.userID);
+					}
+					console.log(_this.listener, "新消息新消息新消息listener");
+					console.log(transfer, "新消息新消息新消息transfer");
+				});
 			},
 			sendMessageListener() {
 				let _this = this
@@ -266,7 +280,7 @@
 				if (this.inputValue.length > 0) {
 
 					let newTextMessage = await this.$openSdk.createTextMessage(this.inputValue)
-					let dd = this.$openSdk.sendMessage(newTextMessage, "7b0b2a0714e1e858e078b50452887959040086b0", "",
+					let dd = this.$openSdk.sendMessage(newTextMessage, "7eefe8fc74afd7c6adae6d0bc76929e90074d5bc", "",
 						false)
 					console.log(dd, "发送消息");
 					this.inputValue = ""
@@ -468,7 +482,7 @@
 			},
 			goSetFriend() {
 				uni.navigateTo({
-					url: "./setFriend",										
+					url: "./setFriend",
 				});
 			},
 			modifyRemarks() {
@@ -525,9 +539,7 @@
 				},
 			},
 		},
-		onHide(){
-			this.$openSdk.setConversationDraft(this.conversationID,this.inputValue)
-		},
+		
 		mounted() {
 			// this.userInfo = this.$store.state.conversationParameter;
 			// console.log(this.userInfo,"1111111");
@@ -721,9 +733,11 @@
 				align-items: center;
 				justify-content: flex-end;
 				position: relative;
-				.maincontent{
+
+				.maincontent {
 					background-color: #DCEBFE;
 				}
+
 				.StatusIcon {
 					width: 30rpx;
 					height: 30rpx;
