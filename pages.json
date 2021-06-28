@@ -2,7 +2,8 @@
 	"easycom": {
 			"^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
 		},
-    "pages": [{
+    "pages": [
+		{
             "path": "pages/login"
 
         },
@@ -39,6 +40,10 @@
 
         },
 		{
+		    "path": "pages/chatWin"
+		
+		},
+		{
             "path" : "pages/mailList"
             
         },
@@ -69,6 +74,9 @@
 		{
 		    "path" : "pages/luyinceshi"
 		    
+		},
+		{
+		    "path": "pages/playVideo"
 		}
     ],
     "globalStyle": {

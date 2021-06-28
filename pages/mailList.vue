@@ -5,10 +5,7 @@
 			<view class="headRight">
 				<image src="../static/search.png" mode="" class="headIcon" @click="goSearch"></image>
 				<image src="../static/more-operations.png" mode="" class="headIcon" @click="controlDisplay"></image>
-				<view class="menuCon" v-show="showOperationsMenu">
-					<view class="triangle">
-
-					</view>
+				<view class="menuCon" v-if="showOperationsMenu">
 					<view class="operationsMenu">
 						<view class="operationsMenu-item" @click="goAddFriend">
 							<image src="../static/addFriend.png" mode="" class="itemImg"></image>
@@ -23,15 +20,7 @@
 							<text>帮助与反馈</text>
 						</view> -->
 					</view>
-
-
-
 				</view>
-
-
-
-
-
 			</view>
 		</view>
 		<view class="newFriend" @click="goNewFriends">
@@ -104,35 +93,34 @@
 			// })
 		},
 		methods: {
-			getMailList(){
+			getMailList() {
 				this.$openSdk.getFriendList()
 			},
-			getMailListListener(){
-				this.$globalEvent.addEventListener('getFriendListSuccess',(params)=>{
+			getMailListListener() {
+				this.$globalEvent.addEventListener('getFriendListSuccess', (params) => {
 					const tmpList = JSON.parse(params.msg)
 					console.log(tmpList)
-					tmpList.map(i=>{
-						i.img= "https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
+					tmpList.map(i => {
+						i.img =
+							"https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
 					})
-					this.friendList = [
-						{
-							letter: "A",
-							data: tmpList
-						}
-					]
+					this.friendList = [{
+						letter: "A",
+						data: tmpList
+					}]
 					console.log(this.friendList)
 				})
-				this.$globalEvent.addEventListener('getFriendListFailed',(params)=>{
+				this.$globalEvent.addEventListener('getFriendListFailed', (params) => {
 					console.log(params);
 				})
 			},
 			async bindClick(e) {
-				let item = Object.assign({},e.item.name)
+				let item = Object.assign({}, e.item.name)
 				console.log(item, "7777777777")
-				if(item.isInBlackList===1){
-					item.blackStatus=true
-				}else{
-					item.blackStatus=false
+				if (item.isInBlackList === 1) {
+					item.blackStatus = true
+				} else {
+					item.blackStatus = false
 				}
 				await this.$store.commit('getSetFriendData', item)
 				uni.navigateTo({
@@ -164,8 +152,8 @@
 		},
 		mounted() {
 			this.getMailList()
-			},
-		onShow(){
+		},
+		onShow() {
 			this.getMailList()
 		}
 	}
@@ -173,8 +161,12 @@
 
 <style lang="scss" scoped>
 	#mailList {
+		position: relative;
 
 		.head {
+			position: fixed;
+			z-index: 99;
+			width: 100%;
 			height: 90rpx;
 			background-color: #fff;
 			display: flex;
@@ -200,20 +192,18 @@
 				.menuCon {
 					z-index: 99;
 					position: absolute;
-					top: 5%;
+					top: 86rpx;
 					right: 1.5%;
 					display: flex;
 					flex-direction: column;
 
-					.triangle {
-						width: 0px;
-						height: 0px;
-						border-top: 18rpx solid transparent;
-						border-bottom: 18rpx solid #1B72EC;
-						border-left: 18rpx solid transparent;
-						border-right: 18rpx solid transparent;
-
-						margin-left: 80%;
+					&::after {
+						content: '';
+						position: absolute;
+						top: -36rpx;
+						right: 36rpx;
+						border: 20rpx solid;
+						border-color: transparent transparent #1b72ec transparent;
 					}
 
 					.operationsMenu {
@@ -223,7 +213,6 @@
 						box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.5);
 						border-radius: 18rpx;
 
-						padding: 0 46rpx;
 
 						.operationsMenu-item {
 							display: flex;
@@ -231,7 +220,6 @@
 							font-size: 30rpx;
 							font-weight: 600;
 							color: #FFFFFF;
-							margin-top: 26rpx;
 
 							.itemImg {
 								width: 44rpx;
@@ -247,6 +235,7 @@
 		}
 
 		.newFriend {
+			padding-top: 90rpx;
 			height: 136rpx;
 			background-color: #fff;
 			margin-top: 6rpx;

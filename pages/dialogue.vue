@@ -1,5 +1,23 @@
 <template>
 	<view id="dialogue">
+<<<<<<< HEAD
+=======
+		<view class="mask" :style="{display:showMask?'flex':'none'}">
+			<!-- <view class="mask"> -->
+			<view class="voice-icon-box">
+				<image class="icon-item" src="../static/press-voice.png" mode=""></image>
+				<view class="bottom-icon" />
+			</view>
+			<view class="btn-list">
+				<view class="action-btn">
+					<u-button type="default" size="mini">cancel</u-button>
+					<u-button size="mini" type="default">send</u-button>
+				</view>
+				<view class="press-btn" @longpress="startSpeack" @touchend="stopSpeack">long press when speacking</view>
+			</view>
+		</view>
+
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 		<view class="headCon">
 			<view class="head">
 				<image src="../static/goBack.png" mode="" class="headleft" @click="goBack"></image>
@@ -158,6 +176,10 @@
 				</view>
 			</view>
 		</view>
+<<<<<<< HEAD
+=======
+
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 		<u-action-sheet @click="imageOrVideo" :list="actionList" v-model="actionShow"></u-action-sheet>
 	</view>
 </template>
@@ -168,6 +190,11 @@
 		send_msg
 	} from "../api";
 	import uploadFile from "../uploadFile/index.js";
+<<<<<<< HEAD
+=======
+
+	let _this = null
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 	export default {
 		data() {
 			return {
@@ -199,10 +226,20 @@
 				],
 				actionShow: false,
 				onloadParams: {},
+<<<<<<< HEAD
 			};
 		},
 		onLoad: function(option) {
 			console.log(option);
+=======
+				showMask: false,
+				recorderManager: null,
+			};
+		},
+		onLoad: function(option) {
+			// console.log();
+			_this = this;
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 			this.getHistoryMessageListListener();
 			this.sendMessageListener();
 			this.addMsgListener();
@@ -222,6 +259,7 @@
 			}
 			console.log(this.$store.state, "vuex");
 		},
+<<<<<<< HEAD
 		onBackPress(options) {
 			if (options.from === 'navigateBack' || options.from === 'backbutton') {
 				if (this.onloadParams.unreadCount > 0) {
@@ -237,6 +275,19 @@
 		methods: {
 			addMsgListener() {
 				let _this = this;
+=======
+		onBackPress() {
+			console.log(this.onloadParams, "参数参数");
+			if (this.onloadParams.unreadCount > 0) {
+				this.$openSdk.markSingleMsgHasRead(this.onloadParams.userID);
+			}
+			if (this.inputValue.length > 0) {
+				this.$openSdk.setConversationDraft(this.conversationID, this.inputValue);
+			}
+		},
+		methods: {
+			addMsgListener() {
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 				this.$globalEvent.addEventListener("onRecvNewMessage", (params) => {
 					let transfer = JSON.stringify(params);
 					_this.listener = JSON.parse(JSON.parse(transfer).msg);
@@ -251,6 +302,7 @@
 				});
 			},
 			sendMessageListener() {
+<<<<<<< HEAD
 				let _this = this;
 				_this.$globalEvent.addEventListener("sendMessageSuccess", (params) => {
 					let transfer = JSON.stringify(params);
@@ -266,16 +318,35 @@
 					let transfer = JSON.stringify(params);
 					_this.listener = JSON.parse(transfer);
 
+=======
+				_this.$globalEvent.addEventListener("sendMessageSuccess", (params) => {
+					_this.listener = JSON.parse(params.msg);
+					console.log(_this.listener, "发送成功");
+				});
+				_this.$globalEvent.addEventListener("sendMessageFailed", (params) => {
+					_this.listener = JSON.parse(params.msg);
+					console.log(_this.listener, "发送失败");
+				});
+				_this.$globalEvent.addEventListener("sendMessageProgress", (params) => {
+					console.log(params);
+					_this.listener = JSON.parse(params.msg);
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 					console.log(_this.listener, "发送进度");
 				});
 			},
 			getHistoryMessageListListener() {
+<<<<<<< HEAD
 				let _this = this;
 				_this.$globalEvent.addEventListener("getHisMsgSuccess", (params) => {
 					let transfer = JSON.stringify(params);
 					console.log(params.msg);
 					_this.list = JSON.parse(JSON.parse(transfer).msg);
 
+=======
+				_this.$globalEvent.addEventListener("getHisMsgSuccess", (params) => {
+					let transfer = JSON.stringify(params);
+					_this.list = JSON.parse(JSON.parse(transfer).msg);
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 					console.log(_this.list, "拉消息");
 				});
 				_this.$globalEvent.addEventListener("getHisMsgFailed", (params) => {
@@ -359,12 +430,36 @@
 					uni.chooseVideo({
 						sourceType: ["album"],
 						success: (res) => {
+<<<<<<< HEAD
 							console.log(res);
+=======
+							console.log(res.tempFilePath);
+							console.log(res.duration);
+							const fileIndex = res.tempFilePath.indexOf("__UNI__F1D268F") + 14
+							const suffixIndex = res.tempFilePath.lastIndexOf(".") + 1
+							const suffix = res.tempFilePath.slice(suffixIndex)
+							let url = res.tempFilePath.slice(fileIndex)
+							url = '../..' + url
+							const snapshot = "snapshot.jpg"
+							const newVideoMessage = _this.$openSdk.createVideoMessage(url, suffix, res
+								.duration, snapshot);
+							console.log(url);
+							console.log(suffix);
+							console.log(newVideoMessage);
+							console.log(_this.recvID);
+							let dd = _this.$openSdk.sendMessage(
+								newVideoMessage,
+								_this.recvID,
+								"",
+								false
+							);
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 						},
 					});
 				}
 			},
 
+<<<<<<< HEAD
 			async album() {
 				let _this = this;
 				let latest = {};
@@ -381,11 +476,25 @@
 						console.log(contactPath);
 						let newImgMessage = _this.$openSdk.createImageMessage(contactPath);
 						console.log(newImgMessage, "图片创建返回");
+=======
+			album() {
+				let latest = {};
+				uni.chooseImage({
+					count: 9,
+					sizeType: ["original", "compressed"],
+					sourceType: ["album"],
+					success: function(res) {
+						const tempFilePaths = res.tempFilePaths[0];
+						const tmpPath = tempFilePaths.slice(4);
+						const contactPath = ".." + tmpPath;
+						let newImgMessage = _this.$openSdk.createImageMessage(contactPath);
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 						let dd = _this.$openSdk.sendMessage(
 							newImgMessage,
 							_this.recvID,
 							"",
 							false
+<<<<<<< HEAD
 						);
 						console.log(dd, "发送消息");
 						_this.list.push(JSON.parse(newImgMessage));
@@ -486,10 +595,15 @@
 							}
 
 						}); */
+=======
+						);
+						_this.list.push(JSON.parse(newImgMessage));
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 					},
 				});
 			},
 			shot() {
+<<<<<<< HEAD
 				let _this = this;
 				uni.chooseImage({
 					count: 6, //默认9
@@ -503,21 +617,52 @@
 						console.log(contactPath);
 						let newImgMessage = _this.$openSdk.createImageMessage(contactPath);
 						console.log(newImgMessage, "图片创建返回");
+=======
+				uni.chooseImage({
+					sizeType: ["original", "compressed"],
+					sourceType: ["camera"],
+					success: function(res) {
+						const tempFilePaths = res.tempFilePaths[0];
+						const tmpPath = tempFilePaths.slice(4);
+						const contactPath = ".." + tmpPath;
+						let newImgMessage = _this.$openSdk.createImageMessage(contactPath);
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 						let dd = _this.$openSdk.sendMessage(
 							newImgMessage,
 							_this.recvID,
 							"",
 							false
 						);
+<<<<<<< HEAD
 						console.log(dd, "发送消息");
+=======
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 						_this.list.push(JSON.parse(newImgMessage));
 					},
 				});
 			},
+<<<<<<< HEAD
 			async voice() {
 				uni.navigateTo({
 					url: "./luyinceshi",
 				});
+=======
+			voice() {
+				this.showMask = true
+			},
+			
+			startSpeack() {
+				this.recorderManager = uni.getRecorderManager()
+				this.recorderManager.start({
+					format: "wav"
+				})
+			},
+			stopSpeack() {
+				if (this.recorderManager) {
+					this.recorderManager.stop()
+					this.recorderManager = null
+				}
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 			},
 			goBack() {
 				uni.switchTab({
@@ -609,6 +754,69 @@
 
 <style lang="scss" scoped>
 	#dialogue {
+<<<<<<< HEAD
+=======
+		height: 100vh;
+
+		.mask {
+			width: 100%;
+			height: 100vh;
+			background-color: rgba(0, 0, 0, 0.2);
+			position: relative;
+			z-index: 999;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+
+			.voice-icon-box {
+				position: relative;
+				width: 192px;
+				height: 110px;
+				background-color: white;
+				margin-top: 40vh;
+				text-align: center;
+				line-height: 110px;
+
+				.icon-item {
+					width: 104px;
+					height: 28px;
+				}
+
+				.bottom-icon {
+					position: absolute;
+					left: 50%;
+					transform: translateX(-50%);
+					width: 0;
+					height: 0;
+					border: 40rpx solid;
+					border-color: white transparent transparent transparent;
+				}
+			}
+
+			.btn-list {
+
+				.action-btn {
+					margin: 10vh 0 3vh 0;
+					display: flex;
+					justify-content: space-between;
+
+					uni-button {
+						margin: 0;
+					}
+				}
+
+				// width: 252px;
+			}
+
+			.press-btn {
+				background-color: #1B72EC;
+				color: #FFFFFF;
+				padding: 8px 14px;
+				border-radius: 4px;
+			}
+		}
+
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 		.onlineCircle {
 			width: 20rpx;
 			height: 20rpx;
@@ -727,8 +935,13 @@
 		}
 
 		.main {
+<<<<<<< HEAD
 			padding-bottom: 220rpx;
 			margin-top: 120rpx;
+=======
+			// padding-bottom: 220rpx;
+			// margin-top: 120rpx;
+>>>>>>> 49ddc176abb29348360646c50ce427d010370b74
 
 			.left {
 				margin-left: 44rpx;
