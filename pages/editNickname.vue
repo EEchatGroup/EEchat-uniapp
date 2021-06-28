@@ -32,21 +32,19 @@
 					url: './my'
 				});
 			},
-			/* submit() {
+			submit() {
 				let parameter = {}
-				parameter.hh = "11111"
-				parameter.token = this.$store.state.userInfo.token.accessToken
-				parameter.optionID = this.$store.state.userInfo.optionID
-				parameter.nickName = this.nickname
-				console.log(parameter,"参数")
-				changeNickname(parameter).then(res => {
-					console.log(res,"修改昵称返回值")
+				parameter.name = this.nickname
+				this.$openSdk.setSelfInfo(parameter,data=>{
+					console.log(data);
 				})
-				uni.switchTab({
-					url: './my'
-				});
+				
+				
+				// uni.switchTab({
+				// 	url: './my'
+				// });
 			}
-		 */},
+		},
 		 // onLoad:function(options){
 		 // 	console.log(options);
 			// if(options.path!=="my"){

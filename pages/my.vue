@@ -13,7 +13,7 @@
 		<view class="funtionArea">
 			<uni-list>
 				<uni-list-item thumb="../static/changeAvatar.png" title="Change your Avatar" clickable
-					@click="goEditNickname"></uni-list-item>
+					@click="changeAvatar"></uni-list-item>
 				<uni-list-item thumb="../static/edit.png" title="Change nickname" clickable @click="goEditNickname">
 				</uni-list-item>
 				<uni-list-item thumb="../static/blockList.png" title="Address book blacklist" clickable
@@ -54,6 +54,22 @@
 		},
 
 		methods: {
+			changeAvatar(){
+				let _this = this 
+				uni.chooseImage({
+				    count: 6, //默认9
+				    sizeType: ['original','compressed'], //可以指定是原图还是压缩图，默认二者都有
+				    sourceType: ['album'], //从相册选择
+				    success: function (res) {
+						const tempFilePaths = res.tempFilePaths[0]
+						let parameter = {}
+						parameter.icon = tempFilePaths
+						_this.$openSdk.setSelfInfo(parameter,data=>{
+							console.log(data);
+						})
+				    }
+				});
+			},
 			goEditNickname() {
 				uni.navigateTo({
 					url: './editNickname'
@@ -67,45 +83,14 @@
 			logoutConfirm() {
 				this.$refs.logoutPopup.open()
 			},
-			showLinkPopup() {
-				this.$refs.popup.open()
-			},
-
-			cancel() {
-				this.$refs.popup.close()
-			},
-			copyLink() {
-				//创建一个input框
-				const input = document.createElement("input");
-				//将指定的DOM节点添加到body的末尾
-				document.body.appendChild(input);
-				//设置input框的value值为直播地址
-				input.setAttribute("value", this.linkValue);
-				//选取文本域中的内容
-				input.select();
-				//copy的意思是拷贝当前选中内容到剪贴板
-				//document.execCommand（）方法操纵可编辑内容区域的元素
-				//返回值为一个Boolean，如果是 false 则表示操作不被支持或未被启用
-				if (document.execCommand("copy")) {
-					document.execCommand("copy");
-				}
-				//删除这个节点
-				document.body.removeChild(input);
-				this.$refs.popup.close()
-			},
+			
 			logoutCancel() {
 				this.$refs.logoutPopup.close()
 			},
 			logout() {
 				this.$openSdk.logout()
 				this.$refs.logoutPopup.close()
-				// sessionStorage.removeItem('token')
-				// try {
-				//     uni.removeStorageSync('token');
-				// } catch (e) {
-				//     // error
-				// }
-
+				
 			}
 		},
 		mounted() {

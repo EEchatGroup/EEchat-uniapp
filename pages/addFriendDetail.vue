@@ -10,14 +10,14 @@
 				</view>
 				
 				<button type="primary" class="button" @click="addFriend">
-					<image src="../static/addFriend.png" mode="" class="buttonIcon"></image>Add friend
+					<image src="../static/addFriend2.png" mode="" class="buttonIcon"></image>Add friend
 				</button>
 				
 				<!-- <button type="primary" class="button" @click="addFriend" v-show="!alreadyAdd">
-					<image src="../static/addFriend.png" mode="" class="buttonIcon"></image>Add friend
+					<image src="../static/addFriend2.png" mode="" class="buttonIcon"></image>Add friend
 				</button>
 				<button type="primary" class="button" @click="sendMessage" v-show="alreadyAdd">
-					<image src="../static/groupChat.png" mode="" class="buttonIcon"></image>Send Message
+					<image src="../static/sentMsg.png" mode="" class="buttonIcon"></image>Send Message
 				</button> -->
 
 			</view>
