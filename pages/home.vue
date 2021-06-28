@@ -1,11 +1,10 @@
 <template>
 	<view id="home">
 		<view class="head">
-			<text class="title" @click="dd">EEchat</text>
+			<text class="title">EEchat</text>
 			<view class="headRight">
 				<image src="../static/more-operations.png" mode="" class="headIcon" @click="controlDisplay"></image>
-				<view class="my-menuCon" v-show="showOperationsMenu">
-					<view class="triangle"> </view>
+				<view class="my-menuCon" v-if="showOperationsMenu">
 					<view class="operationsMenu">
 						<view class="operationsMenu-item" @click="goAddFriend">
 							<image src="../static/addFriend.png" mode="" class="itemImg"></image>
@@ -18,44 +17,50 @@
 		<view class="main">
 
 			<view class="chatList">
-				<view class="chatItem" v-for="item in sessionList" :key="item.conversationID"
-					@longtap.prevent="showOperation(item.conversationID)" @click="goDialogue(item)">
-					<image
-						src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
-						mode="" class="portrait"></image>
-					<view class="chatItemMain">
-						<view class="mainHead">
-							<text class="nickName">{{
-                item.userID.length > 20 ? item.userID.slice(0, 20) + "..." : item.userID
-              }}</text>
-							<text class="latestTime">{{ item.latestMsg.serverMsgID.slice(11,16) }}</text>
-						</view>
-						<view class="mainBottom">
-							<text class="latestContent">{{ item | showFilter }}</text>
+				<uni-swipe-action>
+					<uni-swipe-action-item autoClose v-for="item in sessionList" :key="item.conversationID"
+						>
+						<template>
+							<view @click="clickConversation(item)" class="chatItem">
+								<image
+									src="https://vkceyugu.cdn.bspapp.com/VKCEYUGU-dc-site/460d46d0-4fcc-11eb-8ff1-d5dcf8779628.png"
+									mode="" class="portrait"></image>
+								<view class="chatItemMain">
+									<view class="mainHead">
+										<text class="nickName">{{
+					               	  item.userID.length > 20 ? item.userID.slice(0, 20) + "..." : item.userID
+					               	}}</text>
+										<text class="latestTime">{{ item.latestMsg.sendTime| dateFilter }}</text>
+									</view>
+									<view class="mainBottom">
+										<text class="latestContent">{{ item | msgFilter }}</text>
+										<view class="msgNumber" v-if="item.unreadCount>0"> {{item.unreadCount}}
+										</view>
+									</view>
+								</view>
+							</view>
+						</template>
+						<template v-slot:right>
+							<view class="action-item action-item-top"
+								@click="pinConversation(item.conversationID,item.isPinned)"><text>Top</text></view>
+							<view class="action-item action-item-del" @click="deleteConversation(item.conversationID)">
+								<text>Delete</text></view>
+							<view class="action-item action-item-mark" @click="markAsRead(item.userID)">
+								<text>Mark as read</text></view>
+						</template>
+					</uni-swipe-action-item>
+				</uni-swipe-action>
 
-							<view class="msgNumber" v-show="item.unreadCount>0"> {{item.unreadCount}} </view>
-						</view>
-					</view>
-					
-					<view class="operationBox" :ref="item.id" v-if="item.conversationID == chooseConversationID">
-						<view class="transparent" @click.stop="item.isShow = false"> </view>
-						<view class="operationBox-left" @click.stop="pinConversation(item)">
-							<text>Top</text>
-						</view>
-						<view class="operationBox-right" @click.stop="deleteConversation(item.conversationID)">
-							<text>delete</text>
-						</view>
-						<view class="operationBox-add">
-							<text>Mark as read</text>
-						</view>
-					</view>
-				</view>
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
+	import {
+		calculateDiffTime,
+		formatDate
+	} from '../utils/tools.js'
 	export default {
 		data() {
 			return {
@@ -66,11 +71,10 @@
 				addNewMessage: false,
 				showOperationsMenu: false,
 				listener: null,
-				chooseConversationID: 0
 			};
 		},
 		filters: {
-			showFilter: function(value) {
+			msgFilter(value) {
 				switch (value.latestMsg.contentType) {
 					case 101:
 						return value.latestMsg.content
@@ -88,210 +92,90 @@
 						return JSON.parse(value.latestMsg.content).text
 						break;
 				}
-
+			},
+			dateFilter(val) {
+				const fromDay = calculateDiffTime(val)
+				const sendTimeArr = formatDate(val)
+				switch (fromDay) {
+					case 0:
+						return sendTimeArr[1]
+					case 1:
+						return "last day"
+					default:
+						return sendTimeArr[0]
+				}
 			}
 		},
 		onLoad() {
-			this.getAllConversationListListener();
-			this.deleteConversationListener();
-			this.getTotalUnreadMsgCountListener();
-			this.getOneConversationListener()
-			this.SetConversationDraftListener()
-			this.markSingleMsgHasReadListener()
-			this.pinConversationListener()
+			this.getAllConversationListList();
 			// this.$openSdk.setConversationListener()
-			this.$openSdk.getAllConversationList()
-			this.$openSdk.getTotalUnreadMsgCount()
-
-
-
+			this.getTotalUnreadMsgCount()
 		},
-		onShow() {},
 		beforeMount() {
 			this.setConversationListener()
 		},
 		methods: {
-			SetConversationDraftListener() {
-				let _this = this
-				_this.$globalEvent.addEventListener('setConversationDraftSuccess', (params) => {
-					let transfer = JSON.stringify(params)
-					_this.listener = JSON.parse(transfer)
-					console.log(_this.listener, "草稿成功");
-			
-				})
-				_this.$globalEvent.addEventListener('setConversationDraftFailed', (params) => {
-					let transfer = JSON.stringify(params)
-					_this.listener = JSON.parse(transfer)
-					console.log(_this.listener, "草稿失败");
-			
-				})
-			},
-			markSingleMsgHasReadListener() {
-				let _this = this
-				_this.$globalEvent.addEventListener('markSingleMsgSuccess', (params) => {
-					let transfer = JSON.stringify(params)
-					_this.listener = JSON.parse(transfer)
-					console.log(_this.listener, "设置已读成功");
-
-				})
-				_this.$globalEvent.addEventListener('markSingleMsgFailed', (params) => {
-					let transfer = JSON.stringify(params)
-					_this.listener = JSON.parse(transfer)
-					console.log(_this.listener, "设置已读失败");
-
-				})
-			},
 			setConversationListener() {
 				let _this = this
-				_this.$globalEvent.addEventListener("onNewConversation", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(JSON.parse(transfer).msg);
-					for (let i = 0; i < _this.listener.length; i++) {
-						_this.listener[i].latestMsg = JSON.parse(_this.listener[i].latestMsg)
-
-					}
-					_this.sessionList = _this.listener.concat(_this.sessionList)
-					console.log(_this.listener, "信心信息信息");
+				_this.$globalEvent.addEventListener("onNewConversation", params=> {
+					let res = JSON.parse(params.msg)
+					res.forEach(r=>r.latestMsg = JSON.parse(r.latestMsg))
+					_this.sessionList = res.concat(_this.sessionList)
 					console.log(_this.sessionList, "新会话");
 				});
-				_this.$globalEvent.addEventListener("onConversationChanged", function(e) {
-					console.log(e);
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(JSON.parse(transfer).msg);
-					console.log(_this.listener, "kong空");
-					if (_this.listener != null) {
-						for (let i = 0; i < _this.listener.length; i++) {
-							_this.listener[i].latestMsg = JSON.parse(_this.listener[i].latestMsg)
-
-						}
-						_this.sessionList = _this.listener
+				_this.$globalEvent.addEventListener("onConversationChanged", params=> {
+					let res = JSON.parse(params.msg)
+					if (res) {
+						res.forEach(r=>r.latestMsg = JSON.parse(r.latestMsg))
+						_this.sessionList =res
 					}
-
 					console.log(_this.sessionList, "会话列表改变");
 				});
-				_this.$globalEvent.addEventListener("onTotalUnreadMessageCountChanged", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					_this.$openSdk.getTotalUnreadMsgCount()
-					console.log(_this.listener, "总未读数改变");
+				_this.$globalEvent.addEventListener("onTotalUnreadMessageCountChanged",params=> {
+					// const res = JSON.parse(params.msg)
+					_this.getTotalUnreadMsgCount()
+					console.log(params.msg, "总未读数改变");
 				});
-				_this.$globalEvent.addEventListener("onSyncServerStart", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "监听启动");
+				_this.$globalEvent.addEventListener("onSyncServerStart",params=> {
+					console.log(params.msg, "监听启动");
 				});
-				_this.$globalEvent.addEventListener("onSyncServerFailed", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "监听失败");
+				_this.$globalEvent.addEventListener("onSyncServerFailed",params=> {
+					console.log(params.msg, "监听失败");
 				});
-				_this.$globalEvent.addEventListener("onSyncServerFinish", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "监听完成");
+				_this.$globalEvent.addEventListener("onSyncServerFinish",params=> {
+					console.log(params.msg, "监听完成");
 				});
 
 
 			},
-			getAllConversationListListener() {
-				let _this = this;
-				_this.$globalEvent.addEventListener("getAllConversationSuccess", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(JSON.parse(transfer).msg);
-					for (let i = 0; i < _this.listener.length; i++) {
-						_this.listener[i].latestMsg = JSON.parse(_this.listener[i].latestMsg)
-						_this.listener[i].isShow = false
+			getAllConversationListList() {
+				this.$openSdk.getAllConversationList((data) => {
+					if (data.msg) {
+						let tmpList = JSON.parse(data.msg)
+						for (let i = 0; i < tmpList.length; i++) {
+							tmpList[i].latestMsg = JSON.parse(tmpList[i].latestMsg)
+							tmpList[i].isShow = false
+						}
+						this.sessionList = [...tmpList,...tmpList,...tmpList,...tmpList,...tmpList,...tmpList]
+					} else {
+						console.log(data.err);
 					}
-					_this.sessionList = _this.listener
-					console.log(_this.listener, "获取所有会话成功");
-				});
-				_this.$globalEvent.addEventListener("getAllConversationFailed", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener);
-				});
+				})
 			},
-			deleteConversationListener() {
-				let _this = this;
-				_this.$globalEvent.addEventListener("deleteConversationSuccess", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "删除成功");
-				});
-				_this.$globalEvent.addEventListener("deleteConversationFailed", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "删除失败");
-				});
-			},
-			getTotalUnreadMsgCountListener() {
-				let _this = this;
-				_this.$globalEvent.addEventListener(
-					"getTotalUnreadMsgCountSuccess",
-					function(e) {
-						let transfer = JSON.stringify(e);
-						_this.listener = JSON.parse(transfer);
-						if (Number(_this.listener.msg) > 0) {
+			getTotalUnreadMsgCount() {
+				this.$openSdk.getTotalUnreadMsgCount(data => {
+					if (data.msg) {
+						if (Number(data.msg) > 0) {
 							uni.setTabBarBadge({
 								index: 0,
-								text: _this.listener.msg
+								text: data.msg
 							})
 						} else {
 							uni.removeTabBarBadge({
 								index: 0
 							})
 						}
-
-						console.log(_this.listener.msg, "未读消息");
 					}
-				);
-				_this.$globalEvent.addEventListener(
-					"getTotalUnreadMsgCountFailed",
-					function(e) {
-						let transfer = JSON.stringify(e);
-						_this.listener = JSON.parse(transfer);
-						console.log(_this.listener);
-					}
-				);
-			},
-			getOneConversationListener() {
-				let _this = this;
-				_this.$globalEvent.addEventListener(
-					"getOneConversationSuccess",
-					function(e) {
-						let transfer = JSON.stringify(e);
-						_this.listener = JSON.parse(transfer);
-						console.log(_this.listener, "获取单个会话");
-					}
-				);
-				_this.$globalEvent.addEventListener(
-					"getOneConversationFailed",
-					function(e) {
-						let transfer = JSON.stringify(e);
-						_this.listener = JSON.parse(transfer);
-						console.log(_this.listener);
-					}
-				);
-			},
-			pinConversationListener(){
-				let _this = this;
-				_this.$globalEvent.addEventListener("pinConversationSuccess", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "置顶成功");
-				});
-				_this.$globalEvent.addEventListener("pinConversationFailed", function(e) {
-					let transfer = JSON.stringify(e);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "置顶失败");
-				});
-			},
-			getTotalUnreadMsgCount() {
-				this.$openSdk.getTotalUnreadMsgCount();
-			},
-			dd() {
-				uni.navigateTo({
-					url: "./dialogue",
 				});
 			},
 			controlDisplay() {
@@ -303,48 +187,42 @@
 				});
 				this.showOperationsMenu = false;
 			},
-			showOperation(conversationID) {
-				this.chooseConversationID = conversationID
-			},
-			pinConversation(e) {
-				this.$openSdk.pinConversation(e.conversationID,true)
-				this.chooseConversationID = 0
-			},
-			//depep clone
-			deepClone(obj) {
-				let _obj = JSON.stringify(obj);
-				return JSON.parse(_obj);
-			},
-			goRegiester() {
+			clickConversation(e) {
+				this.$store.commit('setConversationUser',e.userID)
 				uni.navigateTo({
-					url: "./register",
-				});
-			},
-			goDialogue(e) {
-				uni.navigateTo({
-					url: "./dialogue?userID=" + e.userID + "&conversationID=" + e.conversationID +
+					url: "./chatWin?userID=" + e.userID + "&conversationID=" + e.conversationID +
 						"&unreadCount=" + e.unreadCount
 				});
 			},
-			sortNumber(a, b) {
-				return b.UNIXValue - a.UNIXValue;
-			},
-
-			deleteConversation(e) {
-				this.$openSdk.deleteConversation(e);
+			deleteConversation(id) {
+				this.$openSdk.deleteConversation(id, data => {
+					console.log(data);
+				});
 				this.chooseConversationID = 0
 			},
+			pinConversation(id, state) {
+				const newState = state === 0 ? true : false
+				this.$openSdk.pinConversation(id, newState, data => {
+					console.log(data);
+				})
+			},
+			markAsRead(id) {
+				console.log(id);
+				this.$openSdk.markSingleMsgHasRead(id, data => {
+					console.log(data);
+				})
+			},
 		},
-		watch: {
-
-		},
-		mounted() {},
 	};
 </script>
 
 <style lang="scss" scoped>
 	#home {
+		position: relative;
 		.head {
+			position: fixed;
+			z-index: 99;
+			width: 100%;
 			height: 90rpx;
 			background-color: #fff;
 			display: flex;
@@ -370,30 +248,26 @@
 				.my-menuCon {
 					z-index: 99;
 					position: absolute;
-					top: 5%;
+					top: 86rpx;
 					right: 1.5%;
 					display: flex;
 					flex-direction: column;
-
-					.triangle {
-						width: 0px;
-						height: 0px;
-						border-top: 18rpx solid transparent;
-						border-bottom: 18rpx solid #1b72ec;
-						border-left: 18rpx solid transparent;
-						border-right: 18rpx solid transparent;
-
-						margin-left: 80%;
+					
+					&::after{
+						content: '';
+						position: absolute;
+						top: -36rpx;
+						right:36rpx;
+						border: 20rpx solid;
+						border-color: transparent transparent #1b72ec transparent;
 					}
 
 					.operationsMenu {
-						width: 250rpx;
-						height: 100rpx;
 						background-color: #1b72ec;
 						box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.5);
 						border-radius: 18rpx;
-
-						padding: 0 46rpx;
+						padding: 24rpx;
+						
 
 						.operationsMenu-item {
 							display: flex;
@@ -401,7 +275,6 @@
 							font-size: 30rpx;
 							font-weight: 600;
 							color: #ffffff;
-							margin-top: 26rpx;
 
 							.itemImg {
 								width: 44rpx;
@@ -415,10 +288,36 @@
 		}
 
 		.main {
-			padding-bottom: 120rpx;
+			padding-top: 90rpx;
+			// padding-bottom: 120rpx;
 
 			.chatList {
 				margin-top: 6rpx;
+
+				.action-item {
+					width: 148rpx;
+					box-shadow: 0px 4rpx 8rpx 0rpx rgba(0, 0, 0, 0.5);
+					font-size: 28rpx;
+					color: #FFFFFF;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					text-align: center;
+
+					&-del {
+						background: linear-gradient(135deg, #FFD576 0%, #FFAB41 100%);
+					}
+
+					&-top {
+						background: linear-gradient(135deg, #87C0FF 0%, #0060E7 100%);
+					}
+
+					&-mark {
+						background: linear-gradient(135deg, #C9C9C9 0%, #7A7A7A 100%);
+					}
+				}
+
+
 
 				.chatItem {
 					background-color: #fff;

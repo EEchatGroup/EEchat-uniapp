@@ -28,6 +28,7 @@
 							console.log(entry.fullPath,"路径");
 						},
 						(error) => {
+							console.log('getPathFailed----------');
 							console.log(error);
 						}
 					);
@@ -40,41 +41,8 @@
 					ipWs: "47.112.160.66:17778",
 					dbDir,
 				};
-				this.flag = this.$openSdk.initSdk(JSON.stringify(obj));
+				this.flag = this.$openSdk.initSDK(JSON.stringify(obj));
 				console.log(this.flag);
-			},
-			loginListener() {
-				let _this = this;
-				_this.$globalEvent.addEventListener("onLoginSuccess", function(params) {
-					let transfer = JSON.stringify(params);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "登录成功");
-					uni.switchTab({
-						url: "./home",
-					});
-				});
-				_this.$globalEvent.addEventListener("onLoginFailed", (params) => {
-					let transfer = JSON.stringify(params);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "登录失败");
-				});
-			},
-			logoutListener() {
-				let _this = this;
-				_this.$globalEvent.addEventListener("onLogoutSuccess", (params) => {
-					let transfer = JSON.stringify(params);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "登出成功");
-					uni.navigateTo({
-						url: "./login",
-					});
-
-				});
-				_this.$globalEvent.addEventListener("onLogoutFailed", (params) => {
-					let transfer = JSON.stringify(params);
-					_this.listener = JSON.parse(transfer);
-					console.log(_this.listener, "登出失败");
-				});
 			},
 			initFriendListener() {
 				this.$openSdk.setFriendListener();
@@ -128,9 +96,7 @@
 		onLaunch: function() {
 			this.$openSdk.setConversationListener()
 			
-			this.$openSdk.addMsgListener()
-			this.loginListener()
-			this.logoutListener()
+			this.$openSdk.addAdvancedMsgListener()
 			this.fileInfo();
 			this.initFriendListener();
 			this.setFriendListener();
