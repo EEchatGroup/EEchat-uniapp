@@ -1,18 +1,18 @@
 <template>
 	<view v-show="showAcition" :class="{'top-action':isTop,'bottom-action':!isTop}" class="msg-actions">
-		<view class="action-item">
+		<view v-if="msgItem.contentType==101" @click="copyMsg" class="action-item">
 			<image class="action-icon" src="../../static/msg_copy.png"/>
 			<text>copy</text>
 		</view>
-		<view class="action-item">
+		<view @click="deleteMsg" class="action-item">
 			<image class="action-icon" src="../../static/msg_del.png"/>
 			<text>delete</text>
 		</view>
-		<view class="action-item">
+		<view v-if="msgItem.contentType!=103" @click="forwardMsg" class="action-item">
 			<image class="action-icon" src="../../static/msg_share.png"/>
 			<text>forward</text>
 		</view>
-		<view class="action-item">
+		<view @click="withdrawMsg" class="action-item">
 			<image class="action-icon" src="../../static/msg_withdraw.png"/>
 			<text>withdraw</text>
 		</view>
@@ -28,11 +28,48 @@
 		},
 		props:{
 			showAcition:Boolean,
-			isTop:Boolean
+			isTop:Boolean,
+			msgItem:Object
 		},
 		methods:{
-			
-		}
+			copyMsg(){
+				let _this = this
+				uni.setClipboardData({
+				    data: this.msgItem.content,
+				    success: () =>{ 
+						uni.hideToast()
+						_this.$u.toast("copy")
+					}
+				});
+			},
+			deleteMsg(){
+				let _this = this
+				this.$openSdk.deleteMessageFromLocalStorage(JSON.stringify(this.msgItem),(data)=>{
+					if(data.msg===""){
+						const params = {
+							positionId:_this.msgItem.positionId
+						}
+						uni.$emit("deleteMsg",params)
+					}
+				})
+			},
+			forwardMsg(){
+				this.$u.toast("forwardMsg developing")
+				// this.$openSdk.createForwardMessage()
+			},
+			withdrawMsg(){
+				this.$openSdk.revokeMessage(JSON.stringify(this.msgItem),(data)=>{
+					if(data.msg===""){
+						const params = {
+							positionId:_this.msgItem.positionId,
+							isRevoke:true
+						}
+						uni.$emit("deleteMsg",{positionId:params})
+					}
+				})
+				// this.$u.toast("withdrawMsg developing")
+			}
+		},
 	}
 </script>
 

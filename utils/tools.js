@@ -65,23 +65,13 @@ export const moveToDoc = (tempFilePaths) =>{
 	})
 }
 
-// let fileIndex
-// 						if(tempFilePaths.indexOf("compressed")===-1){
-// 							fileIndex = tempFilePaths.indexOf("original") + 10
-// 						}else{
-// 							fileIndex = tempFilePaths.indexOf("compressed") + 10
-// 						}
-// 						const fileSuffix = tempFilePaths.slice(fileIndex)
-// 						moveToDoc.then(entrys=>{
-// 							let contactPath = "../file/"+fileSuffix
-// 							let newImgMessage = _this.$openSdk.createImageMessage(contactPath);
-// 							let dd = _this.$openSdk.sendMessage(
-// 								newImgMessage,
-// 								_this.recvID,
-// 								"",
-// 								false
-// 							);
-// 							console.log(newImgMessage);
-// 							_this.msgList.push(JSON.parse(newImgMessage));
-// 						})
-// 						.catch(err=>console.log(err);)
+export const randomString = (len)=> {
+　　len = len || 32;
+　　var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
+　　var maxPos = $chars.length;
+　　var pwd = '';
+　　for ( let i = 0; i < len; i++) {
+　　　　pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+　　}
+　　return pwd;
+}

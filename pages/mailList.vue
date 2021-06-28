@@ -33,6 +33,14 @@
 			</view>
 		</view>
 		<view class="">
+		<!-- 	<u-index-list :sticky="false" :scrollTop="scrollTop">
+				<view v-for="(item, index) in indexList" :key="index">
+					<u-index-anchor :index="item" />
+					<view v-for="dataItem in data" v-if="dataItem.title==item" class="list-cell">
+						{{dataItem.msg}}
+					</view>
+				</view>
+			</u-index-list> -->
 			<uni-indexed-list :options="friendList" :showSelect="false" @click="bindClick"></uni-indexed-list>
 		</view>
 	</view>
@@ -94,11 +102,21 @@
 		},
 		methods: {
 			getMailList() {
-				this.$openSdk.getFriendList()
-			},
-			getMailListListener() {
-				this.$globalEvent.addEventListener('getFriendListSuccess', (params) => {
-					const tmpList = JSON.parse(params.msg)
+				this.$openSdk.getFriendList((data) => {
+					// const tmpList = JSON.parse(data.msg)
+					const tmpList = [
+						{
+							uid:"123456"
+						},
+						{
+							uid:"123456"
+						},
+						{
+							uid:"123456"
+						},{
+						uid:"123456"
+					}
+					]
 					console.log(tmpList)
 					tmpList.map(i => {
 						i.img =
@@ -106,12 +124,9 @@
 					})
 					this.friendList = [{
 						letter: "A",
-						data: tmpList
+						data: [...tmpList,...tmpList,...tmpList,...tmpList]
 					}]
 					console.log(this.friendList)
-				})
-				this.$globalEvent.addEventListener('getFriendListFailed', (params) => {
-					console.log(params);
 				})
 			},
 			async bindClick(e) {
@@ -148,9 +163,6 @@
 			}
 		},
 		beforeMount() {
-			this.getMailListListener()
-		},
-		mounted() {
 			this.getMailList()
 		},
 		onShow() {
@@ -161,11 +173,11 @@
 
 <style lang="scss" scoped>
 	#mailList {
-		position: relative;
+		// position: relative;
 
 		.head {
-			position: fixed;
-			z-index: 99;
+			// position: fixed;
+			// z-index: 99;
 			width: 100%;
 			height: 90rpx;
 			background-color: #fff;
@@ -235,7 +247,7 @@
 		}
 
 		.newFriend {
-			padding-top: 90rpx;
+			// padding-top: 90rpx;
 			height: 136rpx;
 			background-color: #fff;
 			margin-top: 6rpx;

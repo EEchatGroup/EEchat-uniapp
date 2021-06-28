@@ -29,7 +29,7 @@
 						<text style="color: #FFFFFF;">{{msg.percent}}%</text>
 					</u-circle-progress>
 			</view>
-			<MsgAction :isTop="isTop" :showAcition="showAcition" />
+			<MsgAction :isTop="isTop" :msgItem="msg" :showAcition="showAcition" />
 		</view>
 	</view>
 </template>
@@ -227,6 +227,7 @@
 				background-color: #dfebff;
 				padding: 7px;
 				border-radius: 4px;
+				word-break: break-all;
 
 				&::before {
 					content: '';
@@ -234,8 +235,8 @@
 					border: 7px solid;
 					border-color: transparent transparent transparent #dfebff;
 					right: -14px;
-					top: 50%;
-					transform: translateY(-50%);
+					top: 12px;
+					// transform: translateY(-50%);
 				}
 			}
 

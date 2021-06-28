@@ -156,7 +156,7 @@
 							tmpList[i].latestMsg = JSON.parse(tmpList[i].latestMsg)
 							tmpList[i].isShow = false
 						}
-						this.sessionList = [...tmpList,...tmpList,...tmpList,...tmpList,...tmpList,...tmpList]
+						this.sessionList = tmpList
 					} else {
 						console.log(data.err);
 					}
@@ -208,7 +208,7 @@
 			},
 			markAsRead(id) {
 				console.log(id);
-				this.$openSdk.markSingleMsgHasRead(id, data => {
+				this.$openSdk.markSingleMessageHasRead(id, data => {
 					console.log(data);
 				})
 			},
